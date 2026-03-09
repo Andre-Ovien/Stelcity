@@ -1,0 +1,1 @@
+StelCity is an e-commerce platform built to showcase and sell products, raw materials, and services. The platform is designed to provide a smooth shopping experience for customers while giving the brand a digital storefront.
