@@ -1,0 +1,78 @@
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+import uuid
+from Core.settings import AUTH_USER_MODEL
+# Create your models here.
+
+
+class Product(models.Model):
+    class CategoryChoices(models.TextChoices):
+        PRODUCT = "product"
+        RAW_MATERIAL = "raw_material"
+
+    category = models.CharField(max_length=20,choices=CategoryChoices.choices)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    stock = models.PositiveIntegerField(null=True,blank=True)
+    image = models.ImageField(upload_to="Products", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def in_stock(self):
+        return self.stock > 0
+    
+    def has_variants(self):
+        return self.category == self.CategoryChoices.RAW_MATERIAL
+    
+    def __str__(self):
+        return self.name
+    
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product,related_name="variants",on_delete=models.CASCADE)
+    weight = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=10,decimal_places=2)
+    stock = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.product.name} - {self.weight}"
+    
+class Order(models.Model):
+    class StatusChoices(models.TextChoices):
+        PENDING = 'Pending'
+        CONFIRMED = 'Confirmed'
+        CANCELLED = 'Cancelled'
+
+    order_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10,
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING
+    )
+
+    def __str__(self):
+        return f"Order {self.order_id} by {self.user.email}"
+    
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variant = models.ForeignKey(ProductVariant, null=True, blank=True, on_delete=models.SET_NULL)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    @property
+    def item_subtotal(self):
+        return self.price * self.quantity
+    
+    def __str__(self):
+        if self.variant:
+            return f"{self.quantity} x {self.variant} in Order {self.order.order_id}"
+        return f"{self.quantity} x {self.product.name} in Order {self.order.order_id}"
