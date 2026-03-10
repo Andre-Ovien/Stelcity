@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
-from .models import ProductVariant, Product
-from .serializers import ProductVariantSerializer, ProductSerializer
+from .models import ProductVariant, Product, Order, OrderItem
+from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer
 
 # Create your views here.
 
@@ -31,3 +31,8 @@ class ProductViewSet(generics.ListCreateAPIView):
         if category:
             qs = qs.filter(category=category)
         return qs
+    
+
+class OrderListApiView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.select_related('items').all()
