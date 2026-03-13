@@ -21,6 +21,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
+            'id',
             'category',
             'name',
             'description',
@@ -44,7 +45,7 @@ class ProductSerializer(serializers.ModelSerializer):
         price = attrs.get('price')
         if category != Product.CategoryChoices.RAW_MATERIAL and not price:
             raise serializers.ValidationError({
-                "price": "Price is required for products and services."
+                "price": "Price is required for products."
             })
         return attrs
 
