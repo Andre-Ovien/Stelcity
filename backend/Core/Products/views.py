@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from .models import ProductVariant, Product, Order, OrderItem
 from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -18,16 +20,20 @@ class ProductVariantViewSet(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         product_id = self.kwargs.get('product_id')
-        serializer.save(product_id=product_id)
+        product = get_object_or_404(Product, id=product_id)
+
+        if product.category != Product.CategoryChoices.RAW_MATERIAL:
+            raise ValidationError("Variants can only be added to raw materials")
+        
+        serializer.save(product=product)
 
 class ProductViewSet(generics.ListCreateAPIView):
-    queryset = Product.objects.prefetch_related('variants').all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        category = self.request.query_params.get('category')
         qs = Product.objects.prefetch_related('variants').all()
+        category = self.request.query_params.get('category')
         if category:
             qs = qs.filter(category=category)
         return qs
