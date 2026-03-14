@@ -4,15 +4,15 @@ import { useState, useEffect } from "react"
 import Header from "../components/Header"
 import ProductPageCard from "../components/ProductSection"
 import Pagination from "../components/pagination"
-import { getProducts } from "../lib/product"
+import { getRawMaterials } from "../lib/rawMaterials"
 import { useRouter } from "next/navigation"
 import { useItemsPerPage } from "../hooks/useItemsPerPage"
 
 const sortOptions = [
   { label: "Default", value: "default" },
-//   { label: "Price: Low to High", value: "price_asc" },
-//   { label: "Price: High to Low", value: "price_desc" },
-  { label: "Go to Raw Materials", value: "rawMaterials" },
+  // { label: "Price: Low to High", value: "price_asc" },
+  // { label: "Price: High to Low", value: "price_desc" },
+  { label: "Go to Products", value: "products" },
 ]
 
 function ProductPageCardSkeleton() {
@@ -27,7 +27,7 @@ function ProductPageCardSkeleton() {
   )
 }
 
-export default function ProductsPage() {
+export default function RawMaterialsPage() {
   const [allProducts, setAllProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [sort, setSort] = useState("default")
@@ -39,7 +39,7 @@ export default function ProductsPage() {
   useEffect(() => {
     let mounted = true
     setLoading(true)
-    getProducts().then((data) => {
+    getRawMaterials().then((data) => {
       if (mounted) {
         setAllProducts(data)
         setLoading(false)
@@ -53,8 +53,8 @@ export default function ProductsPage() {
   }, [itemsPerPage])
 
   const handleSort = (value) => {
-    if (value === "rawMaterials") {
-      router.push("/rawMaterials") 
+    if (value === "products") {
+      router.push("/products")
       return
     }
     setSort(value)
@@ -85,7 +85,7 @@ export default function ProductsPage() {
 
         
         <h1 className="text-[20px] font-bold text-gray-900 text-center mb-4">
-          Shop Our Products
+          Shop Our Raw Materials
         </h1>
 
         
@@ -98,7 +98,7 @@ export default function ProductsPage() {
                 setSearch(e.target.value)
                 setCurrentPage(1)
               }}
-              placeholder="Search products..."
+              placeholder="Search raw materials..."
               className="w-full border border-gray-200 rounded-full px-4 py-2 text-[13px] outline-none pl-9 text-gray-700"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -129,15 +129,19 @@ export default function ProductsPage() {
                 <ProductPageCardSkeleton key={i} />
               ))
             : paginated.map((product, index) => (
-                <ProductPageCard key={`${product.id}-${index}`} product={product} />
+                <ProductPageCard
+                  key={`${product.id}-${index}`}
+                  product={product}
+                  basePath="raw-materials"
+                />
               ))
           }
         </div>
 
-      
+        
         {!loading && paginated.length === 0 && (
           <div className="text-center py-16 text-gray-400 text-[14px]">
-            No products found for`{search}`
+            No raw materials found for `{search}`
           </div>
         )}
 

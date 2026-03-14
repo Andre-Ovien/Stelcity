@@ -6,7 +6,7 @@ const features = [
 
 const Why = () => {
   return (
-    <section className=" my-6 bg-[#EEF5EE]  px-4 py-8">
+    <section className=" my-6 bg-[#EEF5EE]  px-5 py-8">
       <h2 className="text-[22px] font-bold text-gray-900 mb-6">
         Why Stelcity?
       </h2>

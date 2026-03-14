@@ -5,7 +5,7 @@ import { MdLocationOn, MdEmail } from "react-icons/md"
 
 const Footer = () => {
   return (
-    <footer className="bg-[#E8F0E8] px-4 py-8 mt-4">
+    <footer className="bg-[#E8F0E8] px-5 py-8 mt-4">
 
       
       <div className="mb-6">
