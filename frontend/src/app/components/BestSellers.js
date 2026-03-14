@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { IoAddCircleOutline } from "react-icons/io5"
 import { getBestSellers } from "../lib/bestSellers"
 
 const BestSellerCard = ({ product }) => {
   return (
-    <div className="min-w-42.5 bg-white rounded-2xl p-3 flex flex-col gap-2 border border-gray-100 shadow-sm">
+    <div className="min-w-42.5 g-white rounded-2xl p-3 flex flex-col gap-2 border border-gray-100 shadow-sm">
       <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50">
         <Image
           src={product.image}
@@ -41,10 +41,33 @@ const BestSellerCard = ({ product }) => {
 
 const BestSellers = () => {
   const [products, setProducts] = useState([])
+  const scrollRef = useRef(null)
+  const isHovered = useRef(false)
+  const direction = useRef(1) 
 
   useEffect(() => {
     getBestSellers().then((data) => setProducts(data))
   }, [])
+
+  useEffect(() => {
+    const container = scrollRef.current
+    if (!container || products.length === 0) return
+
+    const scroll = () => {
+      if (isHovered.current) return
+
+      const atEnd = container.scrollLeft + container.offsetWidth >= container.scrollWidth - 10
+      const atStart = container.scrollLeft <= 0
+
+      if (atEnd) direction.current = -1
+      if (atStart) direction.current = 1
+
+      container.scrollBy({ left: direction.current, behavior: "instant" })
+    }
+
+    const interval = setInterval(scroll, 20)
+    return () => clearInterval(interval)
+  }, [products])
 
   return (
     <section className="py-8">
@@ -52,9 +75,16 @@ const BestSellers = () => {
         Our Bestsellers
       </h2>
 
-      <div className="flex gap-3 overflow-x-auto scrollbar-hide px-4 pb-2">
-        {products.map((product) => (
-          <BestSellerCard key={product.id} product={product} />
+      <div
+        ref={scrollRef}
+        onMouseEnter={() => (isHovered.current = true)}
+        onMouseLeave={() => (isHovered.current = false)}
+        onTouchStart={() => (isHovered.current = true)}
+        onTouchEnd={() => (isHovered.current = false)}
+        className="flex gap-3 overflow-x-auto scrollbar-hide px-4 pb-2"
+      >
+        {products.map((product, index) => (
+          <BestSellerCard key={index} product={product} />
         ))}
       </div>
     </section>

@@ -9,8 +9,13 @@ const TABS = [
   { label: "All", value: "all" },
   { label: "Products", value: "products" },
   { label: "Raw Materials", value: "raw" },
-//   { label: "Services", value: "services" },
 ]
+
+const showMore = {
+  all:      { label: "Show more products",      href: "/products" },
+  products: { label: "Show more products",      href: "/products" },
+  raw:      { label: "Show more raw materials", href: "/rawMaterials" },
+}
 
 const ProductGrid = () => {
   const [category, setCategory] = useState("all")
@@ -21,7 +26,7 @@ const ProductGrid = () => {
       : products.filter((p) => p.category === category)
 
   return (
-    <section className="px-4 py-10 bg-[#F7F6F6] rounded-t-[40px]">
+    <section className="px-5 py-10 bg-[#F7F6F6] rounded-t-[40px]" id="collection">
 
       <h2 className="font-bold text-[22px] text-gray-900">
         Browse Our Collection
@@ -30,7 +35,7 @@ const ProductGrid = () => {
         Explore our skincare categories to find what works best for your skin.
       </p>
 
-      
+    
       <div className="flex gap-2 mt-5 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {TABS.map((tab) => (
           <button
@@ -47,20 +52,20 @@ const ProductGrid = () => {
         ))}
       </div>
 
-      
-      <div className="grid grid-cols-2 gap-3">
+    
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {filtered.slice(0, 4).map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
 
-      
+
       <div className="text-center mt-8">
         <Link
-          href="/products"
+          href={showMore[category].href}
           className="text-[13px] text-gray-500 underline underline-offset-2 hover:text-gray-800 transition-colors"
         >
-          Show more products
+          {showMore[category].label}
         </Link>
       </div>
 

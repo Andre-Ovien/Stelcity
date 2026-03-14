@@ -7,7 +7,7 @@ const Hero = () => {
       <div className="absolute top-0 left-0 w-full z-20">
         <Header />
       </div>
-      <div className="pt-28">
+      <div className="pt-25">
         <Main />
       </div>
 

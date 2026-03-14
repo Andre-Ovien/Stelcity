@@ -7,13 +7,13 @@ const Newsletter = () => {
 
   const handleSubscribe = () => {
     if (!email) return
-    // 👉 replace with real API call later
+    
     console.log("Subscribing:", email)
     setEmail("")
   }
 
   return (
-    <section className="py-10 px-4 text-center">
+    <section className="py-10 px-5 text-center">
       <h2 className="text-[22px] font-bold text-gray-900">Want Updates?</h2>
       <p className="text-[13px] text-gray-500 mt-1 max-w-sm mx-auto">
         Join our community and get skincare tips, special discounts, and early access to new products.
