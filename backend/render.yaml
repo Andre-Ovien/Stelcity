@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: stelcity-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn Core.wsgi:application"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stelcity-db
+          property: connectionString
+
+databases:
+  - name: stelcity-db
+    databaseName: stelcity
+    user: stelcity_user
