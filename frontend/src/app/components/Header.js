@@ -14,7 +14,7 @@ const Header = () => {
     <div className="w-full px-5 relative">
 
       
-      <div className="bg-white w-full my-6 px-4 py-3 rounded-2xl flex justify-between items-center shadow-2xl">
+      <div className="bg-white w-full mb-6 px-4 py-3 rounded-2xl flex justify-between items-center shadow-2xl">
 
         
         <Link href="/">

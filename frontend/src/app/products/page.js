@@ -78,7 +78,7 @@ export default function ProductsPage() {
   )
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white my-6">
       <Header />
 
       <div className="px-4 pb-10">

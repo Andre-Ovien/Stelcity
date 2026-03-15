@@ -21,7 +21,7 @@ const Main = () => {
         
         <button
           onClick={scrollToCollection}
-          className="bg-[#D65A5A] text-white rounded-3xl mr-4 w-24 h-12"
+          className="bg-[#D65A5A] text-white rounded-3xl mr-4 w-24 h-12 font-bold shadow-[0px_4px_15px_rgba(214,90,90,0.5)]"
         >
           Shop now
         </button>
