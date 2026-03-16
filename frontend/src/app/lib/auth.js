@@ -1,29 +1,46 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ""
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
+export async function registerUser(name, email, password) {
+  const res = await fetch(`${BASE_URL}/api/auth/register/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
+  })
 
-// const res = await fetch(`${BASE_URL}/api/auth/login`, {
-//   method: "POST",
-//   headers: { "Content-Type": "application/json" },
-//   body: JSON.stringify({ email, password })
-// })
-// const data = await res.json()
-// return data  → { user: { id, name, email }, token: "..." }
+  const data = await res.json()
 
-export async function loginUser(email, password) {
+  if (!res.ok) {
+    throw new Error(data.message || "Registration failed")
+  }
+
   return {
-    user: { id: 1, name: "Stella Stella", email },
-    token: "fake-token-123",
+    user: data.user,         
+    token: data.tokens.access,
+    refreshToken: data.tokens.refresh,
   }
 }
 
-export async function registerUser(name, email, password) {
+export async function loginUser(email, password) {
+  const res = await fetch(`${BASE_URL}/api/auth/login/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    throw new Error(data.message || "Login failed")
+  }
+
   return {
-    user: { id: 1, name, email },
-    token: "fake-token-123",
+    user: data.user,
+    token: data.tokens.access,
+    refreshToken: data.tokens.refresh,
   }
 }
 
 export async function logoutUser() {
- 
+  
   return true
 }
