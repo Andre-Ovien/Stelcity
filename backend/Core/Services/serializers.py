@@ -12,14 +12,15 @@ class ServiceCategorySerializer(serializers.ModelSerializer):
 
 
 class ServiceSerializer(serializers.ModelSerializer):
-    category = serializers.PrimaryKeyRelatedField(queryset=ServiceCategory.objects.all())
-    category = serializers.CharField(source="category.name")
+    category = serializers.PrimaryKeyRelatedField(queryset=ServiceCategory.objects.all(),write_only=True)
+    category_name = serializers.CharField(source="category.name", read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
     class Meta:
         model = Service
         fields = (
             'category',
+            'category_name',
             'name',
             'description',
             'price',
