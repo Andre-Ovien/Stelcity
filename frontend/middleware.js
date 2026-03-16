@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-const protectedRoutes = ["/account", "/checkout"]
+const protectedRoutes = ["/profile", "/checkout"]
 
 export function middleware(request) {
   const token = request.cookies.get("token")?.value
@@ -9,12 +9,12 @@ export function middleware(request) {
   )
 
   if (isProtected && !token) {
-    return NextResponse.redirect(new URL("/login", request.url))
+    return NextResponse.redirect(new URL("/auth", request.url))
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/account/:path*", "/checkout/:path*"],
+  matcher: ["/profile/:path*", "/checkout/:path*"],
 }

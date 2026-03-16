@@ -2,6 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { poppins } from "../layout"
+
 
 const Main = () => {
 
@@ -14,7 +16,14 @@ const Main = () => {
 
   return (
     <div className="mx-5">
-      <h1 className="text-[32px] font-bold">Healthy <span className="text-[#C94F5C]">Skin</span><br/> Starts here</h1>
+      <h1 className="text-[32px] font-bold">
+        Healthy{" "}
+        <span className="text-[#C94F5C] font-(family-name:--font-poppins) font-bold">
+          Skin
+        </span>
+        <br />
+        Starts here
+     </h1>
       <p className="text-[#826E70] text-[16px] font-normal mt-2">Indulge in a premium skincare experience crafted by experts, designed to transform your complexion and turn your daily routine into a moment of pure self-care.</p>
 
       <div className="mt-10">
