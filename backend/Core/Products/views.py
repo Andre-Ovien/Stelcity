@@ -39,6 +39,10 @@ class ProductViewSet(generics.ListCreateAPIView):
         return qs
     
 
+class ProductDetailApiView(generics.RetrieveAPIView):
+    queryset = Product.objects.prefetch_related('variants').all()
+    serializer_class = ProductSerializer
+
 class OrderListApiView(generics.ListAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.select_related('items').all()
