@@ -2,8 +2,9 @@ services:
   - type: web
     name: stelcity-api
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn Core.Core.wsgi:application"
+    rootDir: backend/Core
+    buildCommand: "pip install -r ../requirements.txt && python manage.py migrate"
+    startCommand: "gunicorn Core.wsgi:application"
     envVars:
       - key: DJANGO_SECRET_KEY
         generateValue: true
