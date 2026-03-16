@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import uuid
-from Core.settings import AUTH_USER_MODEL
+from django.contrib.auth.models import User
+# from Core.settings import AUTH_USER_MODEL
 from cloudinary_storage.storage import MediaCloudinaryStorage
 # Create your models here.
 
@@ -46,7 +47,7 @@ class Order(models.Model):
         CANCELLED = 'Cancelled'
 
     order_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=10,
