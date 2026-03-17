@@ -40,8 +40,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text= gettext_lazy('Designates whether this user should be treated as active')
     )
 
-    date_joined = models.DateTimeField(default=timezone.now)
-    last_login = models.DateTimeField(blank=True, null=True)
+#    date_joined = models.DateTimeField(default=timezone.now)
+#    last_login = models.DateTimeField(blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
