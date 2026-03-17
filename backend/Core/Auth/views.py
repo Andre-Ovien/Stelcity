@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from .throttles import LoginRateThrottle, RegisterRateThrottle
 
 # Create your views here.
 
@@ -16,6 +17,7 @@ def get_tokens_for_user(user):
 
 
 class RegisterView(APIView):
+    throttle_classes = [RegisterRateThrottle]
     serializer_class = RegisterSerializer
 
     def post(self, request):
@@ -34,6 +36,7 @@ class RegisterView(APIView):
         )
     
 class LoginView(APIView):
+    throttle_classes = [LoginRateThrottle]
     serializer_class = LoginSerializer
 
     def post(self, request):
