@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .models import ProductVariant, Product, Order, OrderItem
 from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer
 from django.shortcuts import get_object_or_404
@@ -29,7 +29,6 @@ class ProductVariantViewSet(generics.ListCreateAPIView):
 
 class ProductViewSet(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         qs = Product.objects.prefetch_related('variants').all()
@@ -37,6 +36,12 @@ class ProductViewSet(generics.ListCreateAPIView):
         if category:
             qs = qs.filter(category=category)
         return qs
+    
+    def get_permissions(self):
+        self.permission_classes = [AllowAny]
+        if self.request.method == "POST":
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
     
 
 class ProductDetailApiView(generics.RetrieveAPIView):
@@ -46,3 +51,8 @@ class ProductDetailApiView(generics.RetrieveAPIView):
 class OrderListApiView(generics.ListAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.select_related('items').all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)
