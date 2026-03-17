@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import ServiceCategory, Service
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
-from .serializers import ServiceCategorySerializer, ServiceSerializer
+from .serializers import ServiceCategorySerializer, ServiceSerializer, ServiceCategoryWithServicesSerializer
 
 # Create your views here.
 
@@ -17,3 +17,6 @@ class ServiceListCreateApiView(generics.ListCreateAPIView):
     serializer_class = ServiceSerializer
     permission_classes = [IsAdminUser]
 
+class ServiceView(generics.ListAPIView):
+    queryset = ServiceCategory.objects.all()
+    serializer_class = ServiceCategoryWithServicesSerializer
