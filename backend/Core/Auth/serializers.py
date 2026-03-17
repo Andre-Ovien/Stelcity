@@ -8,6 +8,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
+            'name',
             'email',
             'password',
         )
