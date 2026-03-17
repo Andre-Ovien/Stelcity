@@ -4,4 +4,5 @@ from . import views
 urlpatterns = [
     path('service-category/', views.ServiceCategoryListCreateApiView.as_view()),
     path('add-service/', views.ServiceListCreateApiView.as_view()),
+    path('all-services/', views.ServiceView.as_view()),
 ]
