@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils.translation import gettext_lazy
+from django.utils import timezone
 
 # Create your models here.
 
@@ -28,6 +29,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, null=False)
+    name = models.CharField(max_length=255, blank=True)
     
     is_staff = models.BooleanField(
         gettext_lazy('Staff Status'), default=False,
@@ -37,7 +39,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         gettext_lazy('Active Status'), default=True,
         help_text= gettext_lazy('Designates whether this user should be treated as active')
     )
-    
+
+    date_joined = models.DateTimeField(default=timezone.now)
+    last_login = models.DateTimeField(blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
