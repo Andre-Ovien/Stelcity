@@ -29,7 +29,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, null=False)
-    name = models.CharField(max_length=255, blank=True)
+#    name = models.CharField(max_length=255, blank=True)
     
     is_staff = models.BooleanField(
         gettext_lazy('Staff Status'), default=False,
