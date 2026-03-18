@@ -9,7 +9,6 @@ from .serializers import ServiceCategorySerializer, ServiceSerializer, ServiceCa
 class ServiceCategoryListCreateApiView(generics.ListCreateAPIView):
     queryset = ServiceCategory.objects.all()
     serializer_class = ServiceCategorySerializer
-    permission_classes = [IsAdminUser]
 
     def get_permissions(self):
         self.permission_classes = [AllowAny]
@@ -21,7 +20,12 @@ class ServiceCategoryListCreateApiView(generics.ListCreateAPIView):
 class ServiceListCreateApiView(generics.ListCreateAPIView):
     queryset = Service.objects.select_related('category').all()
     serializer_class = ServiceSerializer
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        self.permission_classes = [AllowAny]
+        if self.request.method == "POST":
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
 
     def get_queryset(self):
         qs = Service.objects.select_related('category').all()
