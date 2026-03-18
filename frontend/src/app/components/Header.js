@@ -42,7 +42,7 @@ const Header = () => {
           {[
             { label: "Home", href: "/" },
             { label: "Products", href: "/products" },
-            { label: "Raw Materials", href: "/raw-materials" },
+            { label: "Raw Materials", href: "/rawMaterials" },
             { label: "Services", href: "/services" },
             { label: "Favourites", href: "/fav" },
           ].map((item) => (

@@ -1,104 +1,31 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ""
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
+export async function getRawMaterials(page = 1) {
+  const res = await fetch(`${BASE_URL}/api/products/categories/?category=raw_material&page=${page}`)
+  const data = await res.json()
+  return {
+    products: data.results.map((p) => {
+      const prices = p.variants.map((v) => parseFloat(v.price))
+      const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0
+      const highestPrice = prices.length > 0 ? Math.max(...prices) : 0
 
-
-export async function getRawMaterials() {
-  return [
-    {
-      id: 1,
-      name: "Germall Plus",
-      description: "Protects water-based skincare products from bacteria...",
-      price: 5000,
-      originalPrice: null,
-      rating: 5,
-      badge: null,
-      image: "/images/germanPlus.png",
-      category: "raw",
-      slug: "germall-plus",
-    },
-    {
-      id: 2,
-      name: "Kojic Dipalmitate",
-      description: "Skin whiteninglightening, sun ...",
-      price: 60000,
-      originalPrice: null,
-      rating: 5,
-      badge: null,
-      image: "/images/kojic.png",
-      category: "raw",
-      slug: "niacinamide-powder",
-    },
-    {
-      id: 3,
-      name: "Vitamin E Oil",
-      description: "Protects the skin from damage, kepps...",
-      price: 3000,
-      originalPrice: 5000,
-      rating: 5,
-      badge: "LIMITED",
-      image: "/images/VitaminE.png",
-      category: "raw",
-      slug: "shea-butter",
-    },
-    {
-      id: 4,
-      name: "Kojic Acid",
-      description: "Lightening agent for hyperpigmentation and dark spots...",
-      price: 6000,
-      originalPrice: null,
-      rating: 5,
-      badge: null,
-      image: "/images/kojic.png",
-      category: "raw",
-      slug: "kojic-acid",
-    },
-    {
-      id: 5,
-      name: "Germall Plus",
-      description: "Protects water-based skincare products from bacteria...",
-      price: 5000,
-      originalPrice: null,
-      rating: 5,
-      badge: null,
-      image: "/images/germanPlus.png",
-      category: "raw",
-      slug: "germall-plus",
-    },
-    {
-      id: 6,
-      name: "Kojic Dipalmitate",
-      description: "Skin whiteninglightening, sun ...",
-      price: 60000,
-      originalPrice: null,
-      rating: 5,
-      badge: null,
-      image: "/images/kojic.png",
-      category: "raw",
-      slug: "niacinamide-powder",
-    },
-    {
-      id: 7,
-      name: "Vitamin E Oil",
-      description: "Protects the skin from damage, kepps...",
-      price: 3000,
-      originalPrice: 5000,
-      rating: 5,
-      badge: "LIMITED",
-      image: "/images/VitaminE.png",
-      category: "raw",
-      slug: "shea-butter",
-    },
-    {
-      id: 8,
-      name: "Kojic Acid",
-      description: "Lightening agent for hyperpigmentation and dark spots...",
-      price: 6000,
-      originalPrice: null,
-      rating: 5,
-      badge: null,
-      image: "/images/kojic.png",
-      category: "raw",
-      slug: "kojic-acid",
-    },
-  ]
+      return {
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: lowestPrice,
+        priceLabel: prices.length > 1
+          ? `₦${lowestPrice.toLocaleString()} - ₦${highestPrice.toLocaleString()}`
+          : `₦${lowestPrice.toLocaleString()}`,
+        variants: p.variants,
+        image: p.image,
+        badge: p.stock <= 3 ? "LIMITED" : null,
+        rating: 5,
+        slug: p.id,
+      }
+    }),
+    count: data.count,
+    next: data.next,
+    previous: data.previous,
+  }
 }

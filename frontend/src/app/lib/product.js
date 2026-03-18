@@ -1,98 +1,45 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ""
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
+export async function getProducts(page = 1) {
+  const res = await fetch(`${BASE_URL}/api/products/categories/?category=product&page=${page}`)
+  const data = await res.json()
+  return {
+    products: data.results.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      price: parseFloat(p.price),
+      image: p.image,
+      badge: p.stock <= 3 ? "LIMITED" : null,
+      rating: 5,
+      slug: p.id,
+    })),
+    count: data.count,
+    next: data.next,
+    previous: data.previous,
+  }
+}
 
+export async function getCollectionPreview(category = "all") {
+  const categoryMap = {
+    all: "product",
+    products: "product",
+    raw: "raw_material",
+  }
 
-export async function getProducts() {
-  return [
-    {
-      id: 1,
-      name: "Glass Skin Face Set",
-      description: "For dark eye circles, dull skin, clears hyperpigmentation...",
-      price: 25000,
-      rating: 5,
-      badge: null,
-      image: "/images/glass.png",
-      category: "products",
-      slug: "glass-skin-face-set",
-    },
-    {
-      id: 2,
-      name: "Luxury Face Serum",
-      description: "Clears hyperpigmentation, reduces dark spots...",
-      price: 5000,
-      rating: 5,
-      badge: null,
-      image: "/images/faceSerum.png",
-      category: "products",
-      slug: "luxury-face-serum",
-    },
-    {
-      id: 3,
-      name: "Skin Lightening Set",
-      description: "Gradually lightens the skin and gives a radiant glow...",
-      price: 55000,
-      originalPrice: 80000,
-      rating: 5,
-      badge: "LIMITED",
-      image: "/images/set.png",
-      category: "products",
-      slug: "skin-lightening-set",
-    },
-    {
-      id: 4,
-      name: "Acne Face Cream",
-      description: "Clears pimples, reduces inflammation...",
-      price: 5000,
-      rating: 5,
-      badge: null,
-      image: "/images/acneCream.png",
-      category: "products",
-      slug: "acne-face-cream",
-    },
-    {
-      id: 5,
-      name: "Glass Skin Face Set",
-      description: "For dark eye circles, dull skin, clears hyperpigmentation...",
-      price: 25000,
-      rating: 5,
-      badge: null,
-      image: "/images/glass.png",
-      category: "products",
-      slug: "glass-skin-face-set",
-    },
-    {
-      id: 6,
-      name: "Luxury Face Serum",
-      description: "Clears hyperpigmentation, reduces dark spots...",
-      price: 5000,
-      rating: 5,
-      badge: null,
-      image: "/images/faceSerum.png",
-      category: "products",
-      slug: "luxury-face-serum",
-    },
-    {
-      id: 7,
-      name: "Skin Lightening Set",
-      description: "Gradually lightens the skin and gives a radiant glow...",
-      price: 55000,
-      originalPrice: 80000,
-      rating: 5,
-      badge: "LIMITED",
-      image: "/images/set.png",
-      category: "products",
-      slug: "skin-lightening-set",
-    },
-    {
-      id: 8,
-      name: "Acne Face Cream",
-      description: "Clears pimples, reduces inflammation...",
-      price: 5000,
-      rating: 5,
-      badge: null,
-      image: "/images/acneCream.png",
-      category: "products",
-      slug: "acne-face-cream",
-    },
-  ]
+  const mapped = categoryMap[category] || "product"
+  const res = await fetch(`${BASE_URL}/api/products/categories/?category=${mapped}`)
+  const data = await res.json()
+
+  return data.results.slice(0, 4).map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    price: parseFloat(p.price),
+    image: p.image,
+    badge: p.stock <= 3 ? "LIMITED" : null,
+    rating: 5,
+    slug: p.id,
+    category: category === "raw" ? "raw-materials" : "products",
+  }))
 }
