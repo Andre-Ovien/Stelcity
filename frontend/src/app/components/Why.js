@@ -1,43 +1,84 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+
 const features = [
-  { icon: "🌿", label: "Natural Ingredients" },
-  { icon: "✅", label: "Dermatologist Tested" },
-  { icon: "🌍", label: "For All Skin Types" },
+  {
+    icon: "🌿",
+    label: "Natural Ingredients",
+    content: "We use only the finest natural ingredients sourced from nature and it's free from harmful chemicals and toxins.",
+  },
+  {
+    icon: "✅",
+    label: "Dermatologist Tested",
+    content: "Formulas designed with skin safety and effectiveness in mind.",
+  },
+  {
+    icon: "🌍",
+    label: "For All Skin Types",
+    content: "Our formulas are carefully crafted to work beautifully on all skin types.",
+  },
 ]
 
-const Why = () => {
+export default function Why() {
+  const [activeIndex, setActiveIndex] = useState(1)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % features.length)
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <section className=" my-6 bg-[#EEF5EE]  px-5 py-8">
+    <section className="my-6 bg-[#EEF5EE] px-5 py-8">
       <h2 className="text-[22px] font-bold text-gray-900 mb-6">
         Why Stelcity?
       </h2>
 
-      <div className="flex gap-3 items-stretch">
+      <div className="flex gap-3 items-center">
 
         
-        <div className="flex flex-col justify-between gap-3 flex-1">
-          {features.map((f) => (
-            <div
+        <div className="flex flex-col gap-3 flex-1">
+          {features.map((f, i) => (
+            <motion.div
               key={f.label}
-              className="flex items-center gap-2 bg-white border border-gray-200 rounded-2xl px-3 py-3"
+              onClick={() => setActiveIndex(i)}
+              animate={{
+                scale: activeIndex === i ? 1.05 : 0.95,
+                borderColor: activeIndex === i ? "#D65A5A" : "#e5e7eb",
+              }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center gap-2 bg-white border-2 rounded-2xl px-3 py-3 cursor-pointer"
             >
               <span className="text-[14px]">{f.icon}</span>
-              <span className="text-[13px] font-medium text-gray-700">
+              <span className={`text-[13px] font-medium transition-colors ${
+                activeIndex === i ? "text-[#D65A5A]" : "text-gray-500"
+              }`}>
                 {f.label}
               </span>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         
-        <div className="flex-1 bg-white border border-gray-200 rounded-2xl p-4 flex items-center justify-center">
-          <p className="text-[#D65A5A] text-[15px] font-semibold italic leading-snug text-center">
-            Formulas designed with skin safety and effectiveness in mind.
-          </p>
+        <div className="flex-1 bg-white border-2 border-gray-200 rounded-3xl p-5 flex items-center justify-center min-h-50">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={activeIndex}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3 }}
+              className="text-[#D65A5A] text-[14px] font-semibold italic leading-snug text-center"
+            >
+              {features[activeIndex].content}
+            </motion.p>
+          </AnimatePresence>
         </div>
 
       </div>
     </section>
   )
 }
-
-export default Why
