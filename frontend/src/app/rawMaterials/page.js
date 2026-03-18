@@ -6,12 +6,13 @@ import ProductPageCard from "../components/ProductSection"
 import Pagination from "../components/pagination"
 import { getRawMaterials } from "../lib/rawMaterials"
 import { useRouter } from "next/navigation"
-import { useItemsPerPage } from "../hooks/useItemsPerPage"
+
+const ITEMS_PER_PAGE = 10
 
 const sortOptions = [
   { label: "Default", value: "default" },
-  // { label: "Price: Low to High", value: "price_asc" },
-  // { label: "Price: High to Low", value: "price_desc" },
+  { label: "Price: Low to High", value: "price_asc" },
+  { label: "Price: High to Low", value: "price_desc" },
   { label: "Go to Products", value: "products" },
 ]
 
@@ -29,28 +30,25 @@ function ProductPageCardSkeleton() {
 
 export default function RawMaterialsPage() {
   const [allProducts, setAllProducts] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [sort, setSort] = useState("default")
   const [search, setSearch] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const router = useRouter()
-  const itemsPerPage = useItemsPerPage()
 
   useEffect(() => {
     let mounted = true
     setLoading(true)
-    getRawMaterials().then((data) => {
+    getRawMaterials(currentPage).then((data) => {
       if (mounted) {
-        setAllProducts(data)
+        setAllProducts(data.products)
+        setTotalCount(data.count)
         setLoading(false)
       }
     })
     return () => { mounted = false }
-  }, [])
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [itemsPerPage])
+  }, [currentPage])
 
   const handleSort = (value) => {
     if (value === "products") {
@@ -71,11 +69,7 @@ export default function RawMaterialsPage() {
     return 0
   })
 
-  const totalPages = Math.ceil(sorted.length / itemsPerPage)
-  const paginated = sorted.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
 
   return (
     <div className="min-h-screen bg-white my-6">
@@ -83,12 +77,10 @@ export default function RawMaterialsPage() {
 
       <div className="px-4 pb-10">
 
-        
         <h1 className="text-[20px] font-bold text-gray-900 text-center mb-4">
           Shop Our Raw Materials
         </h1>
 
-        
         <div className="flex items-center justify-between gap-3 mb-5">
           <div className="relative flex-1">
             <input
@@ -99,11 +91,9 @@ export default function RawMaterialsPage() {
                 setCurrentPage(1)
               }}
               placeholder="Search raw materials..."
-              className="w-full border border-gray-200 rounded-full px-4 py-2 text-[13px] outline-none pl-9 text-gray-700"
+              className="w-full border border-gray-200 rounded-full px-4 py-2 text-[13px] outline-none  text-gray-700"
             />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              
-            </span>
+            
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
@@ -122,30 +112,27 @@ export default function RawMaterialsPage() {
           </div>
         </div>
 
-        
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 items-stretch">
           {loading
-            ? Array.from({ length: itemsPerPage }).map((_, i) => (
+            ? Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                 <ProductPageCardSkeleton key={i} />
               ))
-            : paginated.map((product, index) => (
+            : sorted.map((product, index) => (
                 <ProductPageCard
                   key={`${product.id}-${index}`}
                   product={product}
-                  basePath="raw-materials"
+                  basePath="rawMaterials"
                 />
               ))
           }
         </div>
 
-        
-        {!loading && paginated.length === 0 && (
+        {!loading && sorted.length === 0 && (
           <div className="text-center py-16 text-gray-400 text-[14px]">
             No raw materials found for `{search}`
           </div>
         )}
 
-        
         {!loading && totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
