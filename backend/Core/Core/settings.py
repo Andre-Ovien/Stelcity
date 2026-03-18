@@ -170,6 +170,8 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
+        "Auth.throttles.LoginRateThrottle",
+        "Auth.throttles.RegisterRateThrottle",
     ],
 
     "DEFAULT_THROTTLE_RATES": {
