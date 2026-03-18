@@ -67,7 +67,6 @@ class CartView(generics.GenericAPIView):
     serializer_class = CartItemAddSerializer
 
     def get(self, request):
-        """View current cart"""
         try:
             order = Order.objects.get(
                 user=request.user,
@@ -78,7 +77,6 @@ class CartView(generics.GenericAPIView):
             return Response({"detail": "Your cart is empty."})
 
     def post(self, request):
-        """Add item to cart"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         order = serializer.save(user=request.user)
