@@ -3,8 +3,11 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .models import ProductVariant, Product, Order, OrderItem
-from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer
+from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer, CartItemAddSerializer, CartItemUpdateSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 
 # Create your views here.
 
@@ -50,9 +53,56 @@ class ProductDetailApiView(generics.RetrieveAPIView):
 
 class OrderListApiView(generics.ListAPIView):
     serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('items').all()
+    queryset = Order.objects.prefetch_related('items').all()
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(user=self.request.user)
+    
+
+
+class CartView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartItemAddSerializer
+
+    def get(self, request):
+        """View current cart"""
+        try:
+            order = Order.objects.get(
+                user=request.user,
+                status=Order.StatusChoices.PENDING
+            )
+            return Response(OrderSerializer(order).data)
+        except Order.DoesNotExist:
+            return Response({"detail": "Your cart is empty."})
+
+    def post(self, request):
+        """Add item to cart"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save(user=request.user)
+        return Response(OrderSerializer(order).data, status=status.HTTP_200_OK)
+
+
+class CartItemUpdateView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartItemUpdateSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'item_id'
+
+    def get_queryset(self):
+        return OrderItem.objects.filter(
+            order__user=self.request.user,
+            order__status=Order.StatusChoices.PENDING
+        )
+
+    def get_object(self):
+        return get_object_or_404(self.get_queryset(), id=self.kwargs['item_id'])
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(OrderSerializer(instance.order).data)
