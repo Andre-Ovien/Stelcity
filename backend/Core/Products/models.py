@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 import uuid
 from django.conf import settings
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from django.db.models import Q
 # Create your models here.
 
 
@@ -44,6 +45,15 @@ class Order(models.Model):
         PENDING = 'Pending'
         CONFIRMED = 'Confirmed'
         CANCELLED = 'Cancelled'
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'status'],
+                condition=Q(status='Pending'),
+                name='one_pending_order_per_user'
+            )
+        ]
 
     order_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
