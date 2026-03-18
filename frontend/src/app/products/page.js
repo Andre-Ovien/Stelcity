@@ -14,6 +14,7 @@ const sortOptions = [
   { label: "Price: Low to High", value: "price_asc" },
   { label: "Price: High to Low", value: "price_desc" },
   { label: "Go to Raw Materials", value: "rawMaterials" },
+  { label: "Go to Services", value: "Services" },
 ]
 
 function ProductPageCardSkeleton() {
@@ -53,6 +54,10 @@ export default function ProductsPage() {
   const handleSort = (value) => {
     if (value === "rawMaterials") {
       router.push("/rawMaterials")
+      return
+    }
+    if (value === "Services") {
+      router.push("/services")
       return
     }
     setSort(value)
