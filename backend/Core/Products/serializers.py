@@ -86,27 +86,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'user',
             'status',
         )
-
-
-# class CartItemAddSerializer(serializers.Serializer):
-#     product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-
-#     def save(self, user):
-#         product = self.validated_data['product_id']
-
-#         order, _ = Order.objects.get_or_create(
-#             user=user, status=Order.StatusChoices.PENDING
-#         )
-
-#         price = product.price if not product.has_variants() else None
-
-#         OrderItem.objects.get_or_create(
-#             order=order,
-#             product=product,
-#             defaults={'quantity': 1, 'price': price}
-#         )
-
-#         return order
     
 
 class CartItemAddSerializer(serializers.Serializer):
@@ -127,7 +106,6 @@ class CartItemAddSerializer(serializers.Serializer):
         )
 
         if product.has_variants():
-            # grab cheapest variant as default
             default_variant = product.variants.order_by('price').first()
             price = default_variant.price
         else:
@@ -146,65 +124,6 @@ class CartItemAddSerializer(serializers.Serializer):
 
         return order
 
-# class CartItemUpdateSerializer(serializers.ModelSerializer):
-#     variant_id = serializers.PrimaryKeyRelatedField(
-#         queryset=ProductVariant.objects.all(),
-#         source='variant',
-#         required=False,
-#         allow_null=True
-#     )
-
-#     class Meta:
-#         model = OrderItem
-#         fields = ('variant_id', 'quantity')
-
-#     def validate(self, attrs):
-#         item = self.instance
-#         product = item.product
-#         variant = attrs.get('variant', item.variant)
-#         quantity = attrs.get('quantity', item.quantity)
-
-#         if product.has_variants():
-#             # raw material — block quantity changes, only variant selection allowed
-#             if 'quantity' in self.initial_data:
-#                 raise serializers.ValidationError(
-#                     {"quantity": "Quantity cannot be changed for raw materials. Select a variant instead."}
-#                 )
-#             if not variant:
-#                 raise serializers.ValidationError(
-#                     {"variant_id": "Please select a variant for this product."}
-#                 )
-#             if variant.product != product:
-#                 raise serializers.ValidationError(
-#                     {"variant_id": "This variant does not belong to this product."}
-#                 )
-#             if variant.stock < 1:
-#                 raise serializers.ValidationError(
-#                     {"variant_id": "This variant is out of stock."}
-#                 )
-#         else:
-#             # regular product — block variant changes, only quantity allowed
-#             if 'variant_id' in self.initial_data:
-#                 raise serializers.ValidationError(
-#                     {"variant_id": "This product does not have variants."}
-#                 )
-#             if quantity > product.stock:
-#                 raise serializers.ValidationError(
-#                     {"quantity": f"Only {product.stock} units available."}
-#                 )
-
-#         return attrs
-
-#     def update(self, instance, validated_data):
-#         variant = validated_data.get('variant', instance.variant)
-
-#         if variant:
-#             instance.price = variant.price
-
-#         instance.variant = variant
-#         instance.quantity = validated_data.get('quantity', instance.quantity)
-#         instance.save()
-#         return instance
 
 class CartItemUpdateSerializer(serializers.ModelSerializer):
     variant_id = serializers.PrimaryKeyRelatedField(
@@ -222,10 +141,8 @@ class CartItemUpdateSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if self.instance:
             if self.instance.product.has_variants():
-                # raw material — drop quantity, only variant selection
                 self.fields.pop('quantity', None)
             else:
-                # regular product — drop variant, only quantity
                 self.fields.pop('variant_id', None)
 
     def validate(self, attrs):
