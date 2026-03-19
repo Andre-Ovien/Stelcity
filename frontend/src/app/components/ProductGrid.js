@@ -1,29 +1,113 @@
 "use client"
 
-import { useState } from "react"
-import { products } from "../lib/products"
-import ProductCard from "./ProductCard"
+import { useState, useEffect } from "react"
+import Image from "next/image"
 import Link from "next/link"
+import { FaHeart } from "react-icons/fa"
+import { getCollectionPreview } from "../lib/homeCollection"
 
 const TABS = [
   { label: "All", value: "all" },
   { label: "Products", value: "products" },
   { label: "Raw Materials", value: "raw" },
+  { label: "Services", value: "services" },
 ]
 
 const showMore = {
-  all:      { label: "Show more products",      href: "/products" },
-  products: { label: "Show more products",      href: "/products" },
+  all:      { label: "Show more", href: "/products" },
+  products: { label: "Show more products", href: "/products" },
   raw:      { label: "Show more raw materials", href: "/rawMaterials" },
+  services: { label: "View all services", href: "/services" },
+}
+
+const displayCount = {
+  all:      6,
+  products: 6,
+  raw:      6,
+  services: 6,
+}
+
+function ProductCard({ product }) {
+  const href =
+    product.type === "service"
+      ? "/services"
+      : product.type === "raw"
+      ? `/rawMaterials/${product.slug}`
+      : `/products/${product.slug}`
+
+  return (
+    <Link href={href} className="h-full">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 relative flex flex-col h-full">
+        {product.badge && (
+          <span className="absolute top-3 left-3 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full tracking-wide uppercase">
+            {product.badge}
+          </span>
+        )}
+
+        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EEF5EE] flex items-center justify-center">
+          {product.image ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 25vw"
+            />
+          ) : (
+            <span className="text-[36px]">✨</span>
+          )}
+        </div>
+
+        <div className="mt-2.5 flex justify-between items-start gap-1">
+          <h3 className="text-[13px] font-semibold text-gray-800 leading-tight">
+            {product.name}
+          </h3>
+          <FaHeart className="text-red-400 text-[13px] shrink-0 mt-0.5" />
+        </div>
+
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-[11px] font-medium text-gray-900">
+            {product.priceLabel}
+          </span>
+        </div>
+
+        <div className="flex text-yellow-400 text-[12px] mt-1 gap-0.5">
+          ★★★★★
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function ProductCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 p-3 flex flex-col gap-2 animate-pulse">
+      <div className="w-full aspect-square rounded-xl bg-gray-200" />
+      <div className="h-4 bg-gray-200 rounded w-3/4" />
+      <div className="h-3 bg-gray-200 rounded w-1/2" />
+      <div className="h-3 bg-gray-200 rounded w-1/4" />
+    </div>
+  )
 }
 
 const ProductGrid = () => {
   const [category, setCategory] = useState("all")
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const filtered =
-    category === "all"
-      ? products
-      : products.filter((p) => p.category === category)
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+    getCollectionPreview(category).then((data) => {
+      if (mounted) {
+        setItems(data || [])
+        setLoading(false)
+      }
+    })
+    return () => { mounted = false }
+  }, [category])
+
+  const count = displayCount[category]
 
   return (
     <section className="px-5 py-10 bg-[#F7F6F6] rounded-t-[40px]" id="collection">
@@ -35,7 +119,6 @@ const ProductGrid = () => {
         Explore our skincare categories to find what works best for your skin.
       </p>
 
-    
       <div className="flex gap-2 mt-5 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {TABS.map((tab) => (
           <button
@@ -52,13 +135,22 @@ const ProductGrid = () => {
         ))}
       </div>
 
-    
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-        {filtered.slice(0, 4).map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {loading
+          ? Array.from({ length: count }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))
+          : items.slice(0, count).map((item) => (
+              <ProductCard key={item.id} product={item} />
+            ))
+        }
       </div>
 
+      {!loading && items.length === 0 && (
+        <div className="text-center py-10 text-gray-400 text-[13px]">
+          Nothing to show right now.
+        </div>
+      )}
 
       <div className="text-center mt-8">
         <Link
