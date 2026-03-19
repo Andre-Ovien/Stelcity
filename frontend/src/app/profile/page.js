@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
@@ -8,6 +9,7 @@ import { FaRegUser } from "react-icons/fa"
 import { IoNotificationsOutline, IoLocationOutline, IoLockClosedOutline } from "react-icons/io5"
 import { useAuthStore } from "../store/authStore"
 import Header from "../components/Header"
+import { useCartStore } from "../store/cartStore"
 
 const menuItems = [
   { label: "Edit Profile", href: "/profile/edit", icon: <FaRegUser size={16} className="text-white" />, bg: "bg-[#D65A5A]" },
@@ -22,11 +24,14 @@ const orderItems = [
 ]
 
 export default function ProfilePage() {
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
+  const clearCart = useCartStore((s) => s.clearCart)
   const router = useRouter()
 
   const handleLogout = () => {
+    clearCart()
     logout()
     router.push("/")
   }
@@ -86,13 +91,46 @@ export default function ProfilePage() {
         </div>
 
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
           className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors"
         >
           Log Out
         </button>
 
       </div>
+
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
+          <div className="bg-white rounded-3xl px-6 py-8 w-full max-w-sm flex flex-col gap-4 shadow-xl">
+
+            <div className="flex flex-col items-center gap-2 text-center">
+              <span className="text-[40px]">🛒</span>
+              <h2 className="text-[18px] font-bold text-gray-900">
+                Log out?
+              </h2>
+              <p className="text-[13px] text-gray-500 leading-relaxed">
+                Your cart will be cleared when you log out.
+              </p>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors"
+            >
+              Yes, log out
+            </button>
+
+            <button
+              onClick={() => setShowLogoutModal(false)}
+              className="w-full border border-gray-200 text-gray-700 font-medium py-3 rounded-full text-[14px] hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
