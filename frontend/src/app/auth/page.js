@@ -66,7 +66,11 @@ export default function AuthPage() {
 
       login(data.user, data.token, data.refreshToken)
       toast.success(mode === "register" ? "Account created!" : "Welcome back!")
-      router.push("/")
+
+      const redirectAfter = sessionStorage.getItem("redirectAfter") || "/"
+      sessionStorage.removeItem("redirectAfter")
+      router.push(redirectAfter)
+
     } catch (err) {
       const msg = err.message || ""
       if (msg.toLowerCase().includes("email")) {

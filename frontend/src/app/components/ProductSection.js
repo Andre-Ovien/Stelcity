@@ -5,13 +5,34 @@ import { useState } from "react"
 import { FaHeart } from "react-icons/fa"
 import { IoAddCircleOutline } from "react-icons/io5"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useCartStore } from "../store/cartStore"
+import toast from "react-hot-toast"
 
 const ProductPageCard = ({ product, basePath = "products" }) => {
   const [wishlisted, setWishlisted] = useState(false)
+  const addItem = useCartStore((s) => s.addItem)
+  const router = useRouter()
+
+  const isRawMaterial = basePath === "rawMaterials"
 
   const handleAddToCart = (e) => {
     e.preventDefault()
-    alert("Added to cart:", product.name)
+
+    if (isRawMaterial) {
+      router.push(`/${basePath}/${product.slug}`)
+      return
+    }
+
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1,
+      variant: null,
+    })
+    toast.success("Added to cart!")
   }
 
   return (
@@ -67,7 +88,7 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
           onClick={handleAddToCart}
           className="flex items-center justify-center gap-1.5 bg-[#D65A5A] text-white rounded-full py-2 text-[12px] font-medium hover:bg-[#c44f4f] transition-colors w-full mt-auto"
         >
-          Add to Cart
+          {isRawMaterial ? "Select Weight" : "Add to Cart"}
           <IoAddCircleOutline size={15} />
         </button>
 

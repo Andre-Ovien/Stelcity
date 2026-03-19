@@ -6,11 +6,26 @@ import { GiHamburgerMenu } from "react-icons/gi"
 import { IoClose } from "react-icons/io5"
 import { FiShoppingCart } from "react-icons/fi"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "../store/authStore"
+import { useCartStore } from "../store/cartStore"
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const isAuth = useAuthStore((s) => s.isAuth)
+  const cartItems = useCartStore((s) => s.items)
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+  const router = useRouter()
+
+  const handleProfileClick = () => {
+    setMenuOpen(false)
+    if (!isAuth) {
+      sessionStorage.setItem("redirectAfter", "/profile")
+      router.push("/auth")
+    } else {
+      router.push("/profile")
+    }
+  }
 
   return (
     <div className="w-full px-5 relative">
@@ -22,8 +37,13 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-4">
-          <Link href="/cart">
+          <Link href="/cart" className="relative">
             <FiShoppingCart size={22} className="text-gray-700" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-[#D65A5A] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {cartCount > 9 ? "9+" : cartCount}
+              </span>
+            )}
           </Link>
 
           <button onClick={() => setMenuOpen(!menuOpen)}>
@@ -57,13 +77,12 @@ const Header = () => {
           ))}
 
           <div className="border-t border-gray-100 pt-4 flex flex-col gap-4">
-            <Link
-              href={isAuth ? "/profile" : "/auth"}
-              onClick={() => setMenuOpen(false)}
-              className="text-[15px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors"
+            <button
+              onClick={handleProfileClick}
+              className="text-[15px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors text-left"
             >
-              {isAuth ? "Profile" : " Sign In "}
-            </Link>
+              {isAuth ? "Profile" : "Login / Register"}
+            </button>
           </div>
 
         </div>

@@ -3,45 +3,38 @@ import { persist } from "zustand/middleware"
 
 export const useCartStore = create(
   persist(
-    (set, get) => ({
-      items: [], 
+    (set) => ({
+      items: [],
 
-      addItem: (product) => {
-        const items = get().items
-        const existing = items.find((i) => i.id === product.id)
-
-        if (existing) {
-          
-          set({
-            items: items.map((i) =>
-              i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
-            ),
-          })
-        } else {
-          set({ items: [...items, { ...product, quantity: 1 }] })
-        }
-      },
+      addItem: (item) =>
+        set((state) => {
+          const existing = state.items.find((i) => i.id === item.id)
+          if (existing) {
+            return {
+              items: state.items.map((i) =>
+                i.id === item.id
+                  ? { ...i, quantity: i.quantity + item.quantity }
+                  : i
+              ),
+            }
+          }
+          return { items: [...state.items, item] }
+        }),
 
       removeItem: (id) =>
-        set({ items: get().items.filter((i) => i.id !== id) }),
+        set((state) => ({
+          items: state.items.filter((i) => i.id !== id),
+        })),
 
-      updateQuantity: (id, quantity) => {
-        if (quantity < 1) return
-        set({
-          items: get().items.map((i) =>
+      updateQuantity: (id, quantity) =>
+        set((state) => ({
+          items: state.items.map((i) =>
             i.id === id ? { ...i, quantity } : i
           ),
-        })
-      },
+        })),
 
       clearCart: () => set({ items: [] }),
-
-      // helpers
-      totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
-      totalPrice: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     }),
-    {
-      name: "cart-storage", 
-    }
+    { name: "cart-storage" }
   )
 )
