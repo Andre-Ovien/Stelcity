@@ -24,7 +24,7 @@ function ServiceCard({ service }) {
         ? `From ₦${Math.min(...service.items.map((i) => i.price)).toLocaleString()}`
         : "",
       image: service.image,
-      description: service.description,
+      description: null,
       badge: null,
       rating: 5,
       slug: null,
@@ -62,9 +62,6 @@ function ServiceCard({ service }) {
         <h3 className="text-[13px] font-semibold text-gray-800 leading-tight">
           {service.category}
         </h3>
-        <p className="text-[11px] text-gray-400 leading-tight line-clamp-3 flex-1">
-          {service.description}
-        </p>
         <div className="flex items-center gap-1 mt-1">
           <span className="text-yellow-400 text-[11px]">★★★★★</span>
           <span className="text-[11px] text-gray-400">5.0</span>
@@ -93,7 +90,6 @@ function ServiceCardSkeleton() {
     <div className="bg-white rounded-2xl border border-gray-100 p-3 flex flex-col gap-2 animate-pulse">
       <div className="w-full aspect-square rounded-xl bg-gray-200" />
       <div className="h-4 bg-gray-200 rounded w-3/4" />
-      <div className="h-3 bg-gray-200 rounded w-full" />
       <div className="h-3 bg-gray-200 rounded w-1/2" />
       <div className="h-8 bg-gray-200 rounded-full w-full mt-2" />
     </div>
@@ -116,7 +112,7 @@ export default function ServicesPage() {
   }, [])
 
   return (
-    <div className="min-h-screen  my-6">
+    <div className="min-h-screen bg-white py-6">
       <Header />
 
       <div className="px-4 pb-10">

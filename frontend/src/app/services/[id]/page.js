@@ -7,7 +7,7 @@ import Image from "next/image"
 import Header from "../../components/Header"
 import { getServices } from "../../lib/services"
 
-const WHATSAPP_NUMBER = "2348144316917"
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2348144316917"
 
 function ServiceDetailSkeleton() {
   return (
@@ -51,14 +51,14 @@ export default function ServiceDetailPage({ params }) {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-[#D6E4D3] my-6">
+    <div className="min-h-screen bg-[#D6E4D3] py-6">
       <Header />
       <ServiceDetailSkeleton />
     </div>
   )
 
   if (!service) return (
-    <div className="min-h-screen bg-[#D6E4D3] my-6">
+    <div className="min-h-screen bg-[#D6E4D3] py-6">
       <Header />
       <div className="text-center py-20 text-gray-500">Service not found</div>
     </div>
@@ -93,12 +93,9 @@ export default function ServiceDetailPage({ params }) {
           )}
         </div>
 
-        <h1 className="text-[20px] font-bold text-gray-900 mb-1">
+        <h1 className="text-[20px] font-bold text-gray-900 mb-6">
           {service.category}
         </h1>
-        <p className="text-[13px] text-gray-500 leading-relaxed mb-6">
-          {service.description}
-        </p>
 
         <div className="bg-white rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
@@ -111,19 +108,24 @@ export default function ServiceDetailPage({ params }) {
             {service.items.map((item) => (
               <div
                 key={item.id}
-                className="flex justify-between items-center px-4 py-3"
+                className="flex justify-between items-start px-4 py-3 gap-3"
               >
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium text-gray-800">
                     {item.name}
                   </p>
+                  {item.description && (
+                    <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">
+                      {item.description}
+                    </p>
+                  )}
                   <p className="text-[12px] font-semibold text-[#D65A5A] mt-0.5">
                     ₦{item.price.toLocaleString()}
                   </p>
                 </div>
                 <button
                   onClick={() => handleRequest(item.name)}
-                  className="bg-[#D65A5A] text-white text-[11px] font-medium px-3 py-1.5 rounded-full hover:bg-[#c44f4f] transition-colors shrink-0 ml-3"
+                  className="bg-[#D65A5A] text-white text-[11px] font-medium px-3 py-1.5 rounded-full hover:bg-[#c44f4f] transition-colors shrink-0"
                 >
                   Request Service
                 </button>
