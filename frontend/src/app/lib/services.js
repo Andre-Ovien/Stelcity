@@ -1,4 +1,7 @@
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+
+let servicesCache = null
 
 const categoryDescriptions = {
   "Body wash": "Refreshing full-body cleansing treatments designed to remove impurities and leave your skin smooth.",
@@ -9,39 +12,49 @@ const categoryDescriptions = {
   "Advanced aesthetics": "High-level cosmetic treatments that use modern techniques to enhance skin quality.",
 }
 
-async function fetchAllServices() {
-  let allResults = []
-  let url = `${BASE_URL}/api/services/add-service/`
+async function fetchCategories() {
+  const res = await fetch(`${BASE_URL}/api/services/service-category/`)
+  if (!res.ok) return []
+  const data = await res.json()
+  return data.results || []
+}
 
-  while (url) {
-    const res = await fetch(url)
-    const data = await res.json()
-    allResults = [...allResults, ...data.results]
-    url = data.next
-  }
-
-  return allResults
+async function fetchItemsByCategory(categoryName) {
+  const res = await fetch(
+    `${BASE_URL}/api/services/add-service/?category=${encodeURIComponent(categoryName)}`
+  )
+  if (!res.ok) return []
+  const data = await res.json()
+  return data.results || []
 }
 
 export async function getServices() {
-  const allItems = await fetchAllServices()
+  if (servicesCache) return servicesCache
 
-  const grouped = {}
-  allItems.forEach((item) => {
-    const cat = item.category_name
-    if (!grouped[cat]) grouped[cat] = []
-    grouped[cat].push({
-      id: `${cat}-${item.name}`,
-      name: item.name,
-      price: parseFloat(item.price),
-    })
-  })
+  try {
+    const categories = await fetchCategories()
 
-  return Object.entries(grouped).map(([category, items], index) => ({
-    id: index + 1,
-    category,
-    description: categoryDescriptions[category] || `Professional ${category.toLowerCase()} services.`,
-    image: null,
-    items,
-  }))
+    const result = await Promise.all(
+      categories.map(async (cat, index) => {
+        const items = await fetchItemsByCategory(cat.name)
+        return {
+          id: index + 1,
+          category: cat.name,
+          description: cat.description || categoryDescriptions[cat.name] || `Professional ${cat.name.toLowerCase()} services.`,
+          image: cat.image || null,
+          items: items.map((item) => ({
+            id: `${cat.name}-${item.name}`,
+            name: item.name,
+            price: parseFloat(item.price),
+          })),
+        }
+      })
+    )
+
+    servicesCache = result
+    return result
+  } catch (err) {
+    console.error("getServices error:", err)
+    return []
+  }
 }

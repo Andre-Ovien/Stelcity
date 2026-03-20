@@ -5,6 +5,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { FaHeart } from "react-icons/fa"
 import { getCollectionPreview } from "../lib/homeCollection"
+import { useFavStore } from "../store/favStore"
+import toast from "react-hot-toast"
 
 const TABS = [
   { label: "All", value: "all" },
@@ -28,12 +30,33 @@ const displayCount = {
 }
 
 function ProductCard({ product }) {
+  const toggleFav = useFavStore((s) => s.toggleFav)
+  const isFav = useFavStore((s) => s.isFav(product.id))
+
   const href =
     product.type === "service"
       ? "/services"
       : product.type === "raw"
       ? `/rawMaterials/${product.slug}`
       : `/products/${product.slug}`
+
+  const handleToggleFav = (e) => {
+    e.preventDefault()
+    toggleFav({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      priceLabel: product.priceLabel,
+      image: product.image,
+      description: product.description,
+      badge: product.badge,
+      rating: product.rating,
+      slug: product.slug,
+      variants: product.variants || [],
+      type: product.type,
+    })
+    toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
+  }
 
   return (
     <Link href={href} className="h-full">
@@ -45,6 +68,12 @@ function ProductCard({ product }) {
         )}
 
         <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EEF5EE] flex items-center justify-center">
+          <button
+            onClick={handleToggleFav}
+            className="absolute top-2 right-2 z-10 bg-white rounded-full p-1.5 shadow-sm"
+          >
+            <FaHeart className={isFav ? "text-red-400" : "text-gray-300"} size={12} />
+          </button>
           {product.image ? (
             <Image
               src={product.image}
@@ -58,11 +87,10 @@ function ProductCard({ product }) {
           )}
         </div>
 
-        <div className="mt-2.5 flex justify-between items-start gap-1">
+        <div className="mt-2.5">
           <h3 className="text-[13px] font-semibold text-gray-800 leading-tight">
             {product.name}
           </h3>
-          <FaHeart className="text-red-400 text-[13px] shrink-0 mt-0.5" />
         </div>
 
         <div className="flex items-center gap-2 mt-1">

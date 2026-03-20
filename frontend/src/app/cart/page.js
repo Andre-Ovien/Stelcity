@@ -111,7 +111,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-[#D6E4D3]">
+      <div className="min-h-screen bg-[#D6E4D3] py-6">
         <Header />
         <div className="flex flex-col items-center justify-center py-24 px-6 gap-4">
           <span className="text-[60px]">🛒</span>
@@ -131,7 +131,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3]">
+    <div className="min-h-screen bg-[#D6E4D3] py-6">
       <Header />
 
       <div className="px-4 pb-36">
