@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Auth.apps.AuthConfig',
+    'Auth',
     'Products',
     'rest_framework',
     'Services',
@@ -216,6 +216,10 @@ AUTH_USER_MODEL = 'Auth.User'
 
 RESEND_API_KEY = config('RESEND_API_KEY')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+MIGRATION_MODULES = {
+    'Auth': 'Auth.migrations',
+}
 
 LOGGING = {
     'version': 1,
