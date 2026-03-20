@@ -6,6 +6,7 @@ urlpatterns = [
     path('categories/', views.ProductViewSet.as_view()),
     path('details/<int:pk>/', views.ProductDetailApiView.as_view()),
     path('orders/', views.OrderListApiView.as_view()),
-    path('cart/', views.CartView.as_view(), name='cart'),
-    path('cart/item/<int:item_id>/', views.CartItemUpdateView.as_view(), name='cart-item-update'),
+    path('cart/checkout/', views.CartCheckoutView.as_view(), name='cart-checkout'),
+    path('payment/webhook/', views.PaystackWebhookView.as_view(), name='paystack-webhook'),
+    path('payment/verify/<str:reference>/', views.VerifyPaymentView.as_view(), name='verify-payment'),
 ]
