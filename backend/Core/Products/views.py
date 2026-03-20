@@ -2,12 +2,16 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
-from .models import ProductVariant, Product, Order, OrderItem
-from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer, CartItemAddSerializer, CartItemUpdateSerializer
+from .models import ProductVariant, Product, Order, OrderItem, Payment
+from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer, CartSyncCheckoutSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+import hmac, hashlib, uuid
+from django.conf import settings
+from .paystack import initialize_payment, verify_payment
+
 
 # Create your views here.
 
@@ -61,46 +65,107 @@ class OrderListApiView(generics.ListAPIView):
         return qs.filter(user=self.request.user)
     
 
-
-class CartView(generics.GenericAPIView):
+class CartCheckoutView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = CartItemAddSerializer
-
-    def get(self, request):
-        try:
-            order = Order.objects.get(
-                user=request.user,
-                status=Order.StatusChoices.PENDING
-            )
-            return Response(OrderSerializer(order).data)
-        except Order.DoesNotExist:
-            return Response({"detail": "Your cart is empty."})
+    serializer_class= CartSyncCheckoutSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        order = serializer.save(user=request.user)
-        return Response(OrderSerializer(order).data, status=status.HTTP_200_OK)
+        order, total, reference = serializer.save(user=request.user)
 
-
-class CartItemUpdateView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = CartItemUpdateSerializer
-    lookup_field = 'id'
-    lookup_url_kwarg = 'item_id'
-
-    def get_queryset(self):
-        return OrderItem.objects.filter(
-            order__user=self.request.user,
-            order__status=Order.StatusChoices.PENDING
+        response = initialize_payment(
+            email=request.user.email,
+            amount=total,
+            reference=reference
         )
 
-    def get_object(self):
-        return get_object_or_404(self.get_queryset(), id=self.kwargs['item_id'])
+        if not response.get('status'):
+            order.delete()
+            return Response(
+                {
+                    "detail": "Payment initialization failed. Please try again."
+                },
+                status=status.HTTP_502_BAD_GATEWAY
+            )
+        
+        Payment.objects.create(
+            order=order,
+            reference=reference,
+            amount=total,
+        )
 
-    def patch(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(OrderSerializer(instance.order).data)
+        return Response({
+            'order_id': str(order.order_id),
+            'reference': reference,
+            'amount': total,
+            'authorization_url': response['data']['authorization_url']
+        }, status=status.HTTP_200_OK)
+    
+class PaystackWebhookView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        paystack_signature = request.headers.get('x-paystack-signature')
+        computed = hmac.new(
+            settings.PAYSTACK_SECRET_KEY.encode('utf-8'),
+            request.body,
+            hashlib.sha512
+        ).hexdigest()
+
+        if paystack_signature != computed:
+            return Response(
+                {
+                    "detail":"Invalid signature.",
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        event = request.data
+        if event.get('event') == 'charge.success':
+            reference = event['data']['reference']
+
+            try:
+                payment = Payment.objects.get(reference=reference)
+            except Payment.DoesNotExist:
+                return Response(
+                    status=status.HTTP_200_OK
+                )
+            
+            verification = verify_payment(reference)
+            if verification['data']['status'] == 'success':
+                payment.status = Payment.StatusChoices.SUCCESS
+                payment.save()
+
+                payment.order.status = Order.StatusChoices.CONFIRMED
+                payment.order.save()
+        
+        return Response(status=status.HTTP_200_OK)
+    
+
+class VerifyPaymentView(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def get(self, request, reference):
+        try:
+            payment = Payment.objects.get(
+                reference=reference,
+                order__user=request.user
+            )
+        except Payment.DoesNotExist:
+            return Response(
+                {
+                    "detail": "Payment not found."
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        return Response(
+            {
+                'reference': payment.reference,
+                'status': payment.status,
+                'amount': payment.amount,
+                'order_id': str(payment.order.order_id),
+                'order_status': payment.order.status,
+            }
+        )
