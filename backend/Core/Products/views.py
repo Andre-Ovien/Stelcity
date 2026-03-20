@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 import hmac, hashlib, uuid
 from django.conf import settings
 from .paystack import initialize_payment, verify_payment
+from .emails import send_order_confirmation
 
 
 # Create your views here.
@@ -139,6 +140,8 @@ class PaystackWebhookView(APIView):
 
                 payment.order.status = Order.StatusChoices.CONFIRMED
                 payment.order.save()
+
+                send_order_confirmation(payment.order)
         
         return Response(status=status.HTTP_200_OK)
     
