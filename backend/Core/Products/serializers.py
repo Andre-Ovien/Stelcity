@@ -18,6 +18,15 @@ class ProductSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
+    total_stock = serializers.SerializerMethodField()
+    in_stock = serializers.SerializerMethodField()
+
+    def get_total_stock(self, obj):
+        return obj.total_stock
+
+    def get_in_stock(self, obj):
+        return obj.in_stock
+
     class Meta:
         model = Product
         fields = (
@@ -27,6 +36,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'price',
             'stock',
+            'total_stock',
+            'in_stock',
             'image',
             'variants',
             'created_at',
