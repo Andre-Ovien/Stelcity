@@ -66,3 +66,37 @@ def send_order_confirmation(order):
         })
     except Exception as e:
         print(f"Email failed: {e}")
+
+
+def send_payment_failed(order):
+    html_content = f"""
+    <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 24px;">
+        <h2 style="color: #e74c3c;">Payment Failed</h2>
+        <p>Hi {order.user.email},</p>
+        <p>Unfortunately your payment for order <strong>{order.order_id}</strong> was unsuccessful.</p>
+        
+        <p>Your cart items are still saved — you can go back and try again.</p>
+
+        <a href="https://stelcity.vercel.app/cart" 
+           style="display: inline-block; margin-top: 16px; padding: 12px 24px; 
+                  background: #e74c3c; color: white; text-decoration: none; 
+                  border-radius: 6px;">
+            Return to Cart
+        </a>
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+        <p style="color: #888; font-size: 13px;">
+            If you keep experiencing issues, reply to this email and we'll help you out.
+        </p>
+    </div>
+    """
+
+    try:
+        resend.Emails.send({
+            "from": settings.DEFAULT_FROM_EMAIL,
+            "to": order.user.email,
+            "subject": "Payment Failed — Stelcity",
+            "html": html_content,
+        })
+    except Exception as e:
+        print(f"Failed payment email error: {e}")
