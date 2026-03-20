@@ -1,29 +1,28 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
 import { FaHeart } from "react-icons/fa"
 import { IoAddCircleOutline } from "react-icons/io5"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCartStore } from "../store/cartStore"
+import { useFavStore } from "../store/favStore"
 import toast from "react-hot-toast"
 
 const ProductPageCard = ({ product, basePath = "products" }) => {
-  const [wishlisted, setWishlisted] = useState(false)
   const addItem = useCartStore((s) => s.addItem)
+  const toggleFav = useFavStore((s) => s.toggleFav)
+  const isFav = useFavStore((s) => s.isFav(product.id))
   const router = useRouter()
 
   const isRawMaterial = basePath === "rawMaterials"
 
   const handleAddToCart = (e) => {
     e.preventDefault()
-
     if (isRawMaterial) {
       router.push(`/${basePath}/${product.slug}`)
       return
     }
-
     addItem({
       id: product.id,
       name: product.name,
@@ -33,6 +32,24 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
       variant: null,
     })
     toast.success("Added to cart!")
+  }
+
+  const handleToggleFav = (e) => {
+    e.preventDefault()
+    toggleFav({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      priceLabel: product.priceLabel,
+      image: product.image,
+      description: product.description,
+      badge: product.badge,
+      rating: product.rating,
+      slug: product.slug,
+      variants: product.variants || [],
+      type: isRawMaterial ? "raw" : "product",
+    })
+    toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
   }
 
   return (
@@ -46,10 +63,10 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
             </span>
           )}
           <button
-            onClick={(e) => { e.preventDefault(); setWishlisted((p) => !p) }}
+            onClick={handleToggleFav}
             className="absolute top-2 right-2 z-10 bg-white rounded-full p-1.5 shadow-sm"
           >
-            <FaHeart className={wishlisted ? "text-red-400" : "text-gray-300"} size={12} />
+            <FaHeart className={isFav ? "text-red-400" : "text-gray-300"} size={12} />
           </button>
           <Image
             src={product.image}
