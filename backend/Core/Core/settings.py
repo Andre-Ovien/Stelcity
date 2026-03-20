@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     "stelcity-api.onrender.com",
     "localhost",
     "127.0.0.1",
+    'overserious-annita-computatively.ngrok-free.dev',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -202,6 +203,8 @@ CORS_ALLOW_HEADERS = [
     "origin",
     "user-agent",
 ]
+
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
