@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Product, ProductVariant, Order, OrderItem
-
+import uuid
 
 class ProductVariantSerializer(serializers.ModelSerializer):
 #    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
@@ -59,6 +59,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = (
+            'id',
             'product_name',
             'product_price',
             'quantity',
@@ -88,96 +89,87 @@ class OrderSerializer(serializers.ModelSerializer):
         )
     
 
-class CartItemAddSerializer(serializers.Serializer):
-    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+class CartSyncCheckoutSerializer(serializers.Serializer):
+    items = serializers.ListField(child=serializers.DictField(), min_length=1)
 
-    def validate_product_id(self, product):
-        if product.has_variants() and not product.variants.exists():
-            raise serializers.ValidationError(
-                "This product has no variants available."
-            )
-        return product
+    def validate_items(self, items):
+        validated_items = []
 
-    def save(self, user):
-        product = self.validated_data['product_id']
+        for item in items:
+            product_id = item.get('product_id')
+            variant_id = item.get('variant_id')
+            quantity = item.get('quantity',1)
 
-        order, _ = Order.objects.get_or_create(
-            user=user, status=Order.StatusChoices.PENDING
-        )
-
-        if product.has_variants():
-            default_variant = product.variants.order_by('price').first()
-            price = default_variant.price
-        else:
-            default_variant = None
-            price = product.price
-
-        OrderItem.objects.get_or_create(
-            order=order,
-            product=product,
-            defaults={
-                'quantity': 1,
-                'price': price,
-                'variant': default_variant
-            }
-        )
-
-        return order
-
-
-class CartItemUpdateSerializer(serializers.ModelSerializer):
-    variant_id = serializers.PrimaryKeyRelatedField(
-        queryset=ProductVariant.objects.all(),
-        source='variant',
-        required=False,
-        allow_null=True
-    )
-
-    class Meta:
-        model = OrderItem
-        fields = ('variant_id', 'quantity')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance:
-            if self.instance.product.has_variants():
-                self.fields.pop('quantity', None)
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                raise serializers.ValidationError(
+                    f"Product with id {product_id} does not exist."
+                )
+            
+            if not isinstance(quantity, int) or quantity < 1:
+                raise serializers.ValidationError(
+                    f"Invalid quantity for {product.name}"
+                )
+            
+            variant = None
+            if product.has_variants():
+                if not variant_id:
+                    raise serializers.ValidationError(
+                        f"{product.name} requires a variant to be selected."
+                    )
+                try:
+                    variant = ProductVariant.objects.get(id=variant_id, product=product)
+                except ProductVariant.DoesNotExist:
+                    raise serializers.ValidationError(
+                        f"Invalid variant for {product.name}."
+                    )
+                if variant.stock < quantity:
+                    raise serializers.ValidationError(
+                        f"Only {variant.stock} units available for {product.name} ({variant.weight})."
+                    )
             else:
-                self.fields.pop('variant_id', None)
+                if quantity > product.stock:
+                    raise serializers.ValidationError(
+                        f"Only {product.stock} units available for {product.name}."
+                    )
+                
+            price = variant.price if variant else product.price
 
-    def validate(self, attrs):
-        item = self.instance
-        variant = attrs.get('variant', item.variant)
-        quantity = attrs.get('quantity', item.quantity)
+            validated_items.append({
+                'product': product,
+                'variant': variant,
+                'quantity': quantity,
+                'price': price,
+            })
+        
+        return validated_items
+    
+    def save(self, user):
+        validated_items = self.validated_data['items']
 
-        if item.product.has_variants():
-            if not variant:
-                raise serializers.ValidationError(
-                    {"variant_id": "Please select a variant."}
-                )
-            if variant.product != item.product:
-                raise serializers.ValidationError(
-                    {"variant_id": "This variant does not belong to this product."}
-                )
-            if variant.stock < 1:
-                raise serializers.ValidationError(
-                    {"variant_id": "This variant is out of stock."}
-                )
-        else:
-            if quantity > item.product.stock:
-                raise serializers.ValidationError(
-                    {"quantity": f"Only {item.product.stock} units available."}
-                )
+        Order.objects.filter(
+            user=user,
+            status=Order.StatusChoices.PENDING
+        ).delete()
 
-        return attrs
+        order = Order.objects.create(
+            user=user,
+            status=Order.StatusChoices.PENDING
+        )
 
-    def update(self, instance, validated_data):
-        variant = validated_data.get('variant', instance.variant)
+        OrderItem.objects.bulk_create([
+            OrderItem(
+                order=order,
+                product=item['product'],
+                variant=item['variant'],
+                quantity=item['quantity'],
+                price=item['price'],
+            )
+            for item in validated_items
+        ])
 
-        if variant:
-            instance.price = variant.price
+        total = sum(item['price'] * item['quantity'] for item in validated_items)
+        reference = str(uuid.uuid4()).replace('-','')[:12].upper()
 
-        instance.variant = variant
-        instance.quantity = validated_data.get('quantity', instance.quantity)
-        instance.save()
-        return instance
+        return order, total, reference
