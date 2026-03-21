@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 import hmac, hashlib, uuid
 from django.conf import settings
 from .paystack import initialize_payment, verify_payment
-from .emails import send_order_confirmation
+from .emails import send_order_confirmation, send_payment_failed
 
 
 # Create your views here.
@@ -150,6 +150,15 @@ class PaystackWebhookView(APIView):
                         item.product.save()
 
                 send_order_confirmation(payment.order)
+
+            elif event.get('event') == 'charge.failed':
+                payment.status = Payment.StatusChoices.FAILED
+                payment.save()
+
+                payment.order.status = Order.StatusChoices.CANCELLED
+                payment.order.save()
+
+                send_payment_failed(payment.order)
         
         return Response(status=status.HTTP_200_OK)
     

@@ -161,7 +161,10 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
 
         Order.objects.filter(
             user=user,
-            status=Order.StatusChoices.PENDING
+            status__in=[
+            Order.StatusChoices.PENDING,
+            Order.StatusChoices.CANCELLED
+        ]
         ).delete()
 
         order = Order.objects.create(
