@@ -26,7 +26,7 @@ def send_order_confirmation(order):
     html_content = f"""
     <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 24px;">
         <h2 style="color: #333;">Order Confirmed! 🎉</h2>
-        <p>Hi {order.user.email},</p>
+        <p>Hi {order.user.full_name or order.user.email},</p>
         <p>Thank you for your order. Here's a summary:</p>
 
         <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
@@ -72,7 +72,7 @@ def send_payment_failed(order):
     html_content = f"""
     <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 24px;">
         <h2 style="color: #e74c3c;">Payment Failed</h2>
-        <p>Hi {order.user.email},</p>
+        <p>Hi {order.user.full_name or order.user.email},</p>
         <p>Unfortunately your payment for order <strong>{order.order_id}</strong> was unsuccessful.</p>
         
         <p>Your cart items are still saved — you can go back and try again.</p>
