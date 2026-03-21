@@ -98,7 +98,21 @@ class OrderSerializer(serializers.ModelSerializer):
             'user',
             'status',
         )
-    
+
+class OrderHistorySerializer(serializers.ModelSerializer):
+    total_price = serializers.SerializerMethodField()
+
+    def get_total_price(self, obj):
+        return sum(item.item_subtotal for item in obj.items.all())
+
+    class Meta:
+        model = Order
+        fields = (
+            'order_id',
+            'status',
+            'total_price',
+            'created_at',
+        )    
 
 class CartSyncCheckoutSerializer(serializers.Serializer):
     items = serializers.ListField(child=serializers.DictField(), min_length=1)
