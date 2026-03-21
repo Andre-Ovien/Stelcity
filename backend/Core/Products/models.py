@@ -23,14 +23,22 @@ class Product(models.Model):
 
     @property
     def in_stock(self):
+        if self.has_variants():
+            return self.total_stock > 0
         return self.stock > 0
-    
+
+    @property
+    def total_stock(self):
+        if self.has_variants():
+            return sum(v.stock for v in self.variants.all())
+        return self.stock
+
     def has_variants(self):
         return self.category == self.CategoryChoices.RAW_MATERIAL
-    
+
     def __str__(self):
         return self.name
-    
+
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product,related_name="variants",on_delete=models.CASCADE)
     weight = models.CharField(max_length=50)
