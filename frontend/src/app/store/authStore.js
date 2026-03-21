@@ -1,9 +1,10 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { refreshAccessToken } from "../lib/auth"
 
 export const useAuthStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       refreshToken: null,
@@ -22,6 +23,23 @@ export const useAuthStore = create(
       updateUser: (updatedUser) => set((state) => ({
         user: { ...state.user, ...updatedUser }
       })),
+
+      refreshIfNeeded: async () => {
+        const { refreshToken, logout } = get()
+        if (!refreshToken) {
+          logout()
+          return null
+        }
+        try {
+          const newToken = await refreshAccessToken(refreshToken)
+          document.cookie = `token=${newToken}; path=/; max-age=${60 * 60 * 24 * 7}`
+          set({ token: newToken })
+          return newToken
+        } catch {
+          logout()
+          return null
+        }
+      },
     }),
     { name: "auth-storage" }
   )
