@@ -118,7 +118,7 @@ export default function FavouritesPage() {
 
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <span className="text-[60px]">🤍</span>
+            
             <h2 className="text-[18px] font-bold text-gray-800">No favourites yet</h2>
             <p className="text-[13px] text-gray-500 text-center">
               Tap the heart on any product to save it here.

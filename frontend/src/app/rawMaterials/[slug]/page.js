@@ -56,6 +56,7 @@ export default function RawMaterialDetailPage({ params }) {
       image: product.image,
       quantity,
       variant: selectedVariant?.weight || null,
+      variantId: selectedVariant?.id || null,
     })
     toast.success("Added to cart!")
   }
