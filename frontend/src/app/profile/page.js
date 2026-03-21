@@ -18,11 +18,6 @@ const menuItems = [
   { label: "Change Password", href: "/profile/change-password", icon: <IoLockClosedOutline size={16} className="text-white" />, bg: "bg-gray-500" },
 ]
 
-const orderItems = [
-  { label: "Current Order(s)", href: "/profile/orders/current" },
-  { label: "Past Orders", href: "/profile/orders/past" },
-]
-
 export default function ProfilePage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const user = useAuthStore((s) => s.user)
@@ -51,7 +46,7 @@ export default function ProfilePage() {
             <FiUser size={40} className="text-gray-400" />
           </div>
           <p className="text-[16px] font-semibold text-[#D65A5A] mt-3">
-            {user?.name || user?.email || "User"}
+            {user?.name || user?.full_name || user?.email || "User"}
           </p>
         </div>
 
@@ -78,16 +73,13 @@ export default function ProfilePage() {
         </p>
 
         <div className="flex flex-col divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden mb-8">
-          {orderItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="flex items-center justify-between px-4 py-4 bg-white hover:bg-gray-50 transition-colors"
-            >
-              <span className="text-[14px] font-medium text-gray-700">{item.label}</span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </Link>
-          ))}
+          <Link
+            href="/profile/orders"
+            className="flex items-center justify-between px-4 py-4 bg-white hover:bg-gray-50 transition-colors"
+          >
+            <span className="text-[14px] font-medium text-gray-700">View Orders</span>
+            <ChevronRight size={18} className="text-gray-400" />
+          </Link>
         </div>
 
         <button
@@ -102,35 +94,28 @@ export default function ProfilePage() {
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
           <div className="bg-white rounded-3xl px-6 py-8 w-full max-w-sm flex flex-col gap-4 shadow-xl">
-
             <div className="flex flex-col items-center gap-2 text-center">
               <span className="text-[40px]">🛒</span>
-              <h2 className="text-[18px] font-bold text-gray-900">
-                Log out?
-              </h2>
+              <h2 className="text-[18px] font-bold text-gray-900">Log out?</h2>
               <p className="text-[13px] text-gray-500 leading-relaxed">
-                Your cart will be cleared when you log out.
+                Your cart will be cleared when you log out. Any items you have added will be lost.
               </p>
             </div>
-
             <button
               onClick={handleLogout}
               className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors"
             >
               Yes, log out
             </button>
-
             <button
               onClick={() => setShowLogoutModal(false)}
               className="w-full border border-gray-200 text-gray-700 font-medium py-3 rounded-full text-[14px] hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
-
           </div>
         </div>
       )}
-
     </div>
   )
 }
