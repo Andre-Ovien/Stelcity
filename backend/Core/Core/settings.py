@@ -217,6 +217,10 @@ AUTH_USER_MODEL = 'Auth.User'
 RESEND_API_KEY = config('RESEND_API_KEY')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
+MIGRATION_MODULES = {
+    'Auth': 'Auth.migrations',
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
