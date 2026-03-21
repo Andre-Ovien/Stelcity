@@ -18,8 +18,6 @@ media/
 
 staticfiles/
 
-**/migrations/*
-!**/migrations/__init__.py
 
 build/
 dist/
