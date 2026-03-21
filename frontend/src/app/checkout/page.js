@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { Pencil } from "lucide-react"
 import Header from "../components/Header"
 import { useCartStore } from "../store/cartStore"
 import { useAuthStore } from "../store/authStore"
 import { createCheckout } from "../lib/checkout"
+import { getShippingAddress } from "../lib/profile"
 import toast from "react-hot-toast"
 
 const DELIVERY_FEE = 5000
@@ -16,11 +18,27 @@ export default function CheckoutPage() {
   const token = useAuthStore((s) => s.token)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [address, setAddress] = useState(null)
+  const [addressLoading, setAddressLoading] = useState(true)
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const total = subtotal + DELIVERY_FEE
 
+  useEffect(() => {
+    if (!token) return
+    getShippingAddress(token).then((data) => {
+      setAddress(data)
+      setAddressLoading(false)
+    })
+  }, [token])
+
   const handlePay = async () => {
+    if (!address) {
+      toast.error("Please add a shipping address first")
+      router.push("/profile/shipping?redirect=/checkout")
+      return
+    }
+
     if (items.length === 0) {
       toast.error("Your cart is empty")
       return
@@ -81,6 +99,58 @@ export default function CheckoutPage() {
           Checkout
         </h1>
 
+      
+        <div className="bg-white rounded-2xl overflow-hidden mb-4">
+          <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-[14px] font-semibold text-gray-800">
+              Shipping Info
+            </h2>
+            <button
+              onClick={() => router.push("/profile/shipping?redirect=/checkout")}
+              className="text-gray-400 hover:text-[#D65A5A] transition-colors"
+            >
+              <Pencil size={15} />
+            </button>
+          </div>
+
+          {addressLoading ? (
+            <div className="px-4 py-4 animate-pulse flex flex-col gap-2">
+              <div className="h-3 bg-gray-200 rounded w-3/4" />
+              <div className="h-3 bg-gray-200 rounded w-1/2" />
+              <div className="h-3 bg-gray-200 rounded w-2/3" />
+            </div>
+          ) : address ? (
+            <div className="px-4 py-4 flex flex-col gap-1.5">
+              <div className="flex gap-2">
+                <span className="text-[12px] text-gray-400 w-24 shrink-0">Address</span>
+                <span className="text-[12px] text-gray-700">{address.street_address}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-[12px] text-gray-400 w-24 shrink-0">City</span>
+                <span className="text-[12px] text-gray-700">{address.city}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-[12px] text-gray-400 w-24 shrink-0">State</span>
+                <span className="text-[12px] text-gray-700">{address.state}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-[12px] text-gray-400 w-24 shrink-0">Postal Code</span>
+                <span className="text-[12px] text-gray-700">{address.postal_code}</span>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => router.push("/profile/shipping?redirect=/checkout")}
+              className="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <span className="text-[13px] text-[#D65A5A] font-medium">
+                + Add shipping address
+              </span>
+            </button>
+          )}
+        </div>
+
+        
         <div className="bg-white rounded-2xl overflow-hidden mb-4">
           <div className="px-4 py-3 border-b border-gray-100">
             <h2 className="text-[14px] font-semibold text-gray-800">
@@ -125,6 +195,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
+    
         <div className="bg-white rounded-2xl px-5 py-4 mb-4 flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <span className="text-[13px] text-gray-500">Subtotal</span>
@@ -157,7 +228,7 @@ export default function CheckoutPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 z-50">
         <button
           onClick={handlePay}
-          disabled={loading}
+          disabled={loading || addressLoading}
           className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60"
         >
           {loading ? "Processing..." : `Pay ₦${total.toLocaleString()}`}
