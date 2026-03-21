@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .models import ProductVariant, Product, Order, OrderItem, Payment
-from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer, CartSyncCheckoutSerializer
+from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer, CartSyncCheckoutSerializer, OrderHistorySerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
@@ -57,13 +57,13 @@ class ProductDetailApiView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
 
 class OrderListApiView(generics.ListAPIView):
-    serializer_class = OrderSerializer
-    queryset = Order.objects.prefetch_related('items').all()
+    serializer_class = OrderHistorySerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(user=self.request.user)
+        return Order.objects.filter(
+            user=self.request.user
+        ).prefetch_related('items').order_by('-created_at')
     
 
 class CartCheckoutView(generics.GenericAPIView):
