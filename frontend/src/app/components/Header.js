@@ -10,6 +10,14 @@ import { useRouter } from "next/navigation"
 import { useAuthStore } from "../store/authStore"
 import { useCartStore } from "../store/cartStore"
 
+const NAV_LINKS = [
+  { label: "Home", href: "/" },
+  { label: "Products", href: "/products" },
+  { label: "Raw Materials", href: "/rawMaterials" },
+  { label: "Services", href: "/services" },
+  { label: "Favourites", href: "/fav" },
+]
+
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const isAuth = useAuthStore((s) => s.isAuth)
@@ -36,7 +44,23 @@ const Header = () => {
           <Image src="/images/logo.png" alt="Stelcity logo" width={100} height={80} />
         </Link>
 
+      
+        <nav className="hidden sm:flex items-center gap-6">
+          {NAV_LINKS.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-[14px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        
         <div className="flex items-center gap-4">
+
+        
           <Link href="/cart" className="relative">
             <FiShoppingCart size={22} className="text-gray-700" />
             {cartCount > 0 && (
@@ -46,26 +70,32 @@ const Header = () => {
             )}
           </Link>
 
-          <button onClick={() => setMenuOpen(!menuOpen)}>
+         
+          <button
+            onClick={handleProfileClick}
+            className="hidden sm:block text-[14px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors"
+          >
+            {isAuth ? "Profile" : "Login"}
+          </button>
+
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="sm:hidden"
+          >
             {menuOpen
               ? <IoClose size={26} className="text-gray-700" />
               : <GiHamburgerMenu size={24} className="text-gray-700" />
             }
           </button>
-        </div>
 
+        </div>
       </div>
 
+      
       {menuOpen && (
-        <div className="bg-white rounded-2xl px-6 py-6 flex flex-col gap-5 shadow-lg absolute top-21.5 left-3 right-3 z-50">
+        <div className="sm:hidden bg-white rounded-2xl px-6 py-6 flex flex-col gap-5 shadow-lg absolute top-18 left-3 right-3 z-50">
 
-          {[
-            { label: "Home", href: "/" },
-            { label: "Products", href: "/products" },
-            { label: "Raw Materials", href: "/rawMaterials" },
-            { label: "Services", href: "/services" },
-            { label: "Favourites", href: "/fav" },
-          ].map((item) => (
+          {NAV_LINKS.map((item) => (
             <Link
               key={item.label}
               href={item.href}
@@ -76,7 +106,7 @@ const Header = () => {
             </Link>
           ))}
 
-          <div className="border-t border-gray-100 pt-4 flex flex-col gap-4">
+          <div className="border-t border-gray-100 pt-4">
             <button
               onClick={handleProfileClick}
               className="text-[15px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors text-left"
