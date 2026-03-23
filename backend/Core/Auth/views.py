@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, ShippingAddressSerializer
+from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, ShippingAddressSerializer, ChangePasswordSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status, generics
@@ -80,3 +80,18 @@ class ShippingAddressView(generics.RetrieveUpdateAPIView):
             }
         )
         return address
+    
+class ChangePasswordView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {
+                "detail": "Password changed successfully."
+            },
+            status=status.HTTP_200_OK
+        )
