@@ -22,15 +22,9 @@ const Newsletter = () => {
 
     setLoading(true)
     try {
-      // TODO: replace with real API call when backend is ready
-      // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter/subscribe/`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email }),
-      // })
-      // if (!res.ok) throw new Error("Failed to subscribe")
+      
 
-      await new Promise((r) => setTimeout(r, 800)) // remove this when API is ready
+      await new Promise((r) => setTimeout(r, 800)) 
       toast.success("You're subscribed")
       setEmail("")
     } catch (err) {

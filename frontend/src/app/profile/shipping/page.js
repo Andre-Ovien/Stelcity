@@ -1,5 +1,8 @@
 "use client"
 
+export const dynamic = 'force-dynamic'
+
+import { Suspense } from "react"
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Header from "../../components/Header"
@@ -15,7 +18,7 @@ const NIGERIAN_STATES = [
   "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara",
 ]
 
-export default function ShippingAddressPage() {
+function ShippingAddressContent() {
   const token = useAuthStore((s) => s.token)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -216,5 +219,17 @@ export default function ShippingAddressPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function ShippingAddressPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-400 text-[13px]">Loading...</p>
+      </div>
+    }>
+      <ShippingAddressContent />
+    </Suspense>
   )
 }
