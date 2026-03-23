@@ -38,19 +38,19 @@ const Header = () => {
   return (
     <div className="w-full px-5 relative">
 
-      <div className="bg-white w-full mb-6 px-4 py-3 rounded-2xl flex justify-between items-center shadow-2xl">
+      <div className="bg-white w-full mb-6 px-4 py-3 rounded-2xl flex justify-between items-center shadow-2xl  xl:rounded-3xl ">
 
         <Link href="/">
-          <Image src="/images/logo.png" alt="Stelcity logo" width={100} height={80} />
+          <Image src="/images/logo.png" alt="Stelcity logo" width={100} height={80} className="xl:w-40"   />
         </Link>
 
       
-        <nav className="hidden sm:flex items-center gap-6">
+        <nav className="hidden sm:flex items-center gap-6 xl:gap-8  "> 
           {NAV_LINKS.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="text-[14px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors"
+              className="text-[14px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors xl:text-[25px] "
             >
               {item.label}
             </Link>
@@ -58,13 +58,13 @@ const Header = () => {
         </nav>
 
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4  xl:gap-7 ">
 
         
           <Link href="/cart" className="relative">
-            <FiShoppingCart size={22} className="text-gray-700" />
+            <FiShoppingCart className="text-gray-700 w-5.5 h-5.5 xl:w-7.5 xl:h-7.5" />
             {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-[#D65A5A] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-1.5 bg-[#D65A5A] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center xl:text-[12px] ">
                 {cartCount > 9 ? "9+" : cartCount}
               </span>
             )}
@@ -73,7 +73,7 @@ const Header = () => {
          
           <button
             onClick={handleProfileClick}
-            className="hidden sm:block text-[14px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors"
+            className="hidden sm:block text-[14px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors  xl:text-[25px]"
           >
             {isAuth ? "Profile" : "Login"}
           </button>
@@ -100,7 +100,7 @@ const Header = () => {
               key={item.label}
               href={item.href}
               onClick={() => setMenuOpen(false)}
-              className="text-[15px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors"
+              className="text-[15px] font-medium text-gray-700 hover:text-[#D65A5A] transition-colors "
             >
               {item.label}
             </Link>
