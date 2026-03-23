@@ -1,5 +1,5 @@
 "use client"
-
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -20,6 +20,7 @@ const menuItems = [
 ]
 
 export default function ProfilePage() {
+  
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const [profileName, setProfileName] = useState(null)
   const user = useAuthStore((s) => s.user)
