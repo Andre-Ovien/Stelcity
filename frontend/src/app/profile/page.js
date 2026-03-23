@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
@@ -10,6 +10,7 @@ import { IoNotificationsOutline, IoLocationOutline, IoLockClosedOutline } from "
 import { useAuthStore } from "../store/authStore"
 import Header from "../components/Header"
 import { useCartStore } from "../store/cartStore"
+import { getProfile } from "../lib/profile"
 
 const menuItems = [
   { label: "Edit Profile", href: "/profile/edit", icon: <FaRegUser size={16} className="text-white" />, bg: "bg-[#D65A5A]" },
@@ -20,10 +21,19 @@ const menuItems = [
 
 export default function ProfilePage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [profileName, setProfileName] = useState(null)
   const user = useAuthStore((s) => s.user)
+  const token = useAuthStore((s) => s.token)
   const logout = useAuthStore((s) => s.logout)
   const clearCart = useCartStore((s) => s.clearCart)
   const router = useRouter()
+
+  useEffect(() => {
+    if (!token) return
+    getProfile(token).then((data) => {
+      if (data?.full_name) setProfileName(data.full_name)
+    })
+  }, [token])
 
   const handleLogout = () => {
     clearCart()
@@ -46,7 +56,7 @@ export default function ProfilePage() {
             <FiUser size={40} className="text-gray-400" />
           </div>
           <p className="text-[16px] font-semibold text-[#D65A5A] mt-3">
-            {user?.name || user?.full_name || user?.email || "User"}
+            {profileName || user?.name || user?.full_name || user?.email || "User"}
           </p>
         </div>
 
