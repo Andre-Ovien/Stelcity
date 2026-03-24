@@ -12,6 +12,7 @@ import hmac, hashlib, uuid
 from django.conf import settings
 from .paystack import initialize_payment, verify_payment
 from .emails import send_order_confirmation, send_payment_failed
+from Notifications.utils import create_notification
 
 
 # Create your views here.
@@ -141,6 +142,13 @@ class PaystackWebhookView(APIView):
                 payment.order.status = Order.StatusChoices.CONFIRMED
                 payment.order.save()
 
+                create_notification(
+                    user=payment.order.user,
+                    type='payment',
+                    title='Payment Confirmed',
+                    message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
+                )
+
                 for item in payment.order.items.select_related('product', 'variant').all():
                     if item.variant:
                         item.variant.stock -= item.quantity
@@ -157,6 +165,13 @@ class PaystackWebhookView(APIView):
 
                 payment.order.status = Order.StatusChoices.CANCELLED
                 payment.order.save()
+
+                create_notification(
+                    user=payment.order.user,
+                    type='payment',
+                    title='Payment Failed',
+                    message=f'Your payment for order {payment.order.order_id} was unsuccessful. Please try again.'
+                )
 
                 send_payment_failed(payment.order)
         
