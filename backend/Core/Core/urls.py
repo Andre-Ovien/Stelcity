@@ -9,5 +9,6 @@ urlpatterns = [
     path('api/services/', include('Services.urls')),
     path('api/token/', TokenObtainPairView.as_view(),name="token"),
     path('api/token/refresh/', TokenRefreshView.as_view(),name="refresh"),
+    path('api/notifications/', include('Notifications.urls')),
 #    path("silk/", include("silk.urls", namespace="silk"))
 ]

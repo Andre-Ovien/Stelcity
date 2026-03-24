@@ -119,3 +119,23 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment {self.reference} for Order {self.order.order_id}"
+
+
+class DeliveryFee(models.Model):
+    state = models.CharField(max_length=100, unique=True)
+    fee = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.state} — ₦{self.fee}"
+
+
+class DeliverySettings(models.Model):
+    default_fee = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = 'Delivery Settings'
+        verbose_name_plural = 'Delivery Settings'
+
+    def __str__(self):
+        return f"Default delivery fee: ₦{self.default_fee}"
