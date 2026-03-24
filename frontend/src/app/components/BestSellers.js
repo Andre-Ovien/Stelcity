@@ -71,7 +71,7 @@ const BestSellers = () => {
 
   return (
     <section className="py-8">
-      <h2 className="text-[22px] font-bold text-gray-900 px-4 mb-5">
+      <h2 className="text-[22px] font-bold text-gray-900 text-center mb-5">
         Our Bestsellers
       </h2>
 

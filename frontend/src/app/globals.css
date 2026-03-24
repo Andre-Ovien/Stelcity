@@ -17,6 +17,17 @@
   scrollbar-width: none;
 }
 
+
+@media screen and (min-width:375px){
+  #space{
+    display: flex;
+    justify-content: space-between;
+    padding-left: 4%;
+    padding-right: 4%;
+    align-items: center;
+    
+  }
+}
 @media screen and (min-width:425px){
   #space{
     display: flex;
