@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Product, ProductVariant, Order, OrderItem
+from .models import Product, ProductVariant, Order, OrderItem, DeliverySettings, DeliveryZone
 import uuid
+from .utils import get_delivery_fee
 
 class ProductVariantSerializer(serializers.ModelSerializer):
 #    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
@@ -114,8 +115,16 @@ class OrderHistorySerializer(serializers.ModelSerializer):
             'created_at',
         )    
 
+
+class DeliveryFeeSerializer(serializers.Serializer):
+    state = serializers.CharField(required=True)
+    area = serializers.CharField(required=False, allow_blank=True)
+
+
 class CartSyncCheckoutSerializer(serializers.Serializer):
     items = serializers.ListField(child=serializers.DictField(), min_length=1)
+    state = serializers.CharField(required=True)
+    area = serializers.CharField(required=False, allow_blank=True, default='')
 
     def validate_items(self, items):
         validated_items = []
@@ -170,8 +179,13 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
         
         return validated_items
     
+
     def save(self, user):
         validated_items = self.validated_data['items']
+        state = self.validated_data['state']
+        area = self.validated_data.get('area', '')
+
+        delivery_fee = get_delivery_fee(state, area)
 
         Order.objects.filter(
             user=user,
@@ -183,7 +197,8 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
 
         order = Order.objects.create(
             user=user,
-            status=Order.StatusChoices.PENDING
+            status=Order.StatusChoices.PENDING,
+            delivery_fee=delivery_fee
         )
 
         OrderItem.objects.bulk_create([
@@ -197,7 +212,8 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
             for item in validated_items
         ])
 
-        total = sum(item['price'] * item['quantity'] for item in validated_items)
+        subtotal = sum(item['price'] * item['quantity'] for item in validated_items)
+        total = subtotal + delivery_fee
         reference = str(uuid.uuid4()).replace('-','')[:12].upper()
 
-        return order, total, reference
+        return order, subtotal, total, delivery_fee, reference
