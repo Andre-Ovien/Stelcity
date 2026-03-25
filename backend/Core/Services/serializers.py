@@ -8,6 +8,7 @@ class ServiceCategorySerializer(serializers.ModelSerializer):
         fields = (
             'name',
             'description',
+            'image',
         )
 
 
@@ -37,5 +38,6 @@ class ServiceCategoryWithServicesSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'description',
+            'image',
             'services'    
         )

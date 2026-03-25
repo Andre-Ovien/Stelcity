@@ -1,11 +1,12 @@
 from django.db import models
-
+from cloudinary_storage.storage import MediaCloudinaryStorage
 # Create your models here.
 
 
 class ServiceCategory(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
+    image = models.ImageField(storage=MediaCloudinaryStorage(),upload_to="Stelcity/Services", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
