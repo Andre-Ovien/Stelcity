@@ -13,20 +13,20 @@ const Main = () => {
   }
 
   return (
-    <div className="mx-5 sm:my-9 sm:mx-8  ">
+    <div className="mx-5 sm:my-7 sm:mx-8  ">
 
       
       <div className="sm:flex sm:flex-row sm:items-center sm:gap-10 lg:mx-6 xl:mx-10 xl:mt-25">
 
         <div className="sm:flex-1">
-          <h1 className="text-[32px] font-bold  xl:text-[48px]">
+          <h1 className="text-[32px] font-bold  xl:text-[48px]  2xl:text-[100px]">
             Healthy{" "}
             <span className="text-[#C94F5C] font-(family-name:--font-poppins) font-bold">
               Skin 
             </span> Starts here
           </h1>
 
-          <p className="text-[#826E70] text-[16px] font-normal mt-2  xl:text-[28px]">
+          <p className="text-[#826E70] text-[16px] font-normal mt-2  xl:text-[28px]  2xl:text-[60px]">
             Indulge in a premium skincare experience crafted by experts, designed to transform your complexion and turn your daily routine into a moment of pure self-care.
           </p>
 
@@ -78,7 +78,7 @@ const Main = () => {
             alt="lady"
             width={420}
             height={420}
-            className=" object-contain sm:h-[450]   xl: w-[800] xl:h-[600] "
+            className=" object-contain sm:h-[450]   xl:w-[800] xl:h-[600] 2xl:w-[1800] 2xl:h-[1400] "
           />
         </div>
 

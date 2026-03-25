@@ -10,30 +10,65 @@ import { useAuthStore } from "../store/authStore"
 import { createCheckout } from "../lib/checkout"
 import { getShippingAddress } from "../lib/profile"
 import toast from "react-hot-toast"
+import { handleSessionExpiry } from "../lib/handleSessionExpiry"
 
-const DELIVERY_FEE = 5000
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 export default function CheckoutPage() {
   const items = useCartStore((s) => s.items)
   const token = useAuthStore((s) => s.token)
+  const softLogout = useAuthStore((s) => s.softLogout)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [address, setAddress] = useState(null)
   const [addressLoading, setAddressLoading] = useState(true)
+  const [deliveryFee, setDeliveryFee] = useState(null)
+  const [deliveryLoading, setDeliveryLoading] = useState(false)
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const total = subtotal + DELIVERY_FEE
+  const total = subtotal + (deliveryFee || 0)
+
+  const hasValidAddress = address &&
+    address.street_address?.trim() &&
+    address.city?.trim() &&
+    address.state?.trim()
 
   useEffect(() => {
     if (!token) return
-    getShippingAddress(token).then((data) => {
-      setAddress(data)
-      setAddressLoading(false)
-    })
+    getShippingAddress(token)
+      .then((data) => {
+        setAddress(data)
+        setAddressLoading(false)
+      })
+      .catch((err) => {
+        if (err.message === "SESSION_EXPIRED") {
+          toast.error("Your session has expired. Please log in again.")
+          handleSessionExpiry(router, softLogout, "/checkout")
+        }
+        setAddressLoading(false)
+      })
   }, [token])
 
+  // fetch delivery fee once address is loaded
+  useEffect(() => {
+    if (!address?.state?.trim() || !address?.city?.trim()) return
+    setDeliveryLoading(true)
+    fetch(
+      `${BASE_URL}/api/products/delivery-fee/?state=${encodeURIComponent(address.state.toLowerCase())}&area=${encodeURIComponent(address.city.toLowerCase())}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setDeliveryFee(data.delivery_fee || 0)
+        setDeliveryLoading(false)
+      })
+      .catch(() => {
+        setDeliveryFee(0)
+        setDeliveryLoading(false)
+      })
+  }, [address])
+
   const handlePay = async () => {
-    if (!address) {
+    if (!hasValidAddress) {
       toast.error("Please add a shipping address first")
       router.push("/profile/shipping?redirect=/checkout")
       return
@@ -59,10 +94,20 @@ export default function CheckoutPage() {
         return obj
       })
 
-      const data = await createCheckout(orderItems, token)
+      const data = await createCheckout(
+        orderItems,
+        token,
+        address.state,
+        address.city
+      )
       window.location.href = data.authorization_url
 
     } catch (err) {
+      if (err.message === "SESSION_EXPIRED") {
+        toast.error("Your session has expired. Please log in again.")
+        handleSessionExpiry(router, softLogout, "/checkout")
+        return
+      }
       toast.error(err.message || "Something went wrong, please try again")
     } finally {
       setLoading(false)
@@ -99,12 +144,9 @@ export default function CheckoutPage() {
           Checkout
         </h1>
 
-      
         <div className="bg-white rounded-2xl overflow-hidden mb-4">
           <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="text-[14px] font-semibold text-gray-800">
-              Shipping Info
-            </h2>
+            <h2 className="text-[14px] font-semibold text-gray-800">Shipping Info</h2>
             <button
               onClick={() => router.push("/profile/shipping?redirect=/checkout")}
               className="text-gray-400 hover:text-[#D65A5A] transition-colors"
@@ -119,7 +161,7 @@ export default function CheckoutPage() {
               <div className="h-3 bg-gray-200 rounded w-1/2" />
               <div className="h-3 bg-gray-200 rounded w-2/3" />
             </div>
-          ) : address ? (
+          ) : hasValidAddress ? (
             <div className="px-4 py-4 flex flex-col gap-1.5">
               <div className="flex gap-2">
                 <span className="text-[12px] text-gray-400 w-24 shrink-0">Address</span>
@@ -150,12 +192,9 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        
         <div className="bg-white rounded-2xl overflow-hidden mb-4">
           <div className="px-4 py-3 border-b border-gray-100">
-            <h2 className="text-[14px] font-semibold text-gray-800">
-              Order Summary
-            </h2>
+            <h2 className="text-[14px] font-semibold text-gray-800">Order Summary</h2>
           </div>
 
           <div className="divide-y divide-gray-50">
@@ -176,17 +215,13 @@ export default function CheckoutPage() {
                     </div>
                   )}
                 </div>
-
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-gray-800 truncate">
-                    {item.name}
-                  </p>
+                  <p className="text-[13px] font-medium text-gray-800 truncate">{item.name}</p>
                   {item.variant && (
                     <p className="text-[11px] text-gray-400">{item.variant}</p>
                   )}
                   <p className="text-[11px] text-gray-500">x{item.quantity}</p>
                 </div>
-
                 <p className="text-[13px] font-semibold text-gray-800 shrink-0">
                   ₦{(item.price * item.quantity).toLocaleString()}
                 </p>
@@ -195,7 +230,6 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-    
         <div className="bg-white rounded-2xl px-5 py-4 mb-4 flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <span className="text-[13px] text-gray-500">Subtotal</span>
@@ -205,16 +239,24 @@ export default function CheckoutPage() {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-[13px] text-gray-500">Delivery</span>
-            <span className="text-[13px] text-gray-700 font-medium">
-              ₦{DELIVERY_FEE.toLocaleString()}
-            </span>
+            {deliveryLoading ? (
+              <div className="h-3 bg-gray-200 rounded w-16 animate-pulse" />
+            ) : (
+              <span className="text-[13px] text-gray-700 font-medium">
+                {deliveryFee !== null ? `₦${deliveryFee.toLocaleString()}` : "—"}
+              </span>
+            )}
           </div>
           <div className="h-px bg-gray-100 my-1" />
           <div className="flex justify-between items-center">
             <span className="text-[15px] font-bold text-gray-900">Total</span>
-            <span className="text-[15px] font-bold text-[#D65A5A]">
-              ₦{total.toLocaleString()}
-            </span>
+            {deliveryLoading ? (
+              <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+            ) : (
+              <span className="text-[15px] font-bold text-[#D65A5A]">
+                ₦{total.toLocaleString()}
+              </span>
+            )}
           </div>
         </div>
 
@@ -228,7 +270,7 @@ export default function CheckoutPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 z-50">
         <button
           onClick={handlePay}
-          disabled={loading || addressLoading}
+          disabled={loading || addressLoading || deliveryLoading}
           className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60"
         >
           {loading ? "Processing..." : `Pay ₦${total.toLocaleString()}`}

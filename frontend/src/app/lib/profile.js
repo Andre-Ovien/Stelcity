@@ -4,23 +4,22 @@ export async function getShippingAddress(token) {
   const res = await fetch(`${BASE_URL}/api/auth/shipping-address/`, {
     headers: { "Authorization": `Bearer ${token}` },
   })
-  if (res.status === 401) return null
+  if (res.status === 401) throw new Error("SESSION_EXPIRED")
   if (!res.ok) return null
-  const data = await res.json()
-  return data
+  return await res.json()
 }
 
 export async function saveShippingAddress(addressData, token) {
   const res = await fetch(`${BASE_URL}/api/auth/shipping-address/`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
     },
     body: JSON.stringify(addressData),
   })
+  if (res.status === 401) throw new Error("SESSION_EXPIRED")
   const data = await res.json()
-  if (res.status === 401) throw new Error("Your session has expired. Please log in again.")
   if (!res.ok) throw new Error(data.detail || "Failed to save address")
   return data
 }
@@ -34,8 +33,8 @@ export async function updateShippingAddress(addressData, token) {
     },
     body: JSON.stringify(addressData),
   })
+  if (res.status === 401) throw new Error("SESSION_EXPIRED")
   const data = await res.json()
-  if (res.status === 401) throw new Error("Your session has expired. Please log in again.")
   if (!res.ok) throw new Error(data.detail || "Failed to update address")
   return data
 }
@@ -44,7 +43,7 @@ export async function getProfile(token) {
   const res = await fetch(`${BASE_URL}/api/auth/profile/`, {
     headers: { "Authorization": `Bearer ${token}` },
   })
-  if (res.status === 401) return null
+  if (res.status === 401) throw new Error("SESSION_EXPIRED")
   if (!res.ok) return null
   return await res.json()
 }
@@ -58,8 +57,8 @@ export async function updateProfile(profileData, token) {
     },
     body: JSON.stringify(profileData),
   })
+  if (res.status === 401) throw new Error("SESSION_EXPIRED")
   const data = await res.json()
-  if (res.status === 401) throw new Error("Your session has expired. Please log in again.")
   if (!res.ok) throw new Error(data.detail || "Failed to update profile")
   return data
 }
@@ -68,7 +67,7 @@ export async function getOrders(token) {
   const res = await fetch(`${BASE_URL}/api/products/orders/`, {
     headers: { "Authorization": `Bearer ${token}` },
   })
-  if (res.status === 401) return []
+  if (res.status === 401) throw new Error("SESSION_EXPIRED")
   if (!res.ok) return []
   const data = await res.json()
   if (Array.isArray(data)) return data
