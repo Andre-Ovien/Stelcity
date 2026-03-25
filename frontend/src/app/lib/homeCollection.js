@@ -1,6 +1,7 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 const cache = {}
+const pendingRequests = {}
 
 function mapProduct(p, type) {
   const prices = p.variants?.map((v) => parseFloat(v.price)) || []
@@ -24,49 +25,53 @@ function mapProduct(p, type) {
   }
 }
 
-async function fetchProducts(category) {
-  if (cache[category]) return cache[category]
+async function fetchWithDedup(key, fetchFn) {
+  if (cache[key]) return cache[key]
+  if (pendingRequests[key]) return pendingRequests[key]
 
-  const res = await fetch(
-    `${BASE_URL}/api/products/categories/?category=${category}&page=1`
-  )
-  if (!res.ok) return []
-  const data = await res.json()
-  cache[category] = data.results || []
-  return cache[category]
+  pendingRequests[key] = fetchFn().then((result) => {
+    cache[key] = result
+    delete pendingRequests[key]
+    return result
+  }).catch((err) => {
+    delete pendingRequests[key]
+    throw err
+  })
+
+  return pendingRequests[key]
+}
+
+async function fetchProducts(category) {
+  return fetchWithDedup(category, async () => {
+    const res = await fetch(
+      `${BASE_URL}/api/products/categories/?category=${category}&page=1`
+    )
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.results || []
+  })
 }
 
 async function fetchServiceCategories() {
-  if (cache["services"]) return cache["services"]
+  return fetchWithDedup("services", async () => {
+    const res = await fetch(`${BASE_URL}/api/services/service-category/`)
+    if (!res.ok) return []
+    const data = await res.json()
+    const categories = data.results || []
 
-  const res = await fetch(`${BASE_URL}/api/services/add-service/`)
-  if (!res.ok) return []
-  const data = await res.json()
-
-  const grouped = {}
-  data.results.forEach((item) => {
-    const cat = item.category_name
-    if (!grouped[cat]) grouped[cat] = []
-    grouped[cat].push(item)
+    return categories.map((cat, index) => ({
+      id: `service-${index}`,
+      name: cat.name,
+      description: null,
+      price: 0,
+      priceLabel: "View services",
+      image: cat.image || null,
+      badge: null,
+      rating: 5,
+      slug: null,
+      type: "service",
+    }))
   })
-
-  const result = Object.entries(grouped).map(([category, items], index) => ({
-    id: `service-${index}`,
-    name: category,
-    description: `${items.length} service${items.length > 1 ? "s" : ""} available`,
-    price: Math.min(...items.map((i) => parseFloat(i.price))),
-    priceLabel: `From ₦${Math.min(
-      ...items.map((i) => parseFloat(i.price))
-    ).toLocaleString()}`,
-    image: null,
-    badge: null,
-    rating: 5,
-    slug: null,
-    type: "service",
-  }))
-
-  cache["services"] = result
-  return result
 }
 
 export async function getCollectionPreview(category = "all") {

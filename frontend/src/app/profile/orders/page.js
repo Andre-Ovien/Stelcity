@@ -6,14 +6,15 @@ import { ChevronLeft } from "lucide-react"
 import Header from "../../components/Header"
 import { useAuthStore } from "../../store/authStore"
 import { getOrders } from "../../lib/profile"
+import { handleSessionExpiry } from "../../lib/handleSessionExpiry"
+import toast from "react-hot-toast"
 
-const STATUS_FILTERS = ["All", "Pending", "Confirmed", "Cancelled", "Delivered"]
+const STATUS_FILTERS = ["All", "Pending", "Confirmed", "Failed"]
 
 const statusColors = {
   Pending:   { bg: "bg-yellow-100", text: "text-yellow-700" },
-  Confirmed: { bg: "bg-blue-100",   text: "text-blue-700" },
-  Cancelled: { bg: "bg-red-100",    text: "text-red-500" },
-  Delivered: { bg: "bg-green-100",  text: "text-green-700" },
+  Confirmed: { bg: "bg-green-100",  text: "text-green-700" },
+  Failed:    { bg: "bg-red-100",    text: "text-red-500" },
 }
 
 function OrderCard({ order }) {
@@ -84,6 +85,7 @@ function OrderSkeleton() {
 
 export default function OrdersPage() {
   const token = useAuthStore((s) => s.token)
+  const softLogout = useAuthStore((s) => s.softLogout)
   const router = useRouter()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -91,22 +93,29 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (!token) return
-    getOrders(token).then((data) => {
-      setOrders(data || [])
-      setLoading(false)
-    })
+    getOrders(token)
+      .then((data) => {
+        setOrders(data || [])
+        setLoading(false)
+      })
+      .catch((err) => {
+        if (err.message === "SESSION_EXPIRED") {
+          toast.error("Your session has expired. Please log in again.")
+          handleSessionExpiry(router, softLogout, "/profile/orders")
+        }
+        setLoading(false)
+      })
   }, [token])
 
   const filtered = filter === "All"
-  ? (Array.isArray(orders) ? orders : [])
-  : (Array.isArray(orders) ? orders : []).filter((o) => o.status === filter)
+    ? (Array.isArray(orders) ? orders : [])
+    : (Array.isArray(orders) ? orders : []).filter((o) => o.status === filter)
 
   return (
-    <div className="min-h-screen bg-white my-6 ">
+    <div className="min-h-screen bg-white my-6">
       <Header />
 
       <div className="px-4 pb-10">
-
         <button
           onClick={() => router.back()}
           className="flex items-center gap-1 text-gray-600 text-[13px] mb-4 hover:text-gray-900 transition-colors"
@@ -159,7 +168,6 @@ export default function OrdersPage() {
             ))}
           </div>
         )}
-
       </div>
     </div>
   )

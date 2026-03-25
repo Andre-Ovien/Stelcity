@@ -9,6 +9,7 @@ import Header from "../../components/Header"
 import { useAuthStore } from "../../store/authStore"
 import { getShippingAddress, saveShippingAddress, updateShippingAddress } from "../../lib/profile"
 import toast from "react-hot-toast"
+import { handleSessionExpiry } from "../../lib/handleSessionExpiry"
 
 const NIGERIAN_STATES = [
   "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue",
@@ -20,6 +21,7 @@ const NIGERIAN_STATES = [
 
 function ShippingAddressContent() {
   const token = useAuthStore((s) => s.token)
+  const softLogout = useAuthStore((s) => s.softLogout) 
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get("redirect")
@@ -42,21 +44,29 @@ function ShippingAddressContent() {
 
   useEffect(() => {
     if (!token) return
-    getShippingAddress(token).then((data) => {
-      if (data) {
-        setExisting(data)
-        setForm({
-          full_name: data.full_name || "",
-          phone_number: data.phone_number || "",
-          street_address: data.street_address || "",
-          city: data.city || "",
-          state: data.state || "",
-          country: "Nigeria",
-          postal_code: data.postal_code || "",
-        })
-      }
-      setFetching(false)
-    })
+    getShippingAddress(token)
+      .then((data) => {
+        if (data) {
+          setExisting(data)
+          setForm({
+            full_name: data.full_name || "",
+            phone_number: data.phone_number || "",
+            street_address: data.street_address || "",
+            city: data.city || "",
+            state: data.state || "",
+            country: "Nigeria",
+            postal_code: data.postal_code || "",
+          })
+        }
+        setFetching(false)
+      })
+      .catch((err) => {
+        if (err.message === "SESSION_EXPIRED") {
+          toast.error("Your session has expired. Please log in again.")
+          handleSessionExpiry(router, softLogout, "/profile/shipping")
+        }
+        setFetching(false)
+      })
   }, [token])
 
   const handleChange = (field, value) => {
@@ -87,6 +97,11 @@ function ShippingAddressContent() {
       toast.success("Shipping address saved!")
       router.push(redirect || "/profile")
     } catch (err) {
+      if (err.message === "SESSION_EXPIRED") {
+        toast.error("Your session has expired. Please log in again.")
+        handleSessionExpiry(router, softLogout, "/profile/shipping")
+        return
+      }
       toast.error(err.message || "Failed to save address")
     } finally {
       setLoading(false)

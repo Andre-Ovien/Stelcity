@@ -1,10 +1,9 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { refreshAccessToken } from "../lib/auth"
 
 export const useAuthStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
       refreshToken: null,
@@ -20,26 +19,15 @@ export const useAuthStore = create(
         set({ user: null, token: null, refreshToken: null, isAuth: false })
       },
 
+      
+      softLogout: () => {
+        document.cookie = "token=; path=/; max-age=0"
+        set({ user: null, token: null, refreshToken: null, isAuth: false })
+      },
+
       updateUser: (updatedUser) => set((state) => ({
         user: { ...state.user, ...updatedUser }
       })),
-
-      refreshIfNeeded: async () => {
-        const { refreshToken, logout } = get()
-        if (!refreshToken) {
-          logout()
-          return null
-        }
-        try {
-          const newToken = await refreshAccessToken(refreshToken)
-          document.cookie = `token=${newToken}; path=/; max-age=${60 * 60 * 24 * 7}`
-          set({ token: newToken })
-          return newToken
-        } catch {
-          logout()
-          return null
-        }
-      },
     }),
     { name: "auth-storage" }
   )

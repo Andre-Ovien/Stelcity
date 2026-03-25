@@ -6,11 +6,13 @@ import Header from "../../components/Header"
 import { useAuthStore } from "../../store/authStore"
 import { getProfile, updateProfile } from "../../lib/profile"
 import toast from "react-hot-toast"
+import { handleSessionExpiry } from "../../lib/handleSessionExpiry"
 
 const GENDER_OPTIONS = ["male", "female", "prefer not to say"]
 
 export default function EditProfilePage() {
   const token = useAuthStore((s) => s.token)
+  const softLogout = useAuthStore((s) => s.softLogout)
   const updateUser = useAuthStore((s) => s.updateUser)
   const router = useRouter()
 
@@ -27,18 +29,26 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     if (!token) return
-    getProfile(token).then((data) => {
-      if (data) {
-        setForm({
-          email: data.email || "",
-          full_name: data.full_name || "",
-          phone_number: data.phone_number || "",
-          gender: data.gender || "",
-          date_of_birth: data.date_of_birth || "",
-        })
-      }
-      setFetching(false)
-    })
+    getProfile(token)
+      .then((data) => {
+        if (data) {
+          setForm({
+            email: data.email || "",
+            full_name: data.full_name || "",
+            phone_number: data.phone_number || "",
+            gender: data.gender || "",
+            date_of_birth: data.date_of_birth || "",
+          })
+        }
+        setFetching(false)
+      })
+      .catch((err) => {
+        if (err.message === "SESSION_EXPIRED") {
+          toast.error("Your session has expired. Please log in again.")
+          handleSessionExpiry(router, softLogout, "/profile/edit")
+        }
+        setFetching(false)
+      })
   }, [token])
 
   const handleChange = (field, value) => {
@@ -68,6 +78,11 @@ export default function EditProfilePage() {
       toast.success("Profile updated!")
       router.push("/profile")
     } catch (err) {
+      if (err.message === "SESSION_EXPIRED") {
+        toast.error("Your session has expired. Please log in again.")
+        handleSessionExpiry(router, softLogout, "/profile/edit")
+        return
+      }
       toast.error(err.message || "Failed to update profile")
     } finally {
       setLoading(false)
