@@ -118,13 +118,13 @@ class OrderHistorySerializer(serializers.ModelSerializer):
 
 class DeliveryFeeSerializer(serializers.Serializer):
     state = serializers.CharField(required=True)
-    area = serializers.CharField(required=False, allow_blank=True)
+    city = serializers.CharField(required=False, allow_blank=True)
 
 
 class CartSyncCheckoutSerializer(serializers.Serializer):
     items = serializers.ListField(child=serializers.DictField(), min_length=1)
     state = serializers.CharField(required=True)
-    area = serializers.CharField(required=False, allow_blank=True, default='')
+    city = serializers.CharField(required=False, allow_blank=True, default='')
 
     def validate_items(self, items):
         validated_items = []
@@ -183,9 +183,9 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
     def save(self, user):
         validated_items = self.validated_data['items']
         state = self.validated_data['state']
-        area = self.validated_data.get('area', '')
+        city = self.validated_data.get('city', '')
 
-        delivery_fee = get_delivery_fee(state, area)
+        delivery_fee = get_delivery_fee(state, city)
 
         Order.objects.filter(
             user=user,

@@ -73,17 +73,17 @@ class DeliveryFeeView(APIView):
 
     def get(self, request):
         state = request.query_params.get('state')
-        area = request.query_params.get('area', '')
+        city = request.query_params.get('city', '')
 
         if not state:
             return Response(
                 {"detail": "State is required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        fee = get_delivery_fee(state,area)
+        fee = get_delivery_fee(state,city)
         return Response({
             "state": state,
-            "area": area or None,
+            "city": city or None,
             "delivery_fee": fee
         })
 
