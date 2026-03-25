@@ -1,12 +1,12 @@
 from .models import DeliveryZone, DeliverySettings
 
 
-def get_delivery_fee(state, area=''):
-    if area:
+def get_delivery_fee(state, city=''):
+    if city:
         try:
             zone = DeliveryZone.objects.get(
                 state__iexact=state,
-                area__iexact=area,
+                city__iexact=city,
                 is_active=True
             )
             return zone.fee
@@ -16,7 +16,7 @@ def get_delivery_fee(state, area=''):
     try:
         zone = DeliveryZone.objects.get(
             state__iexact=state,
-            area__isnull=True,
+            city__isnull=True,
             is_active=True
         )
         return zone.fee

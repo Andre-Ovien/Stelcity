@@ -127,17 +127,17 @@ class Payment(models.Model):
 class DeliveryZone(models.Model):
     """Specific areas within a state e.g Ikorodu, Ikeja"""
     state = models.CharField(max_length=100)
-    area = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
     fee = models.DecimalField(max_digits=10, decimal_places=2)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('state', 'area')
-        ordering = ('state', 'area')
+        unique_together = ('state', 'city')
+        ordering = ('state', 'city')
 
     def __str__(self):
-        if self.area:
-            return f"{self.area}, {self.state} — ₦{self.fee}"
+        if self.city:
+            return f"{self.city}, {self.state} — ₦{self.fee}"
         return f"{self.state} (default) — ₦{self.fee}"
 
 

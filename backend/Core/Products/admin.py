@@ -18,10 +18,10 @@ admin.site.register(Order, OrderAdmin)
 
 @admin.register(DeliveryZone)
 class DeliveryZoneAdmin(admin.ModelAdmin):
-    list_display = ('state', 'area', 'fee', 'is_active')
+    list_display = ('state', 'city', 'fee', 'is_active')
     list_editable = ('fee', 'is_active')
-    search_fields = ('state', 'area')
-    ordering = ('state', 'area')
+    search_fields = ('state', 'city')
+    ordering = ('state', 'city')
 
 @admin.register(DeliverySettings)
 class DeliverySettingsAdmin(admin.ModelAdmin):
