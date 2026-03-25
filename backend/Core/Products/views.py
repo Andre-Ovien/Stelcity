@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
-from .models import ProductVariant, Product, Order, OrderItem, Payment
+from .models import ProductVariant, Product, Order, OrderItem, Payment, DeliveryZone, DeliverySettings
 from .serializers import ProductVariantSerializer, ProductSerializer, OrderSerializer, CartSyncCheckoutSerializer, OrderHistorySerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -13,6 +13,7 @@ from django.conf import settings
 from .paystack import initialize_payment, verify_payment
 from .emails import send_order_confirmation, send_payment_failed
 from Notifications.utils import create_notification
+from .utils import get_delivery_fee
 
 
 # Create your views here.
@@ -65,7 +66,27 @@ class OrderListApiView(generics.ListAPIView):
         return Order.objects.filter(
             user=self.request.user
         ).prefetch_related('items').order_by('-created_at')
-    
+
+
+class DeliveryFeeView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        state = request.query_params.get('state')
+        area = request.query_params.get('area', '')
+
+        if not state:
+            return Response(
+                {"detail": "State is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        fee = get_delivery_fee(state,area)
+        return Response({
+            "state": state,
+            "area": area or None,
+            "delivery_fee": fee
+        })
+
 
 class CartCheckoutView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
@@ -74,7 +95,7 @@ class CartCheckoutView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        order, total, reference = serializer.save(user=request.user)
+        order, subtotal, total, delivery_fee, reference = serializer.save(user=request.user)
 
         response = initialize_payment(
             email=request.user.email,
@@ -100,6 +121,8 @@ class CartCheckoutView(generics.GenericAPIView):
         return Response({
             'order_id': str(order.order_id),
             'reference': reference,
+            "subtotal": subtotal,
+            "delivery_fee": delivery_fee,
             'amount': total,
             'authorization_url': response['data']['authorization_url']
         }, status=status.HTTP_200_OK)
