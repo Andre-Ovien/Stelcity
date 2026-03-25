@@ -21,7 +21,7 @@ const NIGERIAN_STATES = [
 
 function ShippingAddressContent() {
   const token = useAuthStore((s) => s.token)
-  const softLogout = useAuthStore((s) => s.softLogout) 
+  const softLogout = useAuthStore((s) => s.softLogout)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get("redirect")
