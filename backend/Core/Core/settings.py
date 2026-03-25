@@ -170,15 +170,11 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 
     "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
         "Auth.throttles.LoginRateThrottle",
         "Auth.throttles.RegisterRateThrottle",
     ],
 
     "DEFAULT_THROTTLE_RATES": {
-        "anon": "10/minute",
-        "user": "1000/day",
         "login": "3/minute",
         "register": "5/minute",
     }

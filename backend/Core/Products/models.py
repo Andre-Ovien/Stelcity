@@ -65,6 +65,9 @@ class Order(models.Model):
 
     order_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    delivery_fee = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=10,
@@ -121,16 +124,25 @@ class Payment(models.Model):
         return f"Payment {self.reference} for Order {self.order.order_id}"
 
 
-class DeliveryFee(models.Model):
-    state = models.CharField(max_length=100, unique=True)
+class DeliveryZone(models.Model):
+    """Specific areas within a state e.g Ikorodu, Ikeja"""
+    state = models.CharField(max_length=100)
+    area = models.CharField(max_length=100, blank=True, null=True)
     fee = models.DecimalField(max_digits=10, decimal_places=2)
     is_active = models.BooleanField(default=True)
 
+    class Meta:
+        unique_together = ('state', 'area')
+        ordering = ('state', 'area')
+
     def __str__(self):
-        return f"{self.state} — ₦{self.fee}"
+        if self.area:
+            return f"{self.area}, {self.state} — ₦{self.fee}"
+        return f"{self.state} (default) — ₦{self.fee}"
 
 
 class DeliverySettings(models.Model):
+    """Global fallback fee for unlisted states"""
     default_fee = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
