@@ -1,13 +1,13 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
-export async function createCheckout(items, token, state, area) {
+export async function createCheckout(items, token, state, city) {
   const res = await fetch(`${BASE_URL}/api/products/cart/checkout/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
     },
-    body: JSON.stringify({ items, state, area }),
+    body: JSON.stringify({ items, state, city }),
   })
 
   if (res.status === 401) throw new Error("SESSION_EXPIRED")
