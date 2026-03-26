@@ -1,11 +1,16 @@
 @import "tailwindcss";
 
+
+body{
+  overflow-x: hidden;
+}
 .back{
   background-image: url("/images/image 7.png");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   min-height: 100vh;
+  
 
 }
 

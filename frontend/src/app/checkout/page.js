@@ -49,16 +49,25 @@ export default function CheckoutPage() {
       })
   }, [token])
 
-  // fetch delivery fee once address is loaded
   useEffect(() => {
     if (!address?.state?.trim() || !address?.city?.trim()) return
+
+    const cacheKey = `${address.state}-${address.city}`.toLowerCase()
+    const cached = sessionStorage.getItem(`delivery_fee_${cacheKey}`)
+    if (cached) {
+      setDeliveryFee(Number(cached))
+      return
+    }
+
     setDeliveryLoading(true)
     fetch(
-      `${BASE_URL}/api/products/delivery-fee/?state=${encodeURIComponent(address.state.toLowerCase())}&area=${encodeURIComponent(address.city.toLowerCase())}`
+      `${BASE_URL}/api/products/delivery-fee/?state=${encodeURIComponent(address.state.toLowerCase())}&city=${encodeURIComponent(address.city.toLowerCase())}`
     )
       .then((res) => res.json())
       .then((data) => {
-        setDeliveryFee(data.delivery_fee || 0)
+        const fee = typeof data.delivery_fee === "number" ? data.delivery_fee : 0
+        setDeliveryFee(fee)
+        sessionStorage.setItem(`delivery_fee_${cacheKey}`, fee)
         setDeliveryLoading(false)
       })
       .catch(() => {
