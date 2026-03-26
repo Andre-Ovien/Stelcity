@@ -4,8 +4,10 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { FaHeart } from "react-icons/fa"
+import { IoAddCircleOutline } from "react-icons/io5"
 import { getCollectionPreview } from "../lib/homeCollection"
 import { useFavStore } from "../store/favStore"
+import { useCartStore } from "../store/cartStore"
 import toast from "react-hot-toast"
 
 const TABS = [
@@ -25,6 +27,7 @@ const showMore = {
 function ProductCard({ product }) {
   const toggleFav = useFavStore((s) => s.toggleFav)
   const isFav = useFavStore((s) => s.isFav(product.id))
+  const addItem = useCartStore((s) => s.addItem)
 
   const href =
     product.type === "service"
@@ -35,7 +38,6 @@ function ProductCard({ product }) {
 
   const handleToggleFav = (e) => {
     e.preventDefault()
-
     toggleFav({
       id: product.id,
       name: product.name,
@@ -49,8 +51,34 @@ function ProductCard({ product }) {
       variants: product.variants || [],
       type: product.type,
     })
-
     toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
+  }
+
+  const handleAddToCart = (e) => {
+    e.preventDefault()
+    
+  
+    if (product.type === "service") {
+      toast.error("Services cannot be added to cart")
+      return
+    }
+
+    
+    if (product.type === "raw" && product.variants?.length > 0) {
+      toast("Please select a weight on the product page", { icon: "⚖️" })
+      return
+    }
+
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1,
+      variant: null,
+      variantId: null,
+    })
+    toast.success("Added to cart!")
   }
 
   return (
@@ -63,7 +91,7 @@ function ProductCard({ product }) {
           </span>
         )}
 
-        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EEF5EE] flex items-center justify-center">
+        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EEF5EE] flex items-center justify-center shrink-0">
           <button
             onClick={handleToggleFav}
             className="absolute top-2 right-2 z-10 bg-white rounded-full p-1.5 shadow-sm"
@@ -87,20 +115,32 @@ function ProductCard({ product }) {
           )}
         </div>
 
-        <div className="mt-2.5">
-          <h3 className="text-[13px] font-semibold text-gray-800 xl:text-2xl">
-            {product.name}
-          </h3>
-        </div>
+        <div className="flex-1 flex flex-col justify-between mt-2.5">
+          <div>
+            <h3 className="text-[13px] font-semibold text-gray-800 xl:text-xl line-clamp-2">
+              {product.name}
+            </h3>
 
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-[11px] font-medium text-gray-900 xl:text-xl">
-            {product.priceLabel}
-          </span>
-        </div>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-[11px] font-medium text-gray-900 xl:text-lg">
+                {product.priceLabel}
+              </span>
+            </div>
 
-        <div className="flex text-yellow-400 text-[12px] mt-1 gap-0.5 xl:text-xl">
-          ★★★★★
+            <div className="flex text-yellow-400 text-[12px] mt-1 gap-0.5 xl:text-lg">
+              ★★★★★
+            </div>
+          </div>
+
+          {product.type !== "service" && (
+            <button
+              onClick={handleAddToCart}
+              className=" bg-[#D65A5A] flex items-center justify-center gap-1.5 border border-gray-300 rounded-full px-3 py-1.5 text-[11px] text-white font-medium hover:bg-gray-50 transition-colors w-full mt-2 xl:text-base"
+            >
+              Add to Cart
+              <IoAddCircleOutline size={14} className="xl:w-5 xl:h-5" />
+            </button>
+          )}
         </div>
 
       </div>
@@ -115,6 +155,7 @@ function ProductCardSkeleton() {
       <div className="h-4 bg-gray-200 rounded w-3/4" />
       <div className="h-3 bg-gray-200 rounded w-1/2" />
       <div className="h-3 bg-gray-200 rounded w-1/4" />
+      <div className="h-8 bg-gray-200 rounded-full w-full mt-2" />
     </div>
   )
 }
@@ -142,7 +183,6 @@ const ProductGrid = () => {
     return () => window.removeEventListener("resize", updateCount)
   }, [])
 
-
   useEffect(() => {
     let mounted = true
     setLoading(true)
@@ -168,7 +208,6 @@ const ProductGrid = () => {
         Explore our skincare categories to find what works best for your skin.
       </p>
 
-     
       <div className="flex gap-2 mt-5 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {TABS.map((tab) => (
           <button
@@ -185,7 +224,6 @@ const ProductGrid = () => {
         ))}
       </div>
 
-      
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {loading
           ? Array.from({ length: count }).map((_, i) => (
@@ -197,14 +235,12 @@ const ProductGrid = () => {
         }
       </div>
 
-      
       {!loading && items.length === 0 && (
         <div className="text-center py-10 text-gray-400 text-[13px]">
           Nothing to show right now.
         </div>
       )}
 
-      
       <div className="text-center mt-8">
         <Link
           href={showMore[category].href}

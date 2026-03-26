@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Header from "../../components/Header"
 import { useAuthStore } from "../../store/authStore"
@@ -17,6 +17,8 @@ const NIGERIAN_STATES = [
   "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo",
   "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara",
 ]
+
+const citiesCache = new Map()
 
 function ShippingAddressContent() {
   const token = useAuthStore((s) => s.token)
@@ -42,14 +44,22 @@ function ShippingAddressContent() {
   })
 
   const [errors, setErrors] = useState({})
+  
+  
+  const addressFetched = useRef(false)
+ 
+  const cityFetchController = useRef(null)
 
   useEffect(() => {
-    if (!token) return
+    if (!token || addressFetched.current) return
+    
+    addressFetched.current = true
+    
     getShippingAddress(token)
       .then((data) => {
         if (data) {
           setExisting(data)
-          setForm({
+          const newForm = {
             full_name: data.full_name || "",
             phone_number: data.phone_number || "",
             street_address: data.street_address || "",
@@ -57,8 +67,10 @@ function ShippingAddressContent() {
             state: data.state || "",
             country: "Nigeria",
             postal_code: data.postal_code || "",
-          })
-          // If state exists, fetch cities
+          }
+          setForm(newForm)
+          
+          
           if (data.state) {
             fetchCities(data.state)
           }
@@ -76,15 +88,39 @@ function ShippingAddressContent() {
 
   const fetchCities = async (state) => {
     if (!state) return
+    
+    
+    if (cityFetchController.current) {
+      cityFetchController.current.abort()
+    }
+    
+
+    if (citiesCache.has(state)) {
+      setCities(citiesCache.get(state))
+      return
+    }
+    
     setLoadingCities(true)
+    cityFetchController.current = new AbortController()
+    
     try {
-      const res = await fetch(`https://nga-states-lga.onrender.com/?state=${encodeURIComponent(state)}`)
+      const res = await fetch(
+        `https://nga-states-lga.onrender.com/?state=${encodeURIComponent(state)}`,
+        { signal: cityFetchController.current.signal }
+      )
       const data = await res.json()
-      setCities(data || [])
-    } catch {
-      setCities([])
+      const cityList = data || []
+      
+      
+      citiesCache.set(state, cityList)
+      setCities(cityList)
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        setCities([])
+      }
     } finally {
       setLoadingCities(false)
+      cityFetchController.current = null
     }
   }
 
@@ -92,7 +128,7 @@ function ShippingAddressContent() {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: "" }))
 
-    // When state changes, fetch cities and reset city selection
+   
     if (field === "state") {
       setForm((prev) => ({ ...prev, city: "" }))
       fetchCities(value)
@@ -149,7 +185,7 @@ function ShippingAddressContent() {
 
         {fetching ? (
           <div className="flex flex-col gap-3 animate-pulse">
-            {[1, 2, 3, 4, 5].map((i) => (
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-12 bg-gray-100 rounded-xl" />
             ))}
           </div>

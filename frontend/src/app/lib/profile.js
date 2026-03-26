@@ -1,13 +1,23 @@
+import { cachedFetch } from './apiCache'
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 export async function getShippingAddress(token) {
-  const res = await fetch(`${BASE_URL}/api/auth/shipping-address/`, {
-    headers: { "Authorization": `Bearer ${token}` },
-  })
-  if (res.status === 401) throw new Error("SESSION_EXPIRED")
-  if (!res.ok) return null
-  return await res.json()
+  try {
+    const data = await cachedFetch(
+      `${BASE_URL}/api/auth/shipping-address/`,
+      {
+        headers: { "Authorization": `Bearer ${token}` }
+      },
+      10000 
+    )
+    return data
+  } catch (err) {
+    if (err.message.includes('401')) throw new Error("SESSION_EXPIRED")
+    return null
+  }
 }
+
 
 export async function saveShippingAddress(addressData, token) {
   const res = await fetch(`${BASE_URL}/api/auth/shipping-address/`, {

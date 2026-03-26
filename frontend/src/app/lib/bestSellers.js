@@ -1,14 +1,14 @@
+import { cachedFetch } from './apiCache'
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
-let bestSellersCache = null
-
 export async function getBestSellers() {
-  if (bestSellersCache) return bestSellersCache
-
   try {
-    const res = await fetch(`${BASE_URL}/api/products/categories/?category=product&page=1`)
-    if (!res.ok) return []
-    const data = await res.json()
+    const data = await cachedFetch(
+      `${BASE_URL}/api/products/categories/?category=product&page=1`,
+      {},
+      60000 
+    )
 
     const results = (data.results || []).slice(0, 8).map((p) => {
       const prices = p.variants?.map((v) => parseFloat(v.price)) || []
@@ -25,7 +25,6 @@ export async function getBestSellers() {
       }
     })
 
-    bestSellersCache = results
     return results
   } catch {
     return []
