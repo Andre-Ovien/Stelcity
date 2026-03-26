@@ -16,10 +16,7 @@ const sortOptions = [
   { label: "Go to Raw Materials", value: "rawMaterials" },
   { label: "Go to Services", value: "Services" },
 ]
-export const metadata = {
-  title: "Products",
-  description: "Browse our range of premium skincare products.",
-}
+
 
 function ProductPageCardSkeleton() {
   return (
