@@ -63,7 +63,7 @@ export default function Why() {
           ))}
         </div>
 
-        <div className="flex-1 bg-white border-2 border-gray-200 rounded-3xl p-4 sm:p-5 flex items-center justify-center min-h-[160px] sm:min-h-[180px]">
+        <div className="flex-1 bg-white border-2 border-gray-200 rounded-3xl p-4 sm:p-5 flex items-center justify-center min-h-40 sm:min-h-45">
           <AnimatePresence mode="wait">
             <motion.p
               key={activeIndex}
