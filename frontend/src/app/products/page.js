@@ -80,9 +80,9 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-white my-6">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 pt-6">
 
-        <h1 className="text-[20px] font-bold text-gray-900 text-center mb-4">
+        <h1 className="text-[20px] font-bold text-gray-900 text-center mb-4  xl:text-3xl ">
           Shop Our Products
         </h1>
 
@@ -96,17 +96,17 @@ export default function ProductsPage() {
                 setCurrentPage(1)
               }}
               placeholder="Search products..."
-              className="w-full border border-gray-200 rounded-full px-4 py-2 text-[13px] outline-none  text-gray-700"
+              className="w-full border border-gray-200 rounded-full px-4 py-2 text-[13px] outline-none  text-gray-700 xl:text-lg"
             />
             
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[12px] text-gray-500">Sort by:</span>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="text-[12px] text-gray-500 xl:text-lg">Sort by:</span>
             <select
               value={sort}
               onChange={(e) => handleSort(e.target.value)}
-              className="text-[12px] border border-gray-200 rounded-lg px-2 py-1 outline-none text-gray-700"
+              className="text-[12px] border border-gray-200 rounded-lg px-2 py-1 outline-none text-gray-700 xl:text-lg"
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>

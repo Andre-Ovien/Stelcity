@@ -1,5 +1,4 @@
 "use client"
-
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from "react"
@@ -29,6 +28,8 @@ function ShippingAddressContent() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [existing, setExisting] = useState(null)
+  const [cities, setCities] = useState([])
+  const [loadingCities, setLoadingCities] = useState(false)
 
   const [form, setForm] = useState({
     full_name: "",
@@ -57,6 +58,10 @@ function ShippingAddressContent() {
             country: "Nigeria",
             postal_code: data.postal_code || "",
           })
+          // If state exists, fetch cities
+          if (data.state) {
+            fetchCities(data.state)
+          }
         }
         setFetching(false)
       })
@@ -69,9 +74,29 @@ function ShippingAddressContent() {
       })
   }, [token])
 
+  const fetchCities = async (state) => {
+    if (!state) return
+    setLoadingCities(true)
+    try {
+      const res = await fetch(`https://nga-states-lga.onrender.com/?state=${encodeURIComponent(state)}`)
+      const data = await res.json()
+      setCities(data || [])
+    } catch {
+      setCities([])
+    } finally {
+      setLoadingCities(false)
+    }
+  }
+
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: "" }))
+
+    // When state changes, fetch cities and reset city selection
+    if (field === "state") {
+      setForm((prev) => ({ ...prev, city: "" }))
+      fetchCities(value)
+    }
   }
 
   const handleSubmit = async () => {
@@ -117,7 +142,7 @@ function ShippingAddressContent() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 pt-6">
         <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
           Shipping Address
         </h1>
@@ -174,20 +199,6 @@ function ShippingAddressContent() {
             </div>
 
             <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">City *</label>
-              <input
-                type="text"
-                value={form.city}
-                onChange={(e) => handleChange("city", e.target.value)}
-                placeholder="Ikeja"
-                className={inputClass("city")}
-              />
-              {errors.city && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.city}</p>
-              )}
-            </div>
-
-            <div>
               <label className="text-[12px] text-gray-500 mb-1 block">State *</label>
               <select
                 value={form.state}
@@ -201,6 +212,38 @@ function ShippingAddressContent() {
               </select>
               {errors.state && (
                 <p className="text-red-400 text-[11px] mt-1 px-1">{errors.state}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="text-[12px] text-gray-500 mb-1 block">City *</label>
+              {loadingCities ? (
+                <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400">
+                  Loading cities...
+                </div>
+              ) : cities.length > 0 ? (
+                <select
+                  value={form.city}
+                  onChange={(e) => handleChange("city", e.target.value)}
+                  className={`${inputClass("city")} appearance-none`}
+                >
+                  <option value="">Select a city</option>
+                  {cities.map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={form.city}
+                  onChange={(e) => handleChange("city", e.target.value)}
+                  placeholder={form.state ? "No cities found, enter manually" : "Select a state first"}
+                  className={inputClass("city")}
+                  disabled={!form.state}
+                />
+              )}
+              {errors.city && (
+                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.city}</p>
               )}
             </div>
 

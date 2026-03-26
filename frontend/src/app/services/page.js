@@ -115,7 +115,7 @@ export default function ServicesPage() {
     <div className="min-h-screen bg-white py-6">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 mt-6">
         <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6">
           Our Services
         </h1>

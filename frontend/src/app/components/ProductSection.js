@@ -77,36 +77,36 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
           />
         </div>
 
-        <h3 className="text-[13px] font-semibold text-gray-800 leading-tight">
+        <h3 className="text-[13px] font-semibold text-gray-800 leading-tight xl:text-xl">
           {product.name}
         </h3>
 
-        <p className="text-[11px] text-gray-400 leading-tight line-clamp-2">
+        <p className="text-[11px] text-gray-400 leading-tight line-clamp-2 xl:text-lg">
           {product.description}
         </p>
 
         <div className="flex items-center gap-2">
           {product.originalPrice && (
-            <span className="text-[11px] text-gray-400 line-through">
+            <span className="text-[11px] text-gray-400 line-through  ">
               ₦{product.originalPrice.toLocaleString()}
             </span>
           )}
-          <span className="text-[12px] font-medium text-gray-900">
+          <span className="text-[12px] font-medium text-gray-900 xl:text-lg">
             {product.priceLabel || `₦${product.price.toLocaleString()}`}
           </span>
         </div>
 
         <div className="flex items-center gap-1">
-          <span className="text-yellow-400 text-[11px]">{"★".repeat(product.rating)}</span>
+          <span className="text-yellow-400 text-[11px] xl:text-xl">{"★".repeat(product.rating)}</span>
           <span className="text-[11px] text-gray-400">{product.rating}.0</span>
         </div>
 
         <button
           onClick={handleAddToCart}
-          className="flex items-center justify-center gap-1.5 bg-[#D65A5A] text-white rounded-full py-2 text-[12px] font-medium hover:bg-[#c44f4f] transition-colors w-full mt-auto"
+          className="flex items-center justify-center gap-1.5 bg-[#D65A5A] text-white rounded-full py-2 text-[12px] font-medium hover:bg-[#c44f4f] transition-colors w-full mt-auto xl:text-xl "
         >
           {isRawMaterial ? "Select Weight" : "Add to Cart"}
-          <IoAddCircleOutline size={15} />
+          <IoAddCircleOutline size={15}  />
         </button>
 
       </div>

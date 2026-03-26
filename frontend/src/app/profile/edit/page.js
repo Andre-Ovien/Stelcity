@@ -98,7 +98,7 @@ export default function EditProfilePage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 pt-6">
         <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
           Edit Profile
         </h1>
