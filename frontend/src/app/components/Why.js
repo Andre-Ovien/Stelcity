@@ -33,11 +33,12 @@ export default function Why() {
 
   return (
     <section className="my-6 bg-[#EEF5EE] px-5 py-8">
-      <h2 className="text-[22px] font-bold text-gray-900 mb-6">
+      <h2 className="text-[22px] sm:text-[26px] lg:text-[30px] font-bold text-gray-900 mb-6">
         Why Stelcity?
       </h2>
 
-      <div className="flex gap-3 items-center">
+      
+      <div className="flex gap-3 sm:gap-5 items-stretch">
 
         
         <div className="flex flex-col gap-3 flex-1">
@@ -52,8 +53,8 @@ export default function Why() {
               transition={{ duration: 0.3 }}
               className="flex items-center gap-2 bg-white border-2 rounded-2xl px-3 py-3 cursor-pointer"
             >
-              <span className="text-[14px]">{f.icon}</span>
-              <span className={`text-[13px] font-medium transition-colors ${
+              <span className="text-[14px] sm:text-[16px] shrink-0">{f.icon}</span>
+              <span className={`text-[12px] sm:text-[13px] lg:text-[14px] font-medium transition-colors leading-tight ${
                 activeIndex === i ? "text-[#D65A5A]" : "text-gray-500"
               }`}>
                 {f.label}
@@ -62,8 +63,7 @@ export default function Why() {
           ))}
         </div>
 
-        
-        <div className="flex-1 bg-white border-2 border-gray-200 rounded-3xl p-5 flex items-center justify-center min-h-50">
+        <div className="flex-1 bg-white border-2 border-gray-200 rounded-3xl p-4 sm:p-5 flex items-center justify-center min-h-[160px] sm:min-h-[180px]">
           <AnimatePresence mode="wait">
             <motion.p
               key={activeIndex}
@@ -71,7 +71,7 @@ export default function Why() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3 }}
-              className="text-[#D65A5A] text-[14px] font-semibold italic leading-snug text-center"
+              className="text-[#D65A5A] text-[13px] sm:text-[14px] lg:text-[15px] font-semibold italic leading-snug text-center"
             >
               {features[activeIndex].content}
             </motion.p>

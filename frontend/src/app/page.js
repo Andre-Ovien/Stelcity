@@ -6,6 +6,7 @@ import BestSellers from './components/BestSellers'
 import Why from './components/Why'
 import Newsletter from './components/NewsLetter'
 import Footer from './components/Footer'
+import ClientReviews from './components/ClientReview'
 
 
 const page = () => {
@@ -15,7 +16,9 @@ const page = () => {
         <Hero/>
         <ProductGrid/>
         <BestSellers/>
+        <ClientReviews/>
         <Why/>
+        
         <Newsletter/>
         <Footer/>
         
