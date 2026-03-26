@@ -60,7 +60,7 @@ export default function ServiceDetailPage({ params }) {
   if (!service) return (
     <div className="min-h-screen bg-[#D6E4D3] py-6">
       <Header />
-      <div className="text-center py-20 text-gray-500">Service not found</div>
+      <div className="text-center py-20 text-gray-500 pt-6">Service not found</div>
     </div>
   )
 
@@ -68,7 +68,7 @@ export default function ServiceDetailPage({ params }) {
     <div className="min-h-screen bg-[#D6E4D3] py-6">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 pt-6">
 
         <button
           onClick={() => router.back()}

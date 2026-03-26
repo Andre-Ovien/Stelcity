@@ -115,7 +115,7 @@ export default function OrdersPage() {
     <div className="min-h-screen bg-white my-6">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 pt-6">
         <button
           onClick={() => router.back()}
           className="flex items-center gap-1 text-gray-600 text-[13px] mb-4 hover:text-gray-900 transition-colors"

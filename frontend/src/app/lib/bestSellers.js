@@ -1,104 +1,33 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
+let bestSellersCache = null
 
 export async function getBestSellers() {
-  const fakeBestSellers = [
-    {
-      id: 1,
-      name: "Germall Plus",
-      description: "Protects water-based skincare products",
-      price: 5000,
-      rating: 5,
-      image: "/images/german.png",
-    },
-    {
-      id: 2,
-      name: "Glass Skin Face Set",
-      description: "For dark eye circles, dull skin, clears...",
-      price: 15000,
-      rating: 5,
-      image: "/images/acne.png",
-    },
-    {
-      id: 3,
-      name: "Acne Face Set",
-      description: "Clears pimples and dark spots...",
-      price: 30000,
-      rating: 5,
-      image: "/images/black.png",
-    },
-    {
-      id: 4,
-      name: "Luxury Face Serum",
-      description: "Brightens and smoothens skin tone...",
-      price: 5000,
-      rating: 5,
-      image: "/images/face.png",
-    },
-    {
-      id: 1,
-      name: "Germall Plus",
-      description: "Protects water-based skincare products",
-      price: 5000,
-      rating: 5,
-      image: "/images/german.png",
-    },
-    {
-      id: 2,
-      name: "Glass Skin Face Set",
-      description: "For dark eye circles, dull skin, clears...",
-      price: 15000,
-      rating: 5,
-      image: "/images/acne.png",
-    },
-    {
-      id: 3,
-      name: "Acne Face Set",
-      description: "Clears pimples and dark spots...",
-      price: 30000,
-      rating: 5,
-      image: "/images/black.png",
-    },
-    {
-      id: 4,
-      name: "Luxury Face Serum",
-      description: "Brightens and smoothens skin tone...",
-      price: 5000,
-      rating: 5,
-      image: "/images/face.png",
-    },{
-      id: 1,
-      name: "Germall Plus",
-      description: "Protects water-based skincare products",
-      price: 5000,
-      rating: 5,
-      image: "/images/german.png",
-    },
-    {
-      id: 2,
-      name: "Glass Skin Face Set",
-      description: "For dark eye circles, dull skin, clears...",
-      price: 15000,
-      rating: 5,
-      image: "/images/acne.png",
-    },
-    {
-      id: 3,
-      name: "Acne Face Set",
-      description: "Clears pimples and dark spots...",
-      price: 30000,
-      rating: 5,
-      image: "/images/black.png",
-    },
-    {
-      id: 4,
-      name: "Luxury Face Serum",
-      description: "Brightens and smoothens skin tone...",
-      price: 5000,
-      rating: 5,
-      image: "/images/face.png",
-    },
-  ]
+  if (bestSellersCache) return bestSellersCache
 
-  return fakeBestSellers
+  try {
+    const res = await fetch(`${BASE_URL}/api/products/categories/?category=product&page=1`)
+    if (!res.ok) return []
+    const data = await res.json()
+
+    const results = (data.results || []).slice(0, 8).map((p) => {
+      const prices = p.variants?.map((v) => parseFloat(v.price)) || []
+      const lowestPrice = prices.length > 0 ? Math.min(...prices) : parseFloat(p.price)
+      return {
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: lowestPrice,
+        rating: 5,
+        image: p.image,
+        slug: p.id,
+        variants: p.variants || [],
+      }
+    })
+
+    bestSellersCache = results
+    return results
+  } catch {
+    return []
+  }
 }

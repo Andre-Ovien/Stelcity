@@ -111,7 +111,7 @@ export default function FavouritesPage() {
     <div className="min-h-screen bg-[#D6E4D3] py-6">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 pt-6">
         <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6">
           My Favourites
         </h1>

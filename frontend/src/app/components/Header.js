@@ -41,7 +41,7 @@ const Header = () => {
   return (
     <div className="w-full px-4  xl:px-7  2xl:px-10">
       <div>
-        <div className="bg-white rounded-2xl shadow-md px-4 py-3 flex items-center justify-between 2xl:rounded-3xl 2xl:px-6">
+        <div className="bg-white rounded-2xl shadow-lg px-4 py-3 flex items-center justify-between 2xl:rounded-3xl 2xl:px-6">
 
           
           <Link href="/">

@@ -83,27 +83,38 @@ export async function getCollectionPreview(category = "all") {
         fetchServiceCategories(),
       ])
       return [
-        ...products.slice(0, 2).map((p) => mapProduct(p, "product")),
-        ...raw.slice(0, 2).map((p) => mapProduct(p, "raw")),
-        ...services.slice(0, 2),
+        ...products.slice(0, 4).map((p) => mapProduct(p, "product")),
+        ...raw.slice(0, 4).map((p) => mapProduct(p, "raw")),
+        ...services.slice(0, 4),
       ]
     }
 
     if (category === "products") {
       const items = await fetchProducts("product")
-      return items.slice(0, 6).map((p) => mapProduct(p, "product"))
+      return items.slice(0, 12).map((p) => mapProduct(p, "product"))
     }
 
     if (category === "raw") {
       const items = await fetchProducts("raw_material")
-      return items.slice(0, 6).map((p) => mapProduct(p, "raw"))
+      return items.slice(0, 12).map((p) => mapProduct(p, "raw"))
     }
 
     if (category === "services") {
       return await fetchServiceCategories()
     }
 
-    return []
+    if (category === "all") {
+      const [products, raw, services] = await Promise.all([
+        fetchProducts("product"),
+        fetchProducts("raw_material"),
+        fetchServiceCategories(),
+      ])
+      return [
+        ...products.slice(0, 4).map((p) => mapProduct(p, "product")),
+        ...raw.slice(0, 4).map((p) => mapProduct(p, "raw")),
+        ...services.slice(0, 4),
+      ]
+    }
   } catch (err) {
     console.error("getCollectionPreview error:", err)
     return []

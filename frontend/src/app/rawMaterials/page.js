@@ -81,7 +81,7 @@ export default function RawMaterialsPage() {
     <div className="min-h-screen bg-white my-6">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-10 mt-6">
 
         <h1 className="text-[20px] font-bold text-gray-900 text-center mb-4">
           Shop Our Raw Materials

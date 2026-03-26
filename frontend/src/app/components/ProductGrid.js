@@ -22,13 +22,6 @@ const showMore = {
   services: { label: "View all services", href: "/services" },
 }
 
-const displayCount = {
-  all:      6,
-  products: 6,
-  raw:      6,
-  services: 6,
-}
-
 function ProductCard({ product }) {
   const toggleFav = useFavStore((s) => s.toggleFav)
   const isFav = useFavStore((s) => s.isFav(product.id))
@@ -42,6 +35,7 @@ function ProductCard({ product }) {
 
   const handleToggleFav = (e) => {
     e.preventDefault()
+
     toggleFav({
       id: product.id,
       name: product.name,
@@ -55,14 +49,16 @@ function ProductCard({ product }) {
       variants: product.variants || [],
       type: product.type,
     })
+
     toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
   }
 
   return (
     <Link href={href} className="h-full">
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 relative flex flex-col h-full">
+
         {product.badge && (
-          <span className="absolute top-3 left-3 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full tracking-wide uppercase">
+          <span className="absolute top-3 left-3 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase">
             {product.badge}
           </span>
         )}
@@ -72,8 +68,12 @@ function ProductCard({ product }) {
             onClick={handleToggleFav}
             className="absolute top-2 right-2 z-10 bg-white rounded-full p-1.5 shadow-sm"
           >
-            <FaHeart className={isFav ? "text-red-400" : "text-gray-300"} size={12} />
+            <FaHeart
+              className={isFav ? "text-red-400" : "text-gray-300"}
+              size={12}
+            />
           </button>
+
           {product.image ? (
             <Image
               src={product.image}
@@ -88,20 +88,21 @@ function ProductCard({ product }) {
         </div>
 
         <div className="mt-2.5">
-          <h3 className="text-[13px] font-semibold text-gray-800 leading-tight">
+          <h3 className="text-[13px] font-semibold text-gray-800 xl:text-2xl">
             {product.name}
           </h3>
         </div>
 
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-[11px] font-medium text-gray-900">
+          <span className="text-[11px] font-medium text-gray-900 xl:text-xl">
             {product.priceLabel}
           </span>
         </div>
 
-        <div className="flex text-yellow-400 text-[12px] mt-1 gap-0.5">
+        <div className="flex text-yellow-400 text-[12px] mt-1 gap-0.5 xl:text-xl">
           ★★★★★
         </div>
+
       </div>
     </Link>
   )
@@ -122,37 +123,58 @@ const ProductGrid = () => {
   const [category, setCategory] = useState("all")
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
+  const [count, setCount] = useState(6)
+
+  useEffect(() => {
+    const updateCount = () => {
+      if (window.innerWidth >= 1024) {
+        setCount(12)
+      } else if (window.innerWidth >= 768) {
+        setCount(8)
+      } else {
+        setCount(6)
+      }
+    }
+
+    updateCount()
+    window.addEventListener("resize", updateCount)
+
+    return () => window.removeEventListener("resize", updateCount)
+  }, [])
+
 
   useEffect(() => {
     let mounted = true
     setLoading(true)
+
     getCollectionPreview(category).then((data) => {
       if (mounted) {
         setItems(data || [])
         setLoading(false)
       }
     })
+
     return () => { mounted = false }
   }, [category])
 
-  const count = displayCount[category]
-
   return (
-    <section className="px-5 py-10 bg-[#F7F6F6] rounded-t-[40px]" id="collection">
+    <section className="px-5 py-10 bg-[#F7F6F6] rounded-t-[40px] xl:px-9" id="collection">
 
-      <h2 className="font-bold text-[22px] text-gray-900">
+      <h2 className="font-bold text-[22px] text-gray-900 xl:text-3xl">
         Browse Our Collection
       </h2>
-      <p className="text-[13px] text-gray-500 mt-1">
+
+      <p className="text-[13px] text-gray-500 mt-1 xl:text-2xl">
         Explore our skincare categories to find what works best for your skin.
       </p>
 
+     
       <div className="flex gap-2 mt-5 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {TABS.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setCategory(tab.value)}
-            className={`shrink-0 px-4 py-1.5 rounded-full border text-[13px] font-medium transition-all
+            className={`shrink-0 px-4 py-1.5 rounded-full border text-[13px] font-medium xl:text-2xl
               ${category === tab.value
                 ? "bg-[#D65A5A] text-white border-[#D65A5A]"
                 : "bg-white text-gray-600 border-gray-200"
@@ -163,6 +185,7 @@ const ProductGrid = () => {
         ))}
       </div>
 
+      
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {loading
           ? Array.from({ length: count }).map((_, i) => (
@@ -174,16 +197,18 @@ const ProductGrid = () => {
         }
       </div>
 
+      
       {!loading && items.length === 0 && (
         <div className="text-center py-10 text-gray-400 text-[13px]">
           Nothing to show right now.
         </div>
       )}
 
+      
       <div className="text-center mt-8">
         <Link
           href={showMore[category].href}
-          className="text-[13px] text-gray-500 underline underline-offset-2 hover:text-gray-800 transition-colors"
+          className="text-[13px] text-gray-500 underline underline-offset-2 hover:text-gray-800 xl:text-xl"
         >
           {showMore[category].label}
         </Link>
