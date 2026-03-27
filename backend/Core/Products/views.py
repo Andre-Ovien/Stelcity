@@ -227,3 +227,15 @@ class VerifyPaymentView(APIView):
                 'order_status': payment.order.status,
             }
         )
+    
+class OrderTrackingView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+
+    def get_object(self):
+        from django.shortcuts import get_object_or_404
+        return get_object_or_404(
+            Order,
+            order_id=self.kwargs['order_id'],
+            user=self.request.user
+        )
