@@ -10,20 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-    migrations.RunSQL(
-        "UPDATE \"Products_productvariant\" SET stock = 0 WHERE stock IS NULL;",
-        reverse_sql=migrations.RunSQL.noop
-    ),
-    migrations.RunSQL(
-        "UPDATE \"Products_product\" SET stock = 0 WHERE stock IS NULL;",
-        reverse_sql=migrations.RunSQL.noop
-    ),
-    migrations.RemoveField(
-        model_name='product',
-        name='stock',
-    ),
-    migrations.RemoveField(
-        model_name='productvariant',
-        name='stock',
-    ),
-]
+        # empty, or any safe operations unrelated to 'stock'
+    ]
