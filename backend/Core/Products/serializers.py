@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, ProductVariant, Order, OrderItem, DeliverySettings, DeliveryZone
+from .models import Product, ProductVariant, Order, OrderItem, DeliverySettings, DeliveryZone, OrderTracking
 import uuid
 from .utils import get_delivery_fee
 
@@ -80,10 +80,20 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'item_subtotal',
         )
 
+class OrderTrackingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderTracking
+        fields = (
+            'status',
+            'note',
+            'updated_at',
+        )        
+
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True,read_only=True)
     total_price = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True)
+    tracking_updates = OrderTrackingSerializer(many=True, read_only=True)
 
     def get_total_price(self, obj):
         order_items = obj.items.all()
@@ -98,6 +108,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'created_at',
             'user',
             'status',
+            'tracking_updates',
         )
 
 class OrderHistorySerializer(serializers.ModelSerializer):
