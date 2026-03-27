@@ -18,7 +18,23 @@ const NIGERIAN_STATES = [
   "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara",
 ]
 
+const SHIPPING_CACHE_KEY = "stelcity_shipping_address"
 const citiesCache = new Map()
+
+function saveAddressToLocal(data) {
+  try {
+    localStorage.setItem(SHIPPING_CACHE_KEY, JSON.stringify(data))
+  } catch {}
+}
+
+function getAddressFromLocal() {
+  try {
+    const raw = localStorage.getItem(SHIPPING_CACHE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
 
 function ShippingAddressContent() {
   const token = useAuthStore((s) => s.token)
@@ -44,22 +60,36 @@ function ShippingAddressContent() {
   })
 
   const [errors, setErrors] = useState({})
-  
-  
   const addressFetched = useRef(false)
- 
   const cityFetchController = useRef(null)
 
   useEffect(() => {
     if (!token || addressFetched.current) return
-    
     addressFetched.current = true
+
+    
+    const cached = getAddressFromLocal()
+    if (cached) {
+      setExisting(cached)
+      setForm({
+        full_name: cached.full_name || "",
+        phone_number: cached.phone_number || "",
+        street_address: cached.street_address || "",
+        city: cached.city || "",
+        state: cached.state || "",
+        country: "Nigeria",
+        postal_code: cached.postal_code || "",
+      })
+      if (cached.state) fetchCities(cached.state)
+      setFetching(false)
+    }
+
     
     getShippingAddress(token)
       .then((data) => {
         if (data) {
           setExisting(data)
-          const newForm = {
+          setForm({
             full_name: data.full_name || "",
             phone_number: data.phone_number || "",
             street_address: data.street_address || "",
@@ -67,20 +97,16 @@ function ShippingAddressContent() {
             state: data.state || "",
             country: "Nigeria",
             postal_code: data.postal_code || "",
-          }
-          setForm(newForm)
-          
-          
-          if (data.state) {
-            fetchCities(data.state)
-          }
+          })
+          saveAddressToLocal(data)
+          if (data.state) fetchCities(data.state)
         }
         setFetching(false)
       })
       .catch((err) => {
         if (err.message === "SESSION_EXPIRED") {
           toast.error("Your session has expired. Please log in again.")
-          handleSessionExpiry(router, softLogout, "/profile/shipping")
+          handleSessionExpiry(router, softLogout, redirect || "/profile/shipping")
         }
         setFetching(false)
       })
@@ -88,21 +114,15 @@ function ShippingAddressContent() {
 
   const fetchCities = async (state) => {
     if (!state) return
-    
-    
-    if (cityFetchController.current) {
-      cityFetchController.current.abort()
-    }
-    
-
+    if (cityFetchController.current) cityFetchController.current.abort()
     if (citiesCache.has(state)) {
       setCities(citiesCache.get(state))
       return
     }
-    
+
     setLoadingCities(true)
     cityFetchController.current = new AbortController()
-    
+
     try {
       const res = await fetch(
         `https://nga-states-lga.onrender.com/?state=${encodeURIComponent(state)}`,
@@ -110,14 +130,10 @@ function ShippingAddressContent() {
       )
       const data = await res.json()
       const cityList = data || []
-      
-      
       citiesCache.set(state, cityList)
       setCities(cityList)
     } catch (err) {
-      if (err.name !== 'AbortError') {
-        setCities([])
-      }
+      if (err.name !== "AbortError") setCities([])
     } finally {
       setLoadingCities(false)
       cityFetchController.current = null
@@ -127,10 +143,8 @@ function ShippingAddressContent() {
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: "" }))
-
-   
     if (field === "state") {
-      setForm((prev) => ({ ...prev, city: "" }))
+      setForm((prev) => ({ ...prev, state: value, city: "" }))
       fetchCities(value)
     }
   }
@@ -150,17 +164,20 @@ function ShippingAddressContent() {
 
     setLoading(true)
     try {
+      const addressData = { ...form, country: "Nigeria" }
       if (existing) {
-        await updateShippingAddress({ ...form, country: "Nigeria" }, token)
+        await updateShippingAddress(addressData, token)
       } else {
-        await saveShippingAddress({ ...form, country: "Nigeria" }, token)
+        await saveShippingAddress(addressData, token)
       }
+      
+      saveAddressToLocal(addressData)
       toast.success("Shipping address saved!")
       router.push(redirect || "/profile")
     } catch (err) {
       if (err.message === "SESSION_EXPIRED") {
         toast.error("Your session has expired. Please log in again.")
-        handleSessionExpiry(router, softLogout, "/profile/shipping")
+        handleSessionExpiry(router, softLogout, redirect || "/profile/shipping")
         return
       }
       toast.error(err.message || "Failed to save address")
@@ -183,7 +200,7 @@ function ShippingAddressContent() {
           Shipping Address
         </h1>
 
-        {fetching ? (
+        {fetching && !existing ? (
           <div className="flex flex-col gap-3 animate-pulse">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-12 bg-gray-100 rounded-xl" />
@@ -201,9 +218,7 @@ function ShippingAddressContent() {
                 placeholder="John Doe"
                 className={inputClass("full_name")}
               />
-              {errors.full_name && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.full_name}</p>
-              )}
+              {errors.full_name && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.full_name}</p>}
             </div>
 
             <div>
@@ -215,9 +230,7 @@ function ShippingAddressContent() {
                 placeholder="08012345678"
                 className={inputClass("phone_number")}
               />
-              {errors.phone_number && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.phone_number}</p>
-              )}
+              {errors.phone_number && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.phone_number}</p>}
             </div>
 
             <div>
@@ -229,9 +242,7 @@ function ShippingAddressContent() {
                 placeholder="123 Lekki Phase 1"
                 className={inputClass("street_address")}
               />
-              {errors.street_address && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.street_address}</p>
-              )}
+              {errors.street_address && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.street_address}</p>}
             </div>
 
             <div>
@@ -246,9 +257,7 @@ function ShippingAddressContent() {
                   <option key={state} value={state}>{state}</option>
                 ))}
               </select>
-              {errors.state && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.state}</p>
-              )}
+              {errors.state && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.state}</p>}
             </div>
 
             <div>
@@ -273,14 +282,12 @@ function ShippingAddressContent() {
                   type="text"
                   value={form.city}
                   onChange={(e) => handleChange("city", e.target.value)}
-                  placeholder={form.state ? "No cities found, enter manually" : "Select a state first"}
+                  placeholder={form.state ? "Enter city manually" : "Select a state first"}
                   className={inputClass("city")}
                   disabled={!form.state}
                 />
               )}
-              {errors.city && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.city}</p>
-              )}
+              {errors.city && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.city}</p>}
             </div>
 
             <div>

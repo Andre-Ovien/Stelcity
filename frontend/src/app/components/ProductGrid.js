@@ -56,16 +56,14 @@ function ProductCard({ product }) {
 
   const handleAddToCart = (e) => {
     e.preventDefault()
-    
-  
+
     if (product.type === "service") {
       toast.error("Services cannot be added to cart")
       return
     }
 
-    
-    if (product.type === "raw" && product.variants?.length > 0) {
-      toast("Please select a weight on the product page", { icon: "⚖️" })
+    if (product.type === "raw") {
+      window.location.href = `/rawMaterials/${product.slug}`
       return
     }
 
@@ -135,9 +133,9 @@ function ProductCard({ product }) {
           {product.type !== "service" && (
             <button
               onClick={handleAddToCart}
-              className=" bg-[#D65A5A] flex items-center justify-center gap-1.5 border border-gray-300 rounded-full px-3 py-1.5 text-[11px] text-white font-medium hover:bg-gray-50 transition-colors w-full mt-2 xl:text-base"
+              className="bg-[#D65A5A] flex items-center justify-center gap-1 border border-gray-300 rounded-full px-2 py-1.5 text-[11px] text-white font-medium hover:bg-[#c44f4f] transition-colors w-full mt-2 xl:text-base"
             >
-              Add to Cart
+              {product.type === "raw" ? "Select Weight" : "Add to Cart"}
               <IoAddCircleOutline size={14} className="xl:w-5 xl:h-5" />
             </button>
           )}
