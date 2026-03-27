@@ -175,8 +175,15 @@ REST_FRAMEWORK = {
     ],
 
     "DEFAULT_THROTTLE_RATES": {
-        "login": "3/minute",
-        "register": "5/minute",
+        "login": "5/minute",
+        "register": "10/minute",
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 600,  
     }
 }
 

@@ -14,6 +14,9 @@ from .paystack import initialize_payment, verify_payment
 from .emails import send_order_confirmation, send_payment_failed
 from Notifications.utils import create_notification
 from .utils import get_delivery_fee
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 
 
 # Create your views here.
@@ -38,6 +41,9 @@ class ProductVariantViewSet(generics.ListCreateAPIView):
         serializer.save(product=product)
 
 class ProductViewSet(generics.ListCreateAPIView):
+    @method_decorator(cache_page(60 * 10))  
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
     serializer_class = ProductSerializer
 
     def get_queryset(self):
@@ -55,6 +61,9 @@ class ProductViewSet(generics.ListCreateAPIView):
     
 
 class ProductDetailApiView(generics.RetrieveAPIView):
+    @method_decorator(cache_page(60 * 10))  
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
     queryset = Product.objects.prefetch_related('variants').all()
     serializer_class = ProductSerializer
 
