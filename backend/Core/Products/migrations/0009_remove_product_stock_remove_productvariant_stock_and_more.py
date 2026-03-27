@@ -11,14 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='product',
-            name='stock',
-        ),
-        migrations.RemoveField(
-            model_name='productvariant',
-            name='stock',
-        ),
         migrations.CreateModel(
             name='OrderTracking',
             fields=[
