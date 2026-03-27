@@ -33,21 +33,32 @@ export default function CheckoutPage() {
     address.city?.trim() &&
     address.state?.trim()
 
-  useEffect(() => {
-    if (!token) return
-    getShippingAddress(token)
-      .then((data) => {
-        setAddress(data)
-        setAddressLoading(false)
-      })
-      .catch((err) => {
-        if (err.message === "SESSION_EXPIRED") {
-          toast.error("Your session has expired. Please log in again.")
-          handleSessionExpiry(router, softLogout, "/checkout")
+    useEffect(() => {
+      if (!token) return
+
+      
+      try {
+        const cached = localStorage.getItem("stelcity_shipping_address")
+        if (cached) {
+          setAddress(JSON.parse(cached))
+          setAddressLoading(false)
         }
-        setAddressLoading(false)
-      })
-  }, [token])
+      } catch {}
+
+      
+      getShippingAddress(token)
+        .then((data) => {
+          setAddress(data)
+          setAddressLoading(false)
+        })
+        .catch((err) => {
+          if (err.message === "SESSION_EXPIRED") {
+            toast.error("Your session has expired. Please log in again.")
+            handleSessionExpiry(router, softLogout, "/checkout")
+          }
+          setAddressLoading(false)
+        })
+    }, [token])
 
   useEffect(() => {
     if (!address?.state?.trim() || !address?.city?.trim()) return

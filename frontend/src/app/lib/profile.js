@@ -6,14 +6,12 @@ export async function getShippingAddress(token) {
   try {
     const data = await cachedFetch(
       `${BASE_URL}/api/auth/shipping-address/`,
-      {
-        headers: { "Authorization": `Bearer ${token}` }
-      },
-      10000 
+      { headers: { "Authorization": `Bearer ${token}` } },
+      60000 
     )
     return data
   } catch (err) {
-    if (err.message.includes('401')) throw new Error("SESSION_EXPIRED")
+    if (err.message?.includes("401")) throw new Error("SESSION_EXPIRED")
     return null
   }
 }
