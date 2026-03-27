@@ -12,21 +12,21 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 #            'product',
             'weight', 
             'price', 
-            'stock',
+#            'stock',
         )
 
 class ProductSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
-    total_stock = serializers.SerializerMethodField()
-    in_stock = serializers.SerializerMethodField()
+    # total_stock = serializers.SerializerMethodField()
+    # in_stock = serializers.SerializerMethodField()
 
-    def get_total_stock(self, obj):
-        return obj.total_stock
+    # def get_total_stock(self, obj):
+    #     return obj.total_stock
 
-    def get_in_stock(self, obj):
-        return obj.in_stock
+    # def get_in_stock(self, obj):
+    #     return obj.in_stock
 
     class Meta:
         model = Product
@@ -36,21 +36,21 @@ class ProductSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'price',
-            'stock',
-            'total_stock',
-            'in_stock',
+            # 'stock',
+            # 'total_stock',
+            # 'in_stock',
             'image',
             'variants',
             'created_at',
             'updated_at',
         )
 
-    def validate_stock(self, value):
-        if value is not None and value < 0:
-            raise serializers.ValidationError(
-                "stock must be greater than 1!"
-            )
-        return value
+    # def validate_stock(self, value):
+    #     if value is not None and value < 0:
+    #         raise serializers.ValidationError(
+    #             "stock must be greater than 1!"
+    #         )
+    #     return value
     
     def validate(self, attrs):
         category = attrs.get('category')
@@ -158,15 +158,15 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
                     raise serializers.ValidationError(
                         f"Invalid variant for {product.name}."
                     )
-                if variant.stock < quantity:
-                    raise serializers.ValidationError(
-                        f"Only {variant.stock} units available for {product.name} ({variant.weight})."
-                    )
-            else:
-                if quantity > product.stock:
-                    raise serializers.ValidationError(
-                        f"Only {product.stock} units available for {product.name}."
-                    )
+            #     if variant.stock < quantity:
+            #         raise serializers.ValidationError(
+            #             f"Only {variant.stock} units available for {product.name} ({variant.weight})."
+            #         )
+            # else:
+            #     if quantity > product.stock:
+            #         raise serializers.ValidationError(
+            #             f"Only {product.stock} units available for {product.name}."
+            #         )
                 
             price = variant.price if variant else product.price
 
