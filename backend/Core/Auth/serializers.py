@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
-from .models import User, ShippingAddress
+from .models import User, ShippingAddress, NewsletterSubscriber, Newsletter
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -139,3 +139,16 @@ class ChangePasswordSerializer(serializers.Serializer):
         user.set_password(self.validated_data['new_password'])
         user.save()
         return user
+    
+
+class NewsletterSubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsletterSubscriber
+        fields = ('email',)
+
+    def validate_email(self, value):
+        if NewsletterSubscriber.objects.filter(email=value, is_active=True).exists():
+            raise serializers.ValidationError(
+                "This email is already subscribed."
+            )
+        return value
