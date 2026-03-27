@@ -16,22 +16,22 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    stock = models.PositiveIntegerField(null=True,blank=True)
+#    stock = models.PositiveIntegerField(null=True,blank=True)
     image = models.ImageField(storage=MediaCloudinaryStorage(),upload_to="Stelcity/Products", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def in_stock(self):
-        if self.has_variants():
-            return self.total_stock > 0
-        return self.stock > 0
+    # @property
+    # def in_stock(self):
+    #     if self.has_variants():
+    #         return self.total_stock > 0
+    #     return self.stock > 0
 
-    @property
-    def total_stock(self):
-        if self.has_variants():
-            return sum(v.stock for v in self.variants.all())
-        return self.stock
+    # @property
+    # def total_stock(self):
+    #     if self.has_variants():
+    #         return sum(v.stock for v in self.variants.all())
+    #     return self.stock
 
     def has_variants(self):
         return self.category == self.CategoryChoices.RAW_MATERIAL
@@ -43,7 +43,7 @@ class ProductVariant(models.Model):
     product = models.ForeignKey(Product,related_name="variants",on_delete=models.CASCADE)
     weight = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10,decimal_places=2)
-    stock = models.PositiveIntegerField()
+#    stock = models.PositiveIntegerField()
 
     def __str__(self):
         return f"{self.product.name} - {self.weight}"

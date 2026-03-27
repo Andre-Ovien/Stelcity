@@ -172,13 +172,13 @@ class PaystackWebhookView(APIView):
                     message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
                 )
 
-                for item in payment.order.items.select_related('product', 'variant').all():
-                    if item.variant:
-                        item.variant.stock -= item.quantity
-                        item.variant.save()
-                    else:
-                        item.product.stock -= item.quantity
-                        item.product.save()
+                # for item in payment.order.items.select_related('product', 'variant').all():
+                #     if item.variant:
+                #         item.variant.stock -= item.quantity
+                #         item.variant.save()
+                #     else:
+                #         item.product.stock -= item.quantity
+                #         item.product.save()
 
                 send_order_confirmation(payment.order)
 
