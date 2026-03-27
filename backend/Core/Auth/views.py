@@ -1,12 +1,13 @@
 from django.shortcuts import render
-from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, ShippingAddressSerializer, ChangePasswordSerializer
+from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, ShippingAddressSerializer, ChangePasswordSerializer, NewsletterSubscriberSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from .throttles import LoginRateThrottle, RegisterRateThrottle
-from rest_framework.permissions import IsAuthenticated
-from .models import ShippingAddress
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .models import ShippingAddress, NewsletterSubscriber, Newsletter
+from .emails import send_welcome_newsletter
 
 # Create your views here.
 
@@ -94,4 +95,21 @@ class ChangePasswordView(generics.GenericAPIView):
                 "detail": "Password changed successfully."
             },
             status=status.HTTP_200_OK
+        )
+    
+
+class NewsletterSubscribeView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = NewsletterSubscriberSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        subscriber = serializer.save()
+        send_welcome_newsletter(subscriber.email)
+        return Response(
+            {
+                "detail": "Successfully subscribed!"
+            },
+            status=status.HTTP_201_CREATED
         )
