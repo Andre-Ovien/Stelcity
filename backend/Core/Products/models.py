@@ -151,3 +151,26 @@ class DeliverySettings(models.Model):
 
     def __str__(self):
         return f"Default delivery fee: ₦{self.default_fee}"
+
+
+class OrderTracking(models.Model):
+    class StatusChoices(models.TextChoices):
+        PROCESSING = 'processing', 'Processing'
+        DISPATCHED = 'dispatched', 'Dispatched'
+        OUT_FOR_DELIVERY = 'out_for_delivery', 'Out for Delivery'
+        DELIVERED = 'delivered', 'Delivered'
+
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name='tracking_updates'
+    )
+    status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PROCESSING)
+    note = models.TextField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"Order {self.order.order_id} — {self.status}"
