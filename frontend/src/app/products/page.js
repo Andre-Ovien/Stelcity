@@ -78,10 +78,10 @@ export default function ProductsPage() {
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
 
   return (
-    <div className="min-h-screen bg-white my-6">
+    <div className="min-h-screen bg-white my-0">
       <Header />
 
-      <div className="px-4 pb-10 pt-6">
+      <div className="px-4 pb-10 ">
 
         <h1 className="text-[20px] font-bold text-gray-900 text-center mb-4  xl:text-3xl ">
           Shop Our Products

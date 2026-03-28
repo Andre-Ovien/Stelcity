@@ -96,10 +96,10 @@ export default function TrainingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3] py-6">
+    <div className="min-h-screen bg-[#D6E4D3] py-0">
       <Header />
 
-      <div className="px-4 pb-10 max-w-4xl mx-auto pt-6">
+      <div className="px-4 pb-10 max-w-4xl mx-auto ">
         <h1 className="text-[24px] sm:text-[28px] font-bold text-gray-900 text-center mb-2">
           Advanced Training Content
         </h1>

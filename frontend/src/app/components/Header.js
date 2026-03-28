@@ -39,10 +39,10 @@ const Header = () => {
   }
 
   return (
-    <div className="w-full px-4  xl:px-7  2xl:px-10">
-      <div>
-        <div className="bg-white rounded-2xl shadow-lg px-4 py-3 flex items-center justify-between 2xl:rounded-3xl 2xl:px-6">
-
+    <>
+      
+      <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+        <div className="flex items-center justify-between max-w-full px-4 py-3">
           
           <Link href="/">
             <Image
@@ -54,7 +54,7 @@ const Header = () => {
             />
           </Link>
 
-         
+          
           <nav className="hidden sm:flex items-center gap-4 lg:gap-6 xl:gap-8 2xl:gap-10">
             {NAV_LINKS.map((item) => (
               <Link
@@ -71,6 +71,7 @@ const Header = () => {
             ))}
           </nav>
 
+          
           <div className="flex items-center gap-4 lg:gap-6 xl:gap-8 2xl:gap-10">
 
             <Link href="/cart" className="relative">
@@ -82,7 +83,6 @@ const Header = () => {
               )}
             </Link>
 
-            
             <button
               onClick={handleProfileClick}
               className="hidden sm:block text-sm lg:text-base xl:text-lg 2xl:text-xl bg-[#D65A5A] text-white px-4 lg:px-5 xl:px-6 2xl:px-7 py-1.5 lg:py-2 xl:py-2.5 2xl:py-3 rounded-xl hover:bg-[#c44f4f] transition"
@@ -90,49 +90,50 @@ const Header = () => {
               {isAuth ? "Settings" : "Login"}
             </button>
 
-            
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="sm:hidden"
             >
               {menuOpen
                 ? <IoClose size={24} />
-                : <GiHamburgerMenu size={22}
-              />}
+                : <GiHamburgerMenu size={22} />}
             </button>
           </div>
         </div>
+
+        
+        {menuOpen && (
+          <div className="sm:hidden mt-2 bg-white shadow-md px-5 py-5 flex flex-col gap-4">
+            {NAV_LINKS.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className={`text-sm ${
+                  pathname === item.href
+                    ? "text-[#D65A5A] font-semibold"
+                    : "text-gray-700"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <div className="border-t pt-3">
+              <button
+                onClick={handleProfileClick}
+                className="text-sm text-gray-700"
+              >
+                {isAuth ? "Settings" : "Login / Register"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       
-      {menuOpen && (
-        <div className="sm:hidden max-w-7xl xl:max-w-screen-xl 2xl:max-w-screen-2xl mx-auto mt-2 bg-white rounded-2xl shadow-md px-5 py-5 flex flex-col gap-4 xl:gap-5 2xl:gap-6">
-          {NAV_LINKS.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-              className={`text-sm lg:text-base xl:text-lg 2xl:text-xl ${
-                pathname === item.href
-                  ? "text-[#D65A5A] font-semibold"
-                  : "text-gray-700"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-
-          <div className="border-t pt-3">
-            <button
-              onClick={handleProfileClick}
-              className="text-sm lg:text-base xl:text-lg 2xl:text-xl text-gray-700"
-            >
-              {isAuth ? "Settings" : "Login / Register"}
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+      <div className="h-22.5" />
+    </>
   )
 }
 

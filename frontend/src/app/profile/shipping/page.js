@@ -192,10 +192,10 @@ function ShippingAddressContent() {
     }`
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#D6E4D3] my-0">
       <Header />
 
-      <div className="px-4 pb-10 pt-6">
+      <div className="px-4 pb-10 ">
         <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
           Shipping Address
         </h1>

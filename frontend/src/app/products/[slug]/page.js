@@ -68,10 +68,10 @@ export default function ProductDetailPage({ params }) {
   )
 
   return (
-    <div className="min-h-screen bg-white my-6">
+    <div className="min-h-screen bg-white my-0">
       <Header />
 
-      <div className="px-4 pb-24 pt-6">
+      <div className="px-4 pb-24">
 
         <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4">
           <Image

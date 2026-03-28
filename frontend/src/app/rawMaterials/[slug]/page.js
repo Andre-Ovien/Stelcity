@@ -67,24 +67,24 @@ export default function RawMaterialDetailPage({ params }) {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-white my-6">
+    <div className="min-h-screen bg-white my-0">
       <Header/>
       <ProductDetailSkeleton />
     </div>
   )
 
   if (!product) return (
-    <div className="min-h-screen bg-white my-6">
+    <div className="min-h-screen bg-white my-0">
       <Header />
-      <div className="text-center py-20 text-gray-400 mt-6">Product not found</div>
+      <div className="text-center py-20 text-gray-400 ">Product not found</div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-white my-6">
+    <div className="min-h-screen bg-white my-0">
       <Header />
 
-      <div className="px-4 pb-24 mt-6">
+      <div className="px-4 pb-24">
 
         <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4">
           <Image

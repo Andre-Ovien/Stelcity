@@ -112,10 +112,10 @@ export default function ServicesPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white py-6">
+    <div className="min-h-screen bg-white py-0">
       <Header />
 
-      <div className="px-4 pb-10 mt-6">
+      <div className="px-4 pb-10">
         <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6">
           Our Services
         </h1>

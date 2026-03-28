@@ -123,7 +123,7 @@ export default function OrdersPage() {
     : (Array.isArray(orders) ? orders : []).filter((o) => o.status === filter)
 
   return (
-    <div className="min-h-screen bg-white my-6">
+    <div className="min-h-screen bg-[#D6E4D3] my-0">
       <Header />
 
       <div className="px-4 pb-10">

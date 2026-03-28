@@ -8,21 +8,21 @@ const testimonials = [
     name: "Esther",
     color: "bg-[#b8a1f8]",
     rotate: -6,
-    text: "The quality of the ingredients is top-notch! My formulations have never been more stable and effective.",
+    text:  "I tried their body wash and also got a massage session. Everything felt premium and relaxing. I’ll definitely be coming back.",
   },
   {
     id: 2,
     name: "Rachel",
     color: "bg-[#98d67e]",
     rotate: 6,
-    text: "The quality of the ingredients is top-notch! My formulations have never been more stable and effective.",
+    text:  "I ordered raw materials for my skincare line and the quality was exactly what I needed. My products feel better and last longer now.",
   },
   {
     id: 3,
     name: "Mercy",
     color: "bg-[#e94a86]",
     rotate: -6,
-    text: "The quality of the ingredients is top-notch! My formulations have never been more stable and effective.",
+    text: "I`ve been using the face serum and the glass skin set for a few weeks. My skin looks brighter and feels smoother. It absorbs well and doesn’t feel heavy.",
   },
 ]
 
