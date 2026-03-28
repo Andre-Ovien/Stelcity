@@ -44,6 +44,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -237,4 +238,79 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'ERROR',
     },
+}
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Stelcity Admin",
+    "site_header": "Stelcity",
+    "site_brand": "Stelcity",
+    "site_logo": "https://stelcity.vercel.app/images/logo.png",
+    "welcome_sign": "Welcome to Stelcity Admin",
+    "copyright": "Stelcity Ltd",
+
+    # top menu
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index"},
+        {"name": "View Site", "url": "https://stelcity.vercel.app", "new_window": True},
+    ],
+
+    # side menu
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "Auth.user": "fas fa-user",
+        "Products.product": "fas fa-box",
+        "Products.productvariant": "fas fa-boxes",
+        "Products.order": "fas fa-shopping-cart",
+        "Products.orderitem": "fas fa-list",
+        "Products.payment": "fas fa-credit-card",
+        "Products.deliveryzone": "fas fa-truck",
+        "Products.deliverysettings": "fas fa-cog",
+        "Products.newslettersubscriber": "fas fa-envelope",
+        "Products.newsletter": "fas fa-paper-plane",
+        "Products.ordertracking": "fas fa-map-marker-alt",
+        "Services.service": "fas fa-concierge-bell",
+        "Services.servicecategory": "fas fa-tags",
+        "Notifications.notification": "fas fa-bell",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    # UI tweaks
+    "related_modal_active": True,
+    "custom_css": None,
+    "custom_js": None,
+    "show_ui_builder": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-success",
+    "accent": "accent-teal",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-teal",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    }
 }
