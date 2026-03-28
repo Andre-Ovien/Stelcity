@@ -39,7 +39,7 @@ def reverse_seed(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('Products', '0010_previous_migration'),  # update this to your latest migration
+        ('Products', '0010_alter_ordertracking_status'),  
     ]
 
     operations = [
