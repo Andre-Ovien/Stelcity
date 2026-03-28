@@ -1,6 +1,6 @@
 "use client"
 export const dynamic = 'force-dynamic'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Pencil } from "lucide-react"
@@ -18,12 +18,16 @@ export default function CheckoutPage() {
   const items = useCartStore((s) => s.items)
   const token = useAuthStore((s) => s.token)
   const softLogout = useAuthStore((s) => s.softLogout)
+  const isAuth = useAuthStore((s) => s.isAuth)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [address, setAddress] = useState(null)
   const [addressLoading, setAddressLoading] = useState(true)
   const [deliveryFee, setDeliveryFee] = useState(null)
   const [deliveryLoading, setDeliveryLoading] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
+
+  const addressFetched = useRef(false)
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const total = subtotal + (deliveryFee || 0)
@@ -33,69 +37,80 @@ export default function CheckoutPage() {
     address.city?.trim() &&
     address.state?.trim()
 
-    useEffect(() => {
-      if (!token) return
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setHydrated(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
 
-      
-      try {
-        const cached = localStorage.getItem("stelcity_shipping_address")
-        if (cached) {
-          setAddress(JSON.parse(cached))
-          setAddressLoading(false)
+  
+  useEffect(() => {
+    if (!token || addressFetched.current) return
+    addressFetched.current = true
+
+    getShippingAddress(token)
+      .then((data) => {
+        setAddress(data)
+        setAddressLoading(false)
+      })
+      .catch((err) => {
+        if (err.message === "SESSION_EXPIRED") {
+          toast.error("Your session has expired. Please log in again.")
+          handleSessionExpiry(router, softLogout, "/checkout")
         }
-      } catch {}
+        setAddressLoading(false)
+      })
+  }, [token])
 
-      
-      getShippingAddress(token)
-        .then((data) => {
-          setAddress(data)
-          setAddressLoading(false)
-        })
-        .catch((err) => {
-          if (err.message === "SESSION_EXPIRED") {
-            toast.error("Your session has expired. Please log in again.")
-            handleSessionExpiry(router, softLogout, "/checkout")
-          }
-          setAddressLoading(false)
-        })
-    }, [token])
 
   useEffect(() => {
-    if (!address?.state?.trim() || !address?.city?.trim()) return
+    if (!address?.state?.trim() || !address?.city?.trim()) {
+      setDeliveryFee(null)
+      return
+    }
 
-    const cacheKey = `${address.state}-${address.city}`.toLowerCase()
-    const cached = sessionStorage.getItem(`delivery_fee_${cacheKey}`)
-    if (cached) {
+    const stateKey = address.state.toLowerCase().trim()
+    const cityKey = address.city.toLowerCase().trim()
+    const cacheKey = `delivery_fee_${stateKey}_${cityKey}`
+
+    const cached = sessionStorage.getItem(cacheKey)
+    if (cached !== null) {
       setDeliveryFee(Number(cached))
       return
     }
 
     setDeliveryLoading(true)
-    fetch(
-      `${BASE_URL}/api/products/delivery-fee/?state=${encodeURIComponent(address.state.toLowerCase())}&city=${encodeURIComponent(address.city.toLowerCase())}`
-    )
+    fetch(`${BASE_URL}/api/products/delivery-fee/?state=${encodeURIComponent(stateKey)}&city=${encodeURIComponent(cityKey)}`)
       .then((res) => res.json())
       .then((data) => {
         const fee = typeof data.delivery_fee === "number" ? data.delivery_fee : 0
         setDeliveryFee(fee)
-        sessionStorage.setItem(`delivery_fee_${cacheKey}`, fee)
+        sessionStorage.setItem(cacheKey, String(fee))
         setDeliveryLoading(false)
       })
       .catch(() => {
         setDeliveryFee(0)
         setDeliveryLoading(false)
       })
-  }, [address])
+  }, [address?.state, address?.city])
 
   const handlePay = async () => {
-    if (!hasValidAddress) {
-      toast.error("Please add a shipping address first")
-      router.push("/profile/shipping?redirect=/checkout")
+    
+    if (!token || !isAuth) {
+      toast.error("Your session has expired. Please log in again.")
+      handleSessionExpiry(router, softLogout, "/checkout")
       return
     }
 
     if (items.length === 0) {
       toast.error("Your cart is empty")
+      router.push("/products")
+      return
+    }
+
+    if (!hasValidAddress) {
+      toast.error("Please add a shipping address first")
+      router.push("/profile/shipping?redirect=/checkout")
       return
     }
 
@@ -108,18 +123,14 @@ export default function CheckoutPage() {
             : parseInt(item.id),
           quantity: item.quantity,
         }
-        if (item.variantId) {
-          obj.variant_id = item.variantId
-        }
+        if (item.variantId) obj.variant_id = item.variantId
         return obj
       })
 
-      const data = await createCheckout(
-        orderItems,
-        token,
-        address.state,
-        address.city
-      )
+      const data = await createCheckout(orderItems, token, address.state, address.city)
+
+      if (!data.authorization_url) throw new Error("Payment initialization failed")
+
       window.location.href = data.authorization_url
 
     } catch (err) {
@@ -155,6 +166,18 @@ export default function CheckoutPage() {
     )
   }
 
+  
+  if (!hydrated) {
+    return (
+      <div className="min-h-screen bg-[#D6E4D3]">
+        <Header />
+        <div className="flex items-center justify-center py-24">
+          <div className="w-8 h-8 rounded-full border-2 border-[#D65A5A] border-t-transparent animate-spin" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#D6E4D3] py-6">
       <Header />
@@ -164,6 +187,7 @@ export default function CheckoutPage() {
           Checkout
         </h1>
 
+        
         <div className="bg-white rounded-2xl overflow-hidden mb-4">
           <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
             <h2 className="text-[14px] font-semibold text-gray-800">Shipping Info</h2>
@@ -195,15 +219,17 @@ export default function CheckoutPage() {
                 <span className="text-[12px] text-gray-400 w-24 shrink-0">State</span>
                 <span className="text-[12px] text-gray-700">{address.state}</span>
               </div>
-              <div className="flex gap-2">
-                <span className="text-[12px] text-gray-400 w-24 shrink-0">Postal Code</span>
-                <span className="text-[12px] text-gray-700">{address.postal_code}</span>
-              </div>
+              {address.postal_code && (
+                <div className="flex gap-2">
+                  <span className="text-[12px] text-gray-400 w-24 shrink-0">Postal Code</span>
+                  <span className="text-[12px] text-gray-700">{address.postal_code}</span>
+                </div>
+              )}
             </div>
           ) : (
             <button
               onClick={() => router.push("/profile/shipping?redirect=/checkout")}
-              className="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+              className="w-full px-4 py-4 flex items-center text-left hover:bg-gray-50 transition-colors"
             >
               <span className="text-[13px] text-[#D65A5A] font-medium">
                 + Add shipping address
@@ -212,23 +238,17 @@ export default function CheckoutPage() {
           )}
         </div>
 
+        
         <div className="bg-white rounded-2xl overflow-hidden mb-4">
           <div className="px-4 py-3 border-b border-gray-100">
             <h2 className="text-[14px] font-semibold text-gray-800">Order Summary</h2>
           </div>
-
           <div className="divide-y divide-gray-50">
             {items.map((item) => (
               <div key={item.id} className="flex items-center gap-3 px-4 py-3">
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gray-50 shrink-0">
                   {item.image ? (
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      className="object-cover"
-                      sizes="48px"
-                    />
+                    <Image src={item.image} alt={item.name} fill className="object-cover" sizes="48px" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-[#EEF5EE]">
                       <span className="text-[18px]">✨</span>
@@ -237,9 +257,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium text-gray-800 truncate">{item.name}</p>
-                  {item.variant && (
-                    <p className="text-[11px] text-gray-400">{item.variant}</p>
-                  )}
+                  {item.variant && <p className="text-[11px] text-gray-400">{item.variant}</p>}
                   <p className="text-[11px] text-gray-500">x{item.quantity}</p>
                 </div>
                 <p className="text-[13px] font-semibold text-gray-800 shrink-0">
@@ -250,12 +268,11 @@ export default function CheckoutPage() {
           </div>
         </div>
 
+        
         <div className="bg-white rounded-2xl px-5 py-4 mb-4 flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <span className="text-[13px] text-gray-500">Subtotal</span>
-            <span className="text-[13px] text-gray-700 font-medium">
-              ₦{subtotal.toLocaleString()}
-            </span>
+            <span className="text-[13px] text-gray-700 font-medium">₦{subtotal.toLocaleString()}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-[13px] text-gray-500">Delivery</span>
@@ -273,9 +290,7 @@ export default function CheckoutPage() {
             {deliveryLoading ? (
               <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
             ) : (
-              <span className="text-[15px] font-bold text-[#D65A5A]">
-                ₦{total.toLocaleString()}
-              </span>
+              <span className="text-[15px] font-bold text-[#D65A5A]">₦{total.toLocaleString()}</span>
             )}
           </div>
         </div>
@@ -290,7 +305,7 @@ export default function CheckoutPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 z-50">
         <button
           onClick={handlePay}
-          disabled={loading || addressLoading || deliveryLoading}
+          disabled={loading || deliveryLoading}
           className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60"
         >
           {loading ? "Processing..." : `Pay ₦${total.toLocaleString()}`}

@@ -18,6 +18,7 @@ const statusColors = {
 }
 
 function OrderCard({ order }) {
+  const router = useRouter()
   const date = new Date(order.created_at).toLocaleDateString("en-NG", {
     day: "numeric",
     month: "short",
@@ -25,6 +26,7 @@ function OrderCard({ order }) {
   })
 
   const colors = statusColors[order.status] || { bg: "bg-gray-100", text: "text-gray-600" }
+  const canTrack = order.status === "Confirmed"
 
   return (
     <div className="bg-white rounded-2xl px-4 py-4 flex flex-col gap-2 border border-gray-100">
@@ -54,6 +56,15 @@ function OrderCard({ order }) {
           </p>
         </div>
       </div>
+
+      {canTrack && (
+        <button
+          onClick={() => router.push(`/profile/orders/${order.order_id}/tracking`)}
+          className="w-full border border-[#D65A5A] text-[#D65A5A] text-[12px] font-medium py-2 rounded-full hover:bg-[#D65A5A] hover:text-white transition-colors mt-1"
+        >
+          Track Order
+        </button>
+      )}
     </div>
   )
 }
@@ -115,7 +126,7 @@ export default function OrdersPage() {
     <div className="min-h-screen bg-white my-6">
       <Header />
 
-      <div className="px-4 pb-10 pt-6">
+      <div className="px-4 pb-10">
         <button
           onClick={() => router.back()}
           className="flex items-center gap-1 text-gray-600 text-[13px] mb-4 hover:text-gray-900 transition-colors"
@@ -157,8 +168,7 @@ export default function OrdersPage() {
             <p className="text-[13px] text-gray-400 text-center">
               {filter === "All"
                 ? "Your orders will appear here once you make a purchase."
-                : `You have no orders with status "${filter}".`
-              }
+                : `You have no orders with status "${filter}".`}
             </p>
           </div>
         ) : (
