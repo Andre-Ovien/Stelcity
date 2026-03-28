@@ -1,21 +1,13 @@
-import { cachedFetch } from './apiCache'
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 export async function getShippingAddress(token) {
-  try {
-    const data = await cachedFetch(
-      `${BASE_URL}/api/auth/shipping-address/`,
-      { headers: { "Authorization": `Bearer ${token}` } },
-      60000 
-    )
-    return data
-  } catch (err) {
-    if (err.message?.includes("401")) throw new Error("SESSION_EXPIRED")
-    return null
-  }
+  const res = await fetch(`${BASE_URL}/api/auth/shipping-address/`, {
+    headers: { "Authorization": `Bearer ${token}` }
+  })
+  if (res.status === 401) throw new Error("SESSION_EXPIRED")
+  if (!res.ok) return null
+  return await res.json()
 }
-
 
 export async function saveShippingAddress(addressData, token) {
   const res = await fetch(`${BASE_URL}/api/auth/shipping-address/`, {
@@ -29,6 +21,12 @@ export async function saveShippingAddress(addressData, token) {
   if (res.status === 401) throw new Error("SESSION_EXPIRED")
   const data = await res.json()
   if (!res.ok) throw new Error(data.detail || "Failed to save address")
+  
+  
+  try {
+    localStorage.removeItem("stelcity_shipping_address")
+  } catch {}
+  
   return data
 }
 
@@ -44,6 +42,12 @@ export async function updateShippingAddress(addressData, token) {
   if (res.status === 401) throw new Error("SESSION_EXPIRED")
   const data = await res.json()
   if (!res.ok) throw new Error(data.detail || "Failed to update address")
+  
+
+  try {
+    localStorage.removeItem("stelcity_shipping_address")
+  } catch {}
+  
   return data
 }
 
