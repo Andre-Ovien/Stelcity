@@ -244,9 +244,13 @@ JAZZMIN_SETTINGS = {
     "site_title": "Stelcity Admin",
     "site_header": "Stelcity",
     "site_brand": "Stelcity",
-    "site_logo": "https://stelcity.vercel.app/images/logo.png",
+    "site_logo": "https://res.cloudinary.com/dpbbkluvw/image/upload/v1774696610/WhatsApp_Image_2026-03-28_at_05.14.34_w4pf5j.jpg",
     "welcome_sign": "Welcome to Stelcity Admin",
     "copyright": "Stelcity Ltd",
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+    },
 
     # top menu
     "topmenu_links": [
@@ -290,14 +294,14 @@ JAZZMIN_UI_TWEAKS = {
     "body_small_text": False,
     "brand_small_text": False,
     "brand_colour": "navbar-success",
-    "accent": "accent-teal",
-    "navbar": "navbar-dark",
+    "accent": "accent-success",
+    "navbar": "navbar-success navbar-dark",
     "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-teal",
+    "sidebar": "sidebar-dark-success",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": True,
@@ -306,8 +310,8 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_flat_style": False,
     "theme": "default",
     "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
+        "primary": "btn-success",
+        "secondary": "btn-outline-success",
         "info": "btn-info",
         "warning": "btn-warning",
         "danger": "btn-danger",
