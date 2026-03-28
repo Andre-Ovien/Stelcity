@@ -11,18 +11,18 @@ def seed_delivery_data(apps, schema_editor):
 
     # Lagos areas
     DeliveryZone.objects.bulk_create([
-        DeliveryZone(state='Lagos', area='Ikorodu', fee=6000),
-        DeliveryZone(state='Lagos', area='Ikeja', fee=5000),
-        DeliveryZone(state='Lagos', area='Ajah', fee=7000),
-        DeliveryZone(state='Lagos', area=None, fee=5000),  # Lagos default
+        DeliveryZone(state='Lagos', city='Ikorodu', fee=6000),
+        DeliveryZone(state='Lagos', city='Ikeja', fee=5000),
+        DeliveryZone(state='Lagos', city='Ajah', fee=7000),
+        DeliveryZone(state='Lagos', city=None, fee=5000),  # Lagos default
     ])
 
     # Other states
     DeliveryZone.objects.bulk_create([
-        DeliveryZone(state='Abuja', area=None, fee=8000),
-        DeliveryZone(state='Kaduna', area=None, fee=8000),
-        DeliveryZone(state='Lokoja', area=None, fee=9000),
-        DeliveryZone(state='Delta', area=None, fee=8000),
+        DeliveryZone(state='FCT-Abuja', city=None, fee=8000),
+        DeliveryZone(state='Kaduna', city=None, fee=8000),
+        DeliveryZone(state='Kogi', city=None, fee=9000),
+        DeliveryZone(state='Delta', city=None, fee=8000),
     ])
 
     # global default for unlisted states
