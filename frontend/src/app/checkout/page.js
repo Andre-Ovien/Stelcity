@@ -179,7 +179,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3] py-6">
+    <div className="min-h-screen bg-[#D6E4D3] py-0">
       <Header />
 
       <div className="px-4 pb-36">
@@ -299,6 +299,10 @@ export default function CheckoutPage() {
           <p className="text-[13px] text-gray-500 text-center leading-relaxed">
             You will be redirected to Paystack to complete your payment securely.
           </p>
+        </div>
+        
+        <div className="fixed bottom-16 left-0 right-0 bg-gray-50 text-gray-600 text-[12px] text-center py-2 px-4 border-t border-b border-gray-200 z-50">
+          Estimated Delivery: Lagos – within 24 hours.<br/> Outside Lagos – 2–3 business days.
         </div>
       </div>
 

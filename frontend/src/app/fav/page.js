@@ -108,10 +108,10 @@ export default function FavouritesPage() {
   const items = useFavStore((s) => s.items)
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3] py-6">
+    <div className="min-h-screen bg-white py-0">
       <Header />
 
-      <div className="px-4 pb-10 pt-6">
+      <div className="px-4 pb-10">
         <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6">
           My Favourites
         </h1>
