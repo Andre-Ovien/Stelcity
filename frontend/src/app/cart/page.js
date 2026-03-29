@@ -13,13 +13,7 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
     <div className="bg-white rounded-2xl px-4 py-3 flex items-center gap-3">
       <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-gray-50 shrink-0">
         {item.image ? (
-          <Image
-            src={item.image}
-            alt={item.name}
-            fill
-            className="object-cover"
-            sizes="64px"
-          />
+          <Image src={item.image} alt={item.name} fill className="object-cover" sizes="64px" />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-[#EEF5EE]">
             <span className="text-[24px]">✨</span>
@@ -54,32 +48,19 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
 
         <div className="flex items-center gap-2 mt-2">
           <button
-            onClick={() => {
-              if (item.quantity === 1) {
-                onRemove()
-              } else {
-                onUpdateQuantity(item.quantity - 1)
-              }
-            }}
+            onClick={() => item.quantity === 1 ? onRemove() : onUpdateQuantity(item.quantity - 1)}
             className="w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 text-[14px] font-medium hover:bg-gray-50"
           >
             −
           </button>
-
-          <span className="text-[13px] font-semibold w-4 text-center">
-            {item.quantity}
-          </span>
-
+          <span className="text-[13px] font-semibold w-4 text-center">{item.quantity}</span>
           <button
             onClick={() => onUpdateQuantity(item.quantity + 1)}
             className="w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 text-[16px] font-medium hover:bg-gray-50"
           >
             +
           </button>
-
-          {!item.variant && (
-            <span className="text-[11px] text-gray-400 ml-1">qty</span>
-          )}
+          {!item.variant && <span className="text-[11px] text-gray-400 ml-1">qty</span>}
         </div>
       </div>
     </div>
@@ -93,27 +74,18 @@ export default function CartPage() {
   const isAuth = useAuthStore((s) => s.isAuth)
   const router = useRouter()
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  )
-
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const total = subtotal
 
   const handleCheckout = () => {
     if (!isAuth) {
-      toast.error("Please sign in to proceed to checkout", {
-        duration: 2000,
-      })
-
+      toast.error("Please sign in to proceed to checkout", { duration: 2000 })
       setTimeout(() => {
         sessionStorage.setItem("redirectAfter", "/checkout")
         router.push("/auth")
       }, 1500)
-
       return
     }
-
     router.push("/checkout")
   }
 
@@ -121,22 +93,13 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-[#D6E4D3] py-0">
         <Header />
-
         <div className="flex flex-col items-center justify-center py-24 px-6 gap-4">
           <span className="text-[60px]">🛒</span>
-
-          <h2 className="text-[18px] font-bold text-gray-800">
-            Your cart is empty
-          </h2>
-
+          <h2 className="text-[18px] font-bold text-gray-800">Your cart is empty</h2>
           <p className="text-[13px] text-gray-500 text-center">
-            You haven`t added anything yet. Start shopping!
+            You haven't added anything yet. Start shopping!
           </p>
-
-          <Link
-            href="/products"
-            className="bg-[#D65A5A] text-white font-semibold px-8 py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors"
-          >
+          <Link href="/products" className="bg-[#D65A5A] text-white font-semibold px-8 py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors">
             Shop Now
           </Link>
         </div>
@@ -148,42 +111,48 @@ export default function CartPage() {
     <div className="min-h-screen bg-[#D6E4D3] py-0">
       <Header />
 
-      <div className="px-4 pb-36">
-        <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6">
-          My Cart
-        </h1>
+      <div className="px-4 pb-36 md:pb-20 md:px-10 flex flex-col md:flex-row md:justify-center md:gap-8 md:items-start max-w-6xl mx-auto">
+        <div className="flex-1 w-full max-w-md md:max-w-xl">
+          <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6 md:text-left">
+            My Cart
+          </h1>
 
-        <div className="flex flex-col gap-3">
-          {items.map((item) => (
-            <CartItem
-              key={item.id}
-              item={item}
-              onRemove={() => removeItem(item.id)}
-              onUpdateQuantity={(qty) => updateQuantity(item.id, qty)}
-            />
-          ))}
+          <div className="flex flex-col gap-3">
+            {items.map((item) => (
+              <CartItem
+                key={item.id}
+                item={item}
+                onRemove={() => removeItem(item.id)}
+                onUpdateQuantity={(qty) => updateQuantity(item.id, qty)}
+              />
+            ))}
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl px-5 py-4 mt-5 flex flex-col gap-2">
-          <div className="flex justify-between items-center">
-            <span className="text-[13px] text-gray-500">Subtotal</span>
-            <span className="text-[13px] text-gray-700 font-medium">
-              ₦{subtotal.toLocaleString()}
-            </span>
+        <div className="bg-white rounded-2xl px-5 py-4 mt-5 md:mt-[58px] md:w-80 md:shrink-0 flex flex-col">
+          <div className="flex flex-col gap-3">
+            <h2 className="text-[16px] font-bold text-gray-800 mb-3">Order Summary</h2>
+            <div className="flex justify-between items-center">
+              <span className="text-[13px] text-gray-500">Subtotal</span>
+              <span className="text-[13px] text-gray-700 font-medium">₦{subtotal.toLocaleString()}</span>
+            </div>
+            <div className="h-px bg-gray-100 my-1" />
+            <div className="flex justify-between items-center">
+              <span className="text-[15px] font-bold text-gray-900">Total</span>
+              <span className="text-[15px] font-bold text-[#D65A5A]">₦{total.toLocaleString()}</span>
+            </div>
           </div>
 
-          <div className="h-px bg-gray-100 my-1" />
-
-          <div className="flex justify-between items-center">
-            <span className="text-[15px] font-bold text-gray-900">Total</span>
-            <span className="text-[15px] font-bold text-[#D65A5A]">
-              ₦{total.toLocaleString()}
-            </span>
-          </div>
+          <button
+            onClick={handleCheckout}
+            className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors mt-6 hidden md:block"
+          >
+            Proceed to Checkout
+          </button>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 flex flex-col gap-2 z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 flex flex-col gap-2 md:hidden z-50">
         <button
           onClick={handleCheckout}
           className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors"
@@ -191,10 +160,7 @@ export default function CartPage() {
           Proceed to Checkout
         </button>
 
-        <Link
-          href="/products"
-          className="text-[13px] text-gray-500 text-center hover:text-gray-800 transition-colors"
-        >
+        <Link href="/products" className="text-[13px] text-gray-500 text-center hover:text-gray-800 transition-colors">
           Continue shopping
         </Link>
       </div>

@@ -29,7 +29,7 @@ const testimonials = [
 const ClientReviews= () => {
   return (
     <section className="bg-[#d5e4cc] py-10 px-4 flex flex-col items-center w-full overflow-hidden">
-      <h2 className="text-[26px] sm:text-[32px] md:text-[40px] font-black mb-10 text-center">
+      <h2 className="text-[26px] sm:text-[32px] md:text-[40px]  mb-10 text-center">
         What Our Clients Say
       </h2>
 
