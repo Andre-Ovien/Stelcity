@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+from django.urls import reverse_lazy
 from decouple import config
 from datetime import timedelta
 import dj_database_url
@@ -44,7 +45,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -213,7 +214,10 @@ PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -240,81 +244,28 @@ LOGGING = {
     },
 }
 
-JAZZMIN_SETTINGS = {
-    "site_title": "Stelcity Admin",
-    "site_header": "Stelcity",
-    "site_brand": "Stelcity",
-    "site_logo": "https://res.cloudinary.com/dpbbkluvw/image/upload/v1774696610/WhatsApp_Image_2026-03-28_at_05.14.34_w4pf5j.jpg",
-    "welcome_sign": "Welcome to Stelcity Admin",
-    "copyright": "Stelcity Ltd",
-    "changeform_format": "horizontal_tabs",
-    "changeform_format_overrides": {
-        "auth.user": "collapsible",
+def get_logo(request):
+    return "https://res.cloudinary.com/dpbbkluvw/image/upload/v1774696610/WhatsApp_Image_2026-03-28_at_05.14.34_w4pf5j.jpg"
+
+UNFOLD = {
+    "SITE_TITLE": "Stelcity Admin",
+    "SITE_HEADER": "Stelcity",
+    "SITE_URL": "https://stelcity.vercel.app",
+    "SITE_ICON": get_logo,
+    "SITE_LOGO": get_logo,
+    "COLORS": {
+        "primary": {
+            "50": "240 253 244",
+            "100": "220 252 231",
+            "200": "187 247 208",
+            "300": "134 239 172",
+            "400": "74 222 128",
+            "500": "34 197 94",
+            "600": "22 163 74",
+            "700": "15 118 110",
+            "800": "14 116 144",
+            "900": "20 83 45",
+            "950": "5 46 22",
+        },
     },
-
-    # top menu
-    "topmenu_links": [
-        {"name": "Home", "url": "admin:index"},
-        {"name": "View Site", "url": "https://stelcity.vercel.app", "new_window": True},
-    ],
-
-    # side menu
-    "show_sidebar": True,
-    "navigation_expanded": True,
-    "icons": {
-        "auth": "fas fa-users-cog",
-        "Auth.user": "fas fa-user",
-        "Products.product": "fas fa-box",
-        "Products.productvariant": "fas fa-boxes",
-        "Products.order": "fas fa-shopping-cart",
-        "Products.orderitem": "fas fa-list",
-        "Products.payment": "fas fa-credit-card",
-        "Products.deliveryzone": "fas fa-truck",
-        "Products.deliverysettings": "fas fa-cog",
-        "Products.newslettersubscriber": "fas fa-envelope",
-        "Products.newsletter": "fas fa-paper-plane",
-        "Products.ordertracking": "fas fa-map-marker-alt",
-        "Services.service": "fas fa-concierge-bell",
-        "Services.servicecategory": "fas fa-tags",
-        "Notifications.notification": "fas fa-bell",
-    },
-    "default_icon_parents": "fas fa-chevron-circle-right",
-    "default_icon_children": "fas fa-circle",
-
-    # UI tweaks
-    "related_modal_active": True,
-    "custom_css": None,
-    "custom_js": None,
-    "show_ui_builder": False,
-}
-
-JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,
-    "footer_small_text": False,
-    "body_small_text": False,
-    "brand_small_text": False,
-    "brand_colour": "navbar-success",
-    "accent": "accent-success",
-    "navbar": "navbar-success navbar-dark",
-    "no_navbar_border": False,
-    "navbar_fixed": True,
-    "layout_boxed": False,
-    "footer_fixed": False,
-    "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-success",
-    "sidebar_nav_small_text": False,
-    "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": True,
-    "sidebar_nav_compact_style": False,
-    "sidebar_nav_legacy_style": False,
-    "sidebar_nav_flat_style": False,
-    "theme": "default",
-    "button_classes": {
-        "primary": "btn-success",
-        "secondary": "btn-outline-success",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success",
-    }
 }
