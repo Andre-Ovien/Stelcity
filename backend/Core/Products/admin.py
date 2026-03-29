@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import Product,ProductVariant,Order,OrderItem,DeliveryZone, DeliverySettings, OrderTracking
-from Notifications.utils import create_notification
-
+from .models import Product,ProductVariant,Order,OrderItem,DeliveryZone, DeliverySettings, OrderTracking, Payment
+from Notifications.utils import create_notification 
 # Register your models here.
 
 admin.site.register(Product)
@@ -46,3 +45,12 @@ class DeliveryZoneAdmin(admin.ModelAdmin):
 @admin.register(DeliverySettings)
 class DeliverySettingsAdmin(admin.ModelAdmin):
     list_display = ('default_fee',)
+
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('reference', 'order', 'amount', 'status', 'created_at')
+    list_filter = ('status',)
+    search_fields = ('reference', 'order__order_id')
+    readonly_fields = ('reference', 'amount', 'created_at')
