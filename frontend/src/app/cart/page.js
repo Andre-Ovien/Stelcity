@@ -97,7 +97,7 @@ export default function CartPage() {
           <span className="text-[60px]">🛒</span>
           <h2 className="text-[18px] font-bold text-gray-800">Your cart is empty</h2>
           <p className="text-[13px] text-gray-500 text-center">
-            You haven't added anything yet. Start shopping!
+            You haven`t added anything yet. Start shopping!
           </p>
           <Link href="/products" className="bg-[#D65A5A] text-white font-semibold px-8 py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors">
             Shop Now
@@ -113,7 +113,7 @@ export default function CartPage() {
 
       <div className="px-4 pb-36 md:pb-20 md:px-10 flex flex-col md:flex-row md:justify-center md:gap-8 md:items-start max-w-6xl mx-auto">
         <div className="flex-1 w-full max-w-md md:max-w-xl">
-          <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6 md:text-left">
+          <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6 md:text-left  xl:mt-4">
             My Cart
           </h1>
 
@@ -129,7 +129,7 @@ export default function CartPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl px-5 py-4 mt-5 md:mt-[58px] md:w-80 md:shrink-0 flex flex-col">
+        <div className="bg-white rounded-2xl px-5 py-4 mt-5 md:mt-14.5 md:w-80 md:shrink-0 flex flex-col">
           <div className="flex flex-col gap-3">
             <h2 className="text-[16px] font-bold text-gray-800 mb-3">Order Summary</h2>
             <div className="flex justify-between items-center">
