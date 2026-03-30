@@ -2,8 +2,13 @@ from django.contrib import admin
 from django.utils import timezone
 from .models import User, Newsletter, NewsletterSubscriber
 from .emails import send_newsletter_broadcast
+from django.contrib import admin
 
 # Register your models here.
+
+admin.site.site_header = "Stelcity Admin"
+admin.site.site_title = "Stelcity"
+admin.site.index_title = "Welcome to Stelcity Dashboard"
 
 admin.site.register(User)
 
