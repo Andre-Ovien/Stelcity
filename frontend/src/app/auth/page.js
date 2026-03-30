@@ -29,21 +29,13 @@ export default function AuthPage() {
 
   const handleSubmit = async () => {
     const newErrors = {}
-
-    if (mode === "register" && !name.trim()) {
-      newErrors.name = "Name is required"
-    }
-
+    if (mode === "register" && !name.trim()) newErrors.name = "Name is required"
     if (!email.trim()) {
       newErrors.email = "Email is required"
     } else if (!validateEmail(email)) {
       newErrors.email = "Please enter a valid email address"
     }
-
-    if (!password) {
-      newErrors.password = "Password is required"
-    }
-
+    if (!password) newErrors.password = "Password is required"
     if (mode === "register" && password && !allRequirementsMet) {
       newErrors.password = "Password does not meet all requirements"
     }
@@ -57,31 +49,17 @@ export default function AuthPage() {
     setLoading(true)
 
     try {
-      let data
-      if (mode === "register") {
-        data = await registerUser(name, email, password)
-      } else {
-        data = await loginUser(email, password)
-      }
-
+      let data = mode === "register" ? await registerUser(name, email, password) : await loginUser(email, password)
       login(data.user, data.token, data.refreshToken)
       toast.success(mode === "register" ? "Account created!" : "Welcome back!")
-
       const redirectAfter = sessionStorage.getItem("redirectAfter") || "/"
       sessionStorage.removeItem("redirectAfter")
       router.push(redirectAfter)
-
     } catch (err) {
       const msg = err.message || ""
-      if (msg.toLowerCase().includes("email")) {
-        setErrors({ email: "This email is already registered" })
-      } else if (msg.toLowerCase().includes("password")) {
-        setErrors({ password: "Incorrect password" })
-      } else if (msg.toLowerCase().includes("credentials")) {
-        setErrors({ email: "Invalid email or password" })
-      } else {
-        toast.error(msg || "Something went wrong, please try again")
-      }
+      if (msg.toLowerCase().includes("email")) setErrors({ email: "This email is already registered" })
+      else if (msg.toLowerCase().includes("password")) setErrors({ password: "Incorrect password" })
+      else toast.error(msg || "Something went wrong")
     } finally {
       setLoading(false)
     }
@@ -89,16 +67,12 @@ export default function AuthPage() {
 
   const handleToggleMode = () => {
     setMode(mode === "register" ? "login" : "register")
-    setName("")
-    setEmail("")
-    setPassword("")
-    setTouched(false)
-    setErrors({})
+    setName(""); setEmail(""); setPassword(""); setTouched(false); setErrors({})
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col">
-
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
+     
       <Image
         src="/images/backk.png"
         alt="background"
@@ -107,90 +81,94 @@ export default function AuthPage() {
         priority
       />
 
-      <div className="absolute inset-0 bg-black/20" />
+    
+      <div className="absolute inset-0 bg-black/10 md:bg-black/20" />
 
+      
       <div className="relative z-20 flex flex-col min-h-screen">
         <div className="mt-5">
           <Header />
         </div>
 
-        <div className="flex flex-col px-6 pt-10 pb-10">
+        
+        <div className="flex-1 flex items-center justify-center px-6 py-10">
+          
+        
+          <div className="w-full max-w-sm md:max-w-md lg:max-w-xl md:bg-white/10 md:backdrop-blur-md md:border md:border-white/20 md:rounded-[40px] md:p-12 md:shadow-2xl transition-all duration-500">
+            
+            <h1 className="text-[28px] md:text-[36px] font-bold text-[#D65A5A] text-center">
+              {mode === "register" ? "Welcome!" : "Welcome Back!"}
+            </h1>
 
-          <h1 className="text-[28px] font-bold text-[#D65A5A] text-center">
-            {mode === "register" ? "Welcome!" : "Welcome Back!"}
-          </h1>
-
-          <p className="text-[13px] text-black text-center mt-2 mb-10 px-3">
-            {mode === "register"
-              ? "Create your account and start exploring our skincare essentials today."
-              : "Log in to continue your skincare journey."
-            }
-          </p>
-
-          <div className="flex flex-col gap-3 w-full max-w-sm mx-auto">
-
-            {mode === "register" && (
-              <AuthInput
-                type="text"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value)
-                  setErrors((prev) => ({ ...prev, name: "" }))
-                }}
-                placeholder="Name"
-                error={errors.name}
-              />
-            )}
-
-            <AuthInput
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                setErrors((prev) => ({ ...prev, email: "" }))
-              }}
-              placeholder="Email"
-              error={errors.email}
-            />
-
-            <PasswordInput
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                setTouched(true)
-                setErrors((prev) => ({ ...prev, password: "" }))
-              }}
-              error={errors.password}
-            />
-
-            {mode === "register" && touched && password.length > 0 && (
-              <PasswordRequirements password={password} />
-            )}
-
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
-            >
-              {loading
-                ? "Please wait..."
-                : mode === "register" ? "Register" : "Log in"
+            <p className="text-[13px] md:text-[15px] text-black md:text-gray-800 text-center mt-2 mb-10 px-3 font-medium">
+              {mode === "register"
+                ? "Create your account and start exploring our skincare essentials today."
+                : "Log in to continue your skincare journey."
               }
-            </button>
+            </p>
 
-            <div className="flex items-center gap-3 my-1">
-              <div className="flex-1 h-px bg-gray-300" />
-              <span className="text-[12px] text-black">OR</span>
-              <div className="flex-1 h-px bg-gray-300" />
+            <div className="flex flex-col gap-4 w-full">
+              {mode === "register" && (
+                <AuthInput
+                  type="text"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value)
+                    setErrors((prev) => ({ ...prev, name: "" }))
+                  }}
+                  placeholder="Name"
+                  error={errors.name}
+                />
+              )}
+
+              <AuthInput
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  setErrors((prev) => ({ ...prev, email: "" }))
+                }}
+                placeholder="Email"
+                error={errors.email}
+              />
+
+              <PasswordInput
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  setTouched(true)
+                  setErrors((prev) => ({ ...prev, password: "" }))
+                }}
+                error={errors.password}
+              />
+
+              {mode === "register" && touched && password.length > 0 && (
+                <div className="md:bg-white/40 md:p-4 md:rounded-xl">
+                  <PasswordRequirements password={password} />
+                </div>
+              )}
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full bg-[#D65A5A] text-white font-semibold py-4 rounded-full text-[14px] md:text-[16px] hover:bg-[#c44f4f] transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 mt-2 shadow-lg"
+              >
+                {loading ? "Please wait..." : mode === "register" ? "Register" : "Log in"}
+              </button>
+
+              <div className="flex items-center gap-3 my-2">
+                <div className="flex-1 h-px bg-gray-300/50" />
+                <span className="text-[12px] text-black font-bold">OR</span>
+                <div className="flex-1 h-px bg-gray-300/50" />
+              </div>
+
+              <button
+                onClick={handleToggleMode}
+                className="w-full border-2 border-[#D65A5A] md:border-white/40 bg-white/10 text-black font-bold py-3.5 rounded-full text-[14px] hover:bg-white/30 transition-colors"
+              >
+                {mode === "register" ? "Log in" : "Register"}
+              </button>
             </div>
-
-            <button
-              onClick={handleToggleMode}
-              className="w-full border border-gray-300 bg-white/10 text-black font-medium py-3 rounded-full text-[14px] hover:bg-white/20 transition-colors"
-            >
-              {mode === "register" ? "Log in" : "Register"}
-            </button>
-
           </div>
         </div>
       </div>
