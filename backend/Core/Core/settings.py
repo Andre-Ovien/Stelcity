@@ -45,7 +45,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'unfold',
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -244,28 +244,9 @@ LOGGING = {
     },
 }
 
-def get_logo(request):
-    return "https://res.cloudinary.com/dpbbkluvw/image/upload/v1774696610/WhatsApp_Image_2026-03-28_at_05.14.34_w4pf5j.jpg"
-
-UNFOLD = {
-    "SITE_TITLE": "Stelcity Admin",
-    "SITE_HEADER": "Stelcity",
-    "SITE_URL": "https://stelcity.vercel.app",
-    "SITE_ICON": get_logo,
-    "SITE_LOGO": get_logo,
-    "COLORS": {
-        "primary": {
-            "50": "240 253 244",
-            "100": "220 252 231",
-            "200": "187 247 208",
-            "300": "134 239 172",
-            "400": "74 222 128",
-            "500": "34 197 94",
-            "600": "22 163 74",
-            "700": "15 118 110",
-            "800": "14 116 144",
-            "900": "20 83 45",
-            "950": "5 46 22",
-        },
-    },
-}
+SIMPLEUI_HOME_INFO = False
+SIMPLEUI_ANALYSIS = False
+SIMPLEUI_STATIC_OFFLINE = False
+SIMPLEUI_DEFAULT_THEME = 'green.css'
+SIMPLEUI_EXTRA_STYLE = '/static/admin/css/custom_admin.css'
+SIMPLEUI_LOGO = 'https://res.cloudinary.com/dpbbkluvw/image/upload/v1774696610/WhatsApp_Image_2026-03-28_at_05.14.34_w4pf5j.jpg'
