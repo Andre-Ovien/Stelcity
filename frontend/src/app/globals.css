@@ -22,6 +22,10 @@ body{
   scrollbar-width: none;
 }
 
+.play{
+  font-family: playfair display;
+}
+
 
 @media screen and (min-width:375px){
   #space{
