@@ -198,7 +198,7 @@ const ProductGrid = () => {
   return (
     <section className="px-5 py-10 bg-[#F7F6F6] rounded-t-[40px] xl:px-9" id="collection">
 
-      <h2 className="font-bold text-[22px] text-gray-900 xl:text-3xl">
+      <h2 className="underline font-bold text-[22px] text-gray-900 xl:text-3xl">
         Browse Our Collection
       </h2>
 
