@@ -13,14 +13,20 @@ const Main = () => {
   }
 
   return (
-    <div className="mx-5 sm:mt-7 sm:mx-8 2xl:mt-19">
+    <div className="mx-5 sm:mt-5  md:mt-2 sm:mx-8 2xl:mt-19">
 
       <div className="sm:flex sm:flex-row sm:items-center sm:gap-10 lg:mx-6 xl:mx-10 xl:mt-4">
 
         <div className="sm:flex-1">
-          <h1 className="text-[32px]  font-black  xl:text-[48px]  2xl:text-[50px]">
+          <h1 className="text-[32px] leading-9 font-black  xl:text-[48px]  2xl:text-[50px] md:hidden">
             Healthy{" "}
             <span className="text-[#C94F5C]  play">
+              Skin <br/>
+            </span> Starts Here
+          </h1>
+          <h1 className=" hidden md:block text-[32px] leading-9 font-black  xl:text-[48px]  2xl:text-[50px]">
+            Healthy{" "}
+            <span className="text-[#C94F5C] font-[1000] play">
               Skin 
             </span> Starts Here
           </h1>
