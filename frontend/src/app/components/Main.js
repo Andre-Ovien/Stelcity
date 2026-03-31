@@ -18,11 +18,11 @@ const Main = () => {
       <div className="sm:flex sm:flex-row sm:items-center sm:gap-10 lg:mx-6 xl:mx-10 xl:mt-4">
 
         <div className="sm:flex-1">
-          <h1 className="text-[32px] font-bold  xl:text-[48px]  2xl:text-[50px]">
+          <h1 className="text-[32px]  font-black  xl:text-[48px]  2xl:text-[50px]">
             Healthy{" "}
-            <span className="text-[#C94F5C] font-(family-name:--font-poppins) font-bold">
+            <span className="text-[#C94F5C]  play">
               Skin 
-            </span> Starts here
+            </span> Starts Here
           </h1>
 
           <p className="text-[#826E70] text-[16px] font-normal mt-2  xl:text-[28px]  2xl:text-[36px]">
@@ -32,12 +32,12 @@ const Main = () => {
           <div className="mt-10">
             <button
               onClick={scrollToCollection}
-              className="bg-[#D65A5A] text-white rounded-3xl mr-4 w-24 h-12 font-bold shadow-[0px_4px_15px_rgba(214,90,90,0.5)]  xl:w-37 xl:text-[23px]"
+              className=" hover:bg-[#C44F4F] bg-[#D65A5A] text-white rounded-3xl mr-4 w-24 h-12 font-bold shadow-[0px_4px_15px_rgba(214,90,90,0.5)]  xl:w-37 xl:text-[23px]"
             >
               Shop now
             </button>
             <Link href="/products">
-              <button className="bg-[#DAB9A8] text-[#B6454F] border-[#B6454F] rounded-3xl w-36 h-12 xl:w-44 xl:text-[20px]">
+              <button className=" hover:bg-[#e9b8a1] bg-[#DAB9A8] text-[#B6454F] font-bold border-[#B6454F] rounded-3xl w-36 h-12 xl:w-44 xl:text-[20px]">
                 View Collection
               </button>
             </Link>
@@ -51,22 +51,22 @@ const Main = () => {
             className="mt-9 sm:hidden"
           />
 
-          <div className="flex items-center space-between gap-1.5 border-transparent shadow-lg rounded-2xl py-2 px-1 sm:mt-4  xl:mt-10 xl:gap-3" id='space'>
+          <div className="flex items-center space-between gap-1.5   py-2 px-1 sm:mt-4  xl:mt-10 xl:gap-3" id='space'>
             <div className="flex items-center">
               <Image src="/images/tested.png" width={18} height={20} alt="tested" className='xl:w-[30] xl:h-[30]' />
-              <p className="text-[9.5px] lg:text-[13px] xl:text-[18px]">Dermatologist Tested</p>
+              <p className=" text-[#494848] text-[9px] lg:text-[12px] xl:text-[16px]">Dermatologist Tested</p>
             </div>
             <div className="flex items-center">
               <Image src="/images/nature.png" width={18} height={20} alt="tested" className='xl:w-[30] xl:h-[30]' />
-              <p className="text-[9.5px] lg:text-[13px] xl:text-[18px]">Natural Ingredients</p>
+              <p className=" text-[#494848] text-[9px] lg:text-[12px] xl:text-[16px]">Natural Ingredients</p>
             </div>
             <div className="flex items-center">
               <Image src="/images/free.png" width={18} height={20} alt="tested" className='xl:w-[28] xl:h-[28]' />
-              <p className="text-[9.5px] lg:text-[13px] xl:text-[18px]">Cruelty-free</p>
+              <p className=" text-[#494848] text-[9px] lg:text-[12px] xl:text-[16px]">Cruelty-free</p>
             </div>
           </div>
 
-          <h3 className="text-[#D65A5A] text-[14px] font-bold text-center mt-3 pb-3 xl:text-[19px]">
+          <h3 className="text-[#D65A5A] text-[13px] font-bold text-center mt-3 pb-3 xl:text-[1p7x]">
             Trusted by 10,000+ happy customers.
           </h3>
         </div>
