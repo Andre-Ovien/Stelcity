@@ -263,8 +263,8 @@ export default function CheckoutPage() {
           
           <div className="md:w-[320px] lg:w-90 flex flex-col gap-4">
 
-            {/* Totals */}
-            <div className="bg-white rounded-2xl px-5 py-4 flex flex-col gap-2">
+            
+            <div className="bg-white rounded-2xl px-5 py-4 flex flex-col gap-2 mt-5 md:mt-0">
               <div className="flex justify-between items-center">
                 <span className="text-[13px] text-gray-500">Subtotal</span>
                 <span className="text-[13px] text-gray-700 font-medium">₦{subtotal.toLocaleString()}</span>
@@ -297,7 +297,7 @@ export default function CheckoutPage() {
             </div>
 
             
-            <div className="bg-gray-50 text-gray-600 text-[12px] text-center py-3 px-4 rounded-2xl border border-gray-200">
+            <div className=" hidden sm:block bg-gray-50 text-gray-600 text-[12px] text-center py-3 px-4 rounded-2xl border border-gray-200">
               Estimated Delivery: Lagos – within 24 hours.<br />Outside Lagos – 2 – 3 business days.
             </div>
 

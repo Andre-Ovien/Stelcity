@@ -100,7 +100,7 @@ export default function TrainingPage() {
       <Header />
 
       <div className="px-4 pb-10 max-w-4xl mx-auto ">
-        <h1 className="text-[24px] sm:text-[28px] font-bold text-gray-900 text-center mb-2">
+        <h1 className="text-[24px] sm:text-[28px] font-bold text-gray-900 text-center mb-2  xl:mt-7">
           Advanced Training Content
         </h1>
         <p className="text-[13px] text-gray-500 text-center mb-8 max-w-md mx-auto">

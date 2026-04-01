@@ -60,7 +60,7 @@ const Header = () => {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`text-sm lg:text-base xl:text-lg 2xl:text-2xl transition-colors ${
+                className={`text-sm lg:text-base xl:text-lg 2xl:text-xl transition-colors ${
                   pathname === item.href
                     ? "text-[#D65A5A] font-semibold"
                     : "text-gray-700 hover:text-[#D65A5A]"
