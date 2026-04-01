@@ -72,7 +72,7 @@ const ClientReviews = () => {
             </div>
             
             <p className="text-black font-medium text-sm sm:text-base leading-relaxed mb-6">
-              `{testimonials[current].text} ``
+              {testimonials[current].text}
             </p>
 
             <div className="flex items-center gap-3">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Header from "../components/Header"
 import ProductPageCard from "../components/ProductSection"
 import Pagination from "../components/pagination"
@@ -16,7 +16,6 @@ const sortOptions = [
   { label: "Go to Raw Materials", value: "rawMaterials" },
   { label: "Go to Services", value: "Services" },
 ]
-
 
 function ProductPageCardSkeleton() {
   return (
@@ -39,10 +38,10 @@ export default function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const router = useRouter()
 
-  useEffect(() => {
-    let mounted = true
+  const fetchProducts = useCallback((page) => {
     setLoading(true)
-    getProducts(currentPage).then((data) => {
+    let mounted = true
+    getProducts(page).then((data) => {
       if (mounted) {
         setAllProducts(data.products)
         setTotalCount(data.count)
@@ -50,7 +49,12 @@ export default function ProductsPage() {
       }
     })
     return () => { mounted = false }
-  }, [currentPage])
+  }, [])
+
+  useEffect(() => {
+    const cleanup = fetchProducts(currentPage)
+    return cleanup
+  }, [currentPage, fetchProducts])
 
   const handleSort = (value) => {
     if (value === "rawMaterials") {
@@ -63,6 +67,16 @@ export default function ProductsPage() {
     }
     setSort(value)
     setCurrentPage(1)
+  }
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value)
+    setCurrentPage(1)
+  }
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const searched = allProducts.filter((p) =>
@@ -78,36 +92,37 @@ export default function ProductsPage() {
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
 
   return (
-    <div className="min-h-screen bg-white my-0">
+    <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="px-4 pb-10 ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 xl:py-10">
 
-        <h1 className="text-[20px] font-bold text-gray-900 text-center mb-4  xl:text-3xl ">
+        <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center mb-6 xl:mb-8 tracking-tight">
           Shop Our Products
         </h1>
 
-        <div className="flex items-center justify-between gap-3 mb-5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 xl:mb-8">
           <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 xl:w-5 xl:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+            </span>
             <input
               type="text"
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setCurrentPage(1)
-              }}
+              onChange={handleSearchChange}
               placeholder="Search products..."
-              className="w-full border border-gray-200 rounded-full px-4 py-2 text-[13px] outline-none  text-gray-700 xl:text-lg"
+              className="w-full border border-gray-200 bg-white rounded-full pl-9 pr-4 py-2.5 text-sm xl:text-base text-gray-700 placeholder-gray-400 outline-none transition-all duration-200 hover:border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
-            
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="text-[12px] text-gray-500 xl:text-lg">Sort by:</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs sm:text-sm xl:text-base text-gray-500 whitespace-nowrap">Sort by:</span>
             <select
               value={sort}
               onChange={(e) => handleSort(e.target.value)}
-              className="text-[12px] border border-gray-200 rounded-lg px-2 py-1 outline-none text-gray-700 xl:text-lg"
+              className="text-xs sm:text-sm xl:text-base border border-gray-200 bg-white rounded-lg px-3 py-2.5 outline-none text-gray-700 cursor-pointer transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 active:bg-gray-100"
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -118,32 +133,36 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 items-stretch">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 items-stretch">
           {loading
             ? Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                 <ProductPageCardSkeleton key={i} />
               ))
             : sorted.map((product, index) => (
-                <ProductPageCard key={`${product.id}-${index}`} product={product} />
+                <div
+                  key={`${product.id}-${index}`}
+                  className="transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-md active:scale-95 rounded-2xl"
+                >
+                  <ProductPageCard product={product} />
+                </div>
               ))
           }
         </div>
 
         {!loading && sorted.length === 0 && (
-          <div className="text-center py-16 text-gray-400 text-[14px]">
-            No products found for `{search}`
+          <div className="text-center py-20 text-gray-400 text-sm xl:text-base">
+            No products found for &ldquo;{search}&rdquo;
           </div>
         )}
 
         {!loading && totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => {
-              setCurrentPage(page)
-              window.scrollTo({ top: 0, behavior: "smooth" })
-            }}
-          />
+          <div className="mt-8 xl:mt-10">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         )}
 
       </div>
