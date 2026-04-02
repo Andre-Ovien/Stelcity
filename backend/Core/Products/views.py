@@ -16,8 +16,7 @@ from Notifications.utils import create_notification
 from .utils import get_delivery_fee
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-
-
+from .squad import initialize_squad_payment, verify_squad_payment
 
 # Create your views here.
 
@@ -97,6 +96,7 @@ class DeliveryFeeView(APIView):
         })
 
 
+
 class CartCheckoutView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class= CartSyncCheckoutSerializer
@@ -106,10 +106,11 @@ class CartCheckoutView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         order, subtotal, total, delivery_fee, reference = serializer.save(user=request.user)
 
-        response = initialize_payment(
+        response = initialize_squad_payment(
             email=request.user.email,
             amount=total,
-            reference=reference
+            reference=reference,
+            name=request.user.full_name or request.user.email
         )
 
         if not response.get('status'):
@@ -136,78 +137,139 @@ class CartCheckoutView(generics.GenericAPIView):
             'authorization_url': response['data']['authorization_url']
         }, status=status.HTTP_200_OK)
     
-class PaystackWebhookView(APIView):
+
+class SquadWebhookView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        paystack_signature = request.headers.get('x-paystack-signature')
-        computed = hmac.new(
-            settings.PAYSTACK_SECRET_KEY.encode('utf-8'),
-            request.body,
-            hashlib.sha512
-        ).hexdigest()
-
-        if paystack_signature != computed:
+        
+        squad_signature = request.headers.get('x-squad-encrypted-body')
+        if not squad_signature:
             return Response(
-                {
-                    "detail":"Invalid signature.",
-                },
+                {"detail": "Invalid signature."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         event = request.data
-        if event.get('event') == 'charge.success':
-            reference = event['data']['reference']
+        reference = event.get('transaction_ref')
 
-            try:
-                payment = Payment.objects.get(reference=reference)
-            except Payment.DoesNotExist:
-                return Response(
-                    status=status.HTTP_200_OK
-                )
-            
-            verification = verify_payment(reference)
-            if verification['data']['status'] == 'success':
-                payment.status = Payment.StatusChoices.SUCCESS
-                payment.save()
+        if not reference:
+            return Response(status=status.HTTP_200_OK)
 
-                payment.order.status = Order.StatusChoices.CONFIRMED
-                payment.order.save()
+        try:
+            payment = Payment.objects.get(reference=reference)
+        except Payment.DoesNotExist:
+            return Response(status=status.HTTP_200_OK)
 
-                create_notification(
-                    user=payment.order.user,
-                    type='payment',
-                    title='Payment Confirmed',
-                    message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
-                )
+        verification = verify_squad_payment(reference)
 
-                # for item in payment.order.items.select_related('product', 'variant').all():
-                #     if item.variant:
-                #         item.variant.stock -= item.quantity
-                #         item.variant.save()
-                #     else:
-                #         item.product.stock -= item.quantity
-                #         item.product.save()
+        if verification.get('data', {}).get('transaction_status') == 'Success':
+            payment.status = Payment.StatusChoices.SUCCESS
+            payment.save()
 
-                send_order_confirmation(payment.order)
+            payment.order.status = Order.StatusChoices.CONFIRMED
+            payment.order.save()
 
-            elif event.get('event') == 'charge.failed':
-                payment.status = Payment.StatusChoices.FAILED
-                payment.save()
+            create_notification(
+                user=payment.order.user,
+                type='payment',
+                title='Payment Confirmed',
+                message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
+            )
 
-                payment.order.status = Order.StatusChoices.CANCELLED
-                payment.order.save()
+            send_order_confirmation(payment.order)
 
-                create_notification(
-                    user=payment.order.user,
-                    type='payment',
-                    title='Payment Failed',
-                    message=f'Your payment for order {payment.order.order_id} was unsuccessful. Please try again.'
-                )
+        else:
+            payment.status = Payment.StatusChoices.FAILED
+            payment.save()
 
-                send_payment_failed(payment.order)
-        
+            payment.order.status = Order.StatusChoices.CANCELLED
+            payment.order.save()
+
+            create_notification(
+                user=payment.order.user,
+                type='payment',
+                title='Payment Failed',
+                message=f'Your payment for order {payment.order.order_id} was unsuccessful. Please try again.'
+            )
+
+            send_payment_failed(payment.order)
+
         return Response(status=status.HTTP_200_OK)
+
+
+# class PaystackWebhookView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def post(self, request):
+#         paystack_signature = request.headers.get('x-paystack-signature')
+#         computed = hmac.new(
+#             settings.PAYSTACK_SECRET_KEY.encode('utf-8'),
+#             request.body,
+#             hashlib.sha512
+#         ).hexdigest()
+
+#         if paystack_signature != computed:
+#             return Response(
+#                 {
+#                     "detail":"Invalid signature.",
+#                 },
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+        
+#         event = request.data
+#         if event.get('event') == 'charge.success':
+#             reference = event['data']['reference']
+
+#             try:
+#                 payment = Payment.objects.get(reference=reference)
+#             except Payment.DoesNotExist:
+#                 return Response(
+#                     status=status.HTTP_200_OK
+#                 )
+            
+#             verification = verify_payment(reference)
+#             if verification['data']['status'] == 'success':
+#                 payment.status = Payment.StatusChoices.SUCCESS
+#                 payment.save()
+
+#                 payment.order.status = Order.StatusChoices.CONFIRMED
+#                 payment.order.save()
+
+#                 create_notification(
+#                     user=payment.order.user,
+#                     type='payment',
+#                     title='Payment Confirmed',
+#                     message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
+#                 )
+
+#                 # for item in payment.order.items.select_related('product', 'variant').all():
+#                 #     if item.variant:
+#                 #         item.variant.stock -= item.quantity
+#                 #         item.variant.save()
+#                 #     else:
+#                 #         item.product.stock -= item.quantity
+#                 #         item.product.save()
+
+#                 send_order_confirmation(payment.order)
+
+#             elif event.get('event') == 'charge.failed':
+#                 payment.status = Payment.StatusChoices.FAILED
+#                 payment.save()
+
+#                 payment.order.status = Order.StatusChoices.CANCELLED
+#                 payment.order.save()
+
+#                 create_notification(
+#                     user=payment.order.user,
+#                     type='payment',
+#                     title='Payment Failed',
+#                     message=f'Your payment for order {payment.order.order_id} was unsuccessful. Please try again.'
+#                 )
+
+#                 send_payment_failed(payment.order)
+        
+#         return Response(status=status.HTTP_200_OK)
     
 
 class VerifyPaymentView(APIView):
