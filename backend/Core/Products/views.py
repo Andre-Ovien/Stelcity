@@ -134,7 +134,7 @@ class CartCheckoutView(generics.GenericAPIView):
             "subtotal": subtotal,
             "delivery_fee": delivery_fee,
             'amount': total,
-            'authorization_url': response['data']['checkout_url']
+            'authorization_url': response['data']['callback_url']
         }, status=status.HTTP_200_OK)
     
 
