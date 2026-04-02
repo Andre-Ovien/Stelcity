@@ -225,7 +225,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 AUTH_USER_MODEL = 'Auth.User'
 
-FRONTEND_URL = "https://stelcity.vercel.app/"
+FRONTEND_URL = "https://stelcity.vercel.app"
 
 RESEND_API_KEY = config('RESEND_API_KEY')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
