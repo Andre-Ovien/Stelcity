@@ -27,7 +27,7 @@ function ProductDetailSkeleton() {
 }
 
 export default function ProductDetailPage({ params }) {
-  const { slug } = use(params) // unwrap promise
+  const { slug } = use(params) 
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
