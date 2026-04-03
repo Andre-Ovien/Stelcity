@@ -357,11 +357,10 @@ class SquadWebhookView(APIView):
 class VerifyPaymentView(APIView):
     permission_classes=[]
 
-    def get(self, request, reference):
+    def get(self, reference):
         try:
             payment = Payment.objects.get(
                 reference=reference,
-                order__user=request.user
             )
         except Payment.DoesNotExist:
             return Response(
