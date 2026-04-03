@@ -195,7 +195,7 @@ class SquadWebhookView(APIView):
         transaction_status = verification.get('data', {}).get('transaction_status')
         print("TRANSACTION STATUS:", transaction_status)
 
-        if transaction_status == 'Success':
+        if transaction_status.lower() == 'success':
             payment.status = Payment.StatusChoices.SUCCESS
             payment.save()
 
