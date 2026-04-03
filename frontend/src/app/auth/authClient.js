@@ -54,7 +54,7 @@ export default function AuthPage() {
       toast.success(mode === "register" ? "Account created!" : "Welcome back!")
       const redirectAfter = sessionStorage.getItem("redirectAfter") || "/"
       sessionStorage.removeItem("redirectAfter")
-      router.push(redirectAfter)
+      router.replace(redirectAfter)
     } catch (err) {
       const msg = err.message || ""
       if (msg.toLowerCase().includes("email")) setErrors({ email: "This email is already registered" })
