@@ -142,7 +142,6 @@ class SquadWebhookView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        
         squad_signature = request.headers.get('x-squad-encrypted-body')
         if not squad_signature:
             return Response(
@@ -150,10 +149,29 @@ class SquadWebhookView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        computed = hmac.new(
+            settings.SQUAD_SECRET_KEY.encode('utf-8'),
+            request.body,
+            hashlib.sha512
+        ).hexdigest()
+
+        if squad_signature != computed:
+            return Response(
+                {
+                    "detail": "Invalid signature."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         event = request.data
-        reference = event.get('transaction_ref')
+        body = event.get('Body', {})
+        reference = body.get('transaction_ref')
+        event_type = event.get('Event')
 
         if not reference:
+            return Response(status=status.HTTP_200_OK)
+
+        if event_type != 'charge_successful':
             return Response(status=status.HTTP_200_OK)
 
         try:
@@ -161,9 +179,15 @@ class SquadWebhookView(APIView):
         except Payment.DoesNotExist:
             return Response(status=status.HTTP_200_OK)
 
-        verification = verify_squad_payment(reference)
+        if payment.status == Payment.StatusChoices.SUCCESS:
+            return Response(
+                status=status.HTTP_200_OK
+            )
 
-        if verification.get('data', {}).get('transaction_status') == 'Success':
+        verification = verify_squad_payment(reference)        
+        transaction_status = verification.get('data', {}).get('transaction_status')
+
+        if transaction_status == 'Success':
             payment.status = Payment.StatusChoices.SUCCESS
             payment.save()
 
@@ -176,7 +200,6 @@ class SquadWebhookView(APIView):
                 title='Payment Confirmed',
                 message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
             )
-
             send_order_confirmation(payment.order)
 
         else:
@@ -192,10 +215,68 @@ class SquadWebhookView(APIView):
                 title='Payment Failed',
                 message=f'Your payment for order {payment.order.order_id} was unsuccessful. Please try again.'
             )
-
             send_payment_failed(payment.order)
 
         return Response(status=status.HTTP_200_OK)
+
+# class SquadWebhookView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def post(self, request):
+        
+#         squad_signature = request.headers.get('x-squad-encrypted-body')
+#         if not squad_signature:
+#             return Response(
+#                 {"detail": "Invalid signature."},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#         event = request.data
+#         reference = event.get('transaction_ref')
+
+#         if not reference:
+#             return Response(status=status.HTTP_200_OK)
+
+#         try:
+#             payment = Payment.objects.get(reference=reference)
+#         except Payment.DoesNotExist:
+#             return Response(status=status.HTTP_200_OK)
+
+#         verification = verify_squad_payment(reference)
+
+#         if verification.get('data', {}).get('transaction_status') == 'Success':
+#             payment.status = Payment.StatusChoices.SUCCESS
+#             payment.save()
+
+#             payment.order.status = Order.StatusChoices.CONFIRMED
+#             payment.order.save()
+
+#             create_notification(
+#                 user=payment.order.user,
+#                 type='payment',
+#                 title='Payment Confirmed',
+#                 message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
+#             )
+
+#             send_order_confirmation(payment.order)
+
+#         else:
+#             payment.status = Payment.StatusChoices.FAILED
+#             payment.save()
+
+#             payment.order.status = Order.StatusChoices.CANCELLED
+#             payment.order.save()
+
+#             create_notification(
+#                 user=payment.order.user,
+#                 type='payment',
+#                 title='Payment Failed',
+#                 message=f'Your payment for order {payment.order.order_id} was unsuccessful. Please try again.'
+#             )
+
+#             send_payment_failed(payment.order)
+
+#         return Response(status=status.HTTP_200_OK)
 
 
 # class PaystackWebhookView(APIView):
