@@ -19,6 +19,7 @@ def initialize_squad_payment(email, amount, reference, name):
         'transaction_ref': reference,
         'callback_url': f'{settings.FRONTEND_URL}/payment/verify',
         'customer_name': name,
+        'payment_channels': ['card', 'bank', 'ussd', 'transfer'],
     }
     try:
         response = requests.post(url, json=payload, headers=get_headers())
