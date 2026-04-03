@@ -48,7 +48,7 @@ function ServiceCard({ service }) {
         active:scale-95
       "
     >
-      {/* Image */}
+      
       <div className="relative w-full aspect-square bg-[#EEF5EE] flex items-center justify-center shrink-0">
         {service.image ? (
           <Image
@@ -62,7 +62,7 @@ function ServiceCard({ service }) {
           <span className="text-[40px]">✨</span>
         )}
 
-        {/* Fav Button */}
+        
         <button
           onClick={handleToggleFav}
           className="
@@ -77,7 +77,7 @@ function ServiceCard({ service }) {
         </button>
       </div>
 
-      {/* Content */}
+      
       <div className="p-3 flex flex-col gap-1 flex-1">
         <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2 min-h-[2.5rem]">
           {service.category}
@@ -94,7 +94,7 @@ function ServiceCard({ service }) {
           </p>
         )}
 
-        {/* View Services Button */}
+        
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -149,11 +149,11 @@ export default function ServicesPage() {
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 xl:pb-14">
-        <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center my-6 xl:my-10 tracking-tight">
+        <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center mt-1 mb-4 xl:my-10 tracking-tight">
           Our Services
         </h1>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 sm:gap-5 lg:gap-5">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <ServiceCardSkeleton key={i} />
