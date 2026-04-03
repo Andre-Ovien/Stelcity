@@ -148,7 +148,7 @@ export default function ServicesPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 xl:pb-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 xl:pb-14">
         <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center my-6 xl:my-10 tracking-tight">
           Our Services
         </h1>
