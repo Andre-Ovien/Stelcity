@@ -1,6 +1,6 @@
 import React from 'react'
 
-import CheckoutSuccessPage from './CheckoutSuccessPAge'
+import CheckoutSuccessPage from './CheckoutSuccessPage'
 export const metadata = {
   title: "Order Successful | Stelcity",
   description: "Your order has been placed successfully. Thank you for shopping with Stelcity.",
