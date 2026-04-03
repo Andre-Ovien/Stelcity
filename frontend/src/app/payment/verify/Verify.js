@@ -151,27 +151,30 @@
 
 
 
-"use client"
+
+'use client'  // Must be first
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useState } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import Link from "next/link"
-import Header from "../../components/Header"
-import { useCartStore } from "../../store/cartStore"
-import { useAuthStore } from "../../store/authStore"
+import { useEffect, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import Header from '../../components/Header'
+import { useCartStore } from '../../store/cartStore'
+import { useAuthStore } from '../../store/authStore'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
-function CheckoutSuccessContent() {
-  const clearCart = useCartStore((s) => s.clearCart)
-  const token = useAuthStore((s) => s.token)
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const [status, setStatus] = useState("verifying")
+export default function VerifyPage() {
+  const [status, setStatus] = useState('verifying')
   const [orderId, setOrderId] = useState(null)
   const [hydrated, setHydrated] = useState(false)
 
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const clearCart = useCartStore((s) => s.clearCart)
+  const token = useAuthStore((s) => s.token)
+
+  // Mark component as hydrated to avoid SSR issues
   useEffect(() => {
     setHydrated(true)
   }, [])
@@ -179,29 +182,14 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     if (!hydrated) return
 
-    const reference = searchParams.get("transaction_ref")
-
-    // --------------------------
-    // LOCAL TEST MODE
-    // --------------------------
-    if (reference?.startsWith("test")) {
-      // Simulate success/failure
-      if (reference === "test-success") {
-        clearCart()
-        setOrderId(999)
-        setStatus("success")
-      } else if (reference === "test-fail") {
-        setStatus("failed")
-      } else {
-        setStatus("verifying")
-        setTimeout(() => setStatus("success"), 1500) // simulate async
-      }
+    const reference = searchParams.get('reference')
+    if (!reference) {
+      setStatus('failed')
       return
     }
-    // --------------------------
 
-    if (!reference || !token) {
-      setStatus("failed")
+    if (!token) {
+      setStatus('failed')
       return
     }
 
@@ -210,18 +198,18 @@ function CheckoutSuccessContent() {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.status === "success") {
+        if (data.status === 'success') {
           clearCart()
           setOrderId(data.order_id || null)
-          setStatus("success")
+          setStatus('success')
         } else {
-          setStatus("failed")
+          setStatus('failed')
         }
       })
-      .catch(() => setStatus("failed"))
+      .catch(() => setStatus('failed'))
   }, [hydrated, token, searchParams, clearCart])
 
-  if (status === "verifying") {
+  if (status === 'verifying') {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <div className="w-8 h-8 rounded-full border-2 border-[#D65A5A] border-t-transparent animate-spin" />
@@ -230,32 +218,28 @@ function CheckoutSuccessContent() {
     )
   }
 
-  if (status === "failed") {
+  if (status === 'failed') {
     return (
       <div className="flex flex-col items-center justify-center px-6 py-20 gap-5">
         <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center">
           <span className="text-[40px]">❌</span>
         </div>
-        <div className="text-center">
-          <h1 className="text-[22px] font-bold text-gray-900 mb-2">Payment Failed</h1>
-          <p className="text-[13px] text-gray-500 leading-relaxed">
-            We could not verify your payment. If you were charged, please contact support.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 w-full max-w-sm mt-4">
-          <button
-            onClick={() => router.push("/checkout")}
-            className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors text-center"
-          >
-            Try Again
-          </button>
-          <Link
-            href="/products"
-            className="w-full border border-gray-300 text-gray-700 font-medium py-3 rounded-full text-[14px] hover:bg-white transition-colors text-center"
-          >
-            Continue Shopping
-          </Link>
-        </div>
+        <h1 className="text-[22px] font-bold text-gray-900 mb-2">Payment Failed</h1>
+        <p className="text-[13px] text-gray-500 mb-4">
+          We could not verify your payment. If you were charged, contact support.
+        </p>
+        <button
+          onClick={() => router.push('/checkout')}
+          className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors"
+        >
+          Try Again
+        </button>
+        <Link
+          href="/products"
+          className="w-full border border-gray-300 text-gray-700 font-medium py-3 rounded-full text-[14px] hover:bg-white transition-colors block text-center mt-2"
+        >
+          Continue Shopping
+        </Link>
       </div>
     )
   }
@@ -265,47 +249,30 @@ function CheckoutSuccessContent() {
       <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
         <span className="text-[40px]">✅</span>
       </div>
-      <div className="text-center">
-        <h1 className="text-[22px] font-bold text-gray-900 mb-2">Order Placed!</h1>
-        <p className="text-[13px] text-gray-500 leading-relaxed">
-          Your payment was successful and your order has been placed.
-        </p>
-      </div>
-      <div className="flex flex-col gap-3 w-full max-w-sm mt-4">
-        {orderId && (
-          <Link
-            href={`/profile/orders/${orderId}/tracking`}
-            className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors text-center"
-          >
-            Track My Order
-          </Link>
-        )}
+      <h1 className="text-[22px] font-bold text-gray-900 mb-2">Order Placed!</h1>
+      <p className="text-[13px] text-gray-500 mb-4">
+        Your payment was successful and your order has been placed.
+      </p>
+      {orderId && (
         <Link
-          href="/profile/orders"
-          className={`w-full font-semibold py-3 rounded-full text-[14px] transition-colors text-center ${
-            orderId
-              ? "border border-gray-300 text-gray-700 hover:bg-white"
-              : "bg-[#D65A5A] text-white hover:bg-[#c44f4f]"
-          }`}
+          href={`/profile/orders/${orderId}/tracking`}
+          className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors text-center mb-2"
         >
-          View My Orders
+          Track My Order
         </Link>
-        <Link
-          href="/products"
-          className="w-full border border-gray-300 text-gray-700 font-medium py-3 rounded-full text-[14px] hover:bg-white transition-colors text-center"
-        >
-          Continue Shopping
-        </Link>
-      </div>
-    </div>
-  )
-}
-
-export default function CheckoutSuccessPage() {
-  return (
-    <div className="min-h-screen bg-[#D6E4D3]">
-      <Header />
-      <CheckoutSuccessContent />
+      )}
+      <Link
+        href="/profile/orders"
+        className="w-full border border-gray-300 text-gray-700 font-medium py-3 rounded-full text-[14px] hover:bg-white transition-colors text-center"
+      >
+        View My Orders
+      </Link>
+      <Link
+        href="/products"
+        className="w-full border border-gray-300 text-gray-700 font-medium py-3 rounded-full text-[14px] hover:bg-white transition-colors text-center mt-2"
+      >
+        Continue Shopping
+      </Link>
     </div>
   )
 }

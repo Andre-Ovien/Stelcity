@@ -1,6 +1,6 @@
 import React from 'react'
 
-import CheckoutSuccessPage from './Verify'
+import VerifyPage from './Verify'
 
 
 export const metadata = {
@@ -13,7 +13,7 @@ export const metadata = {
 }
 const page = () => {
   return (
-    <CheckoutSuccessPage />
+    <VerifyPage />
   )
 }
 
