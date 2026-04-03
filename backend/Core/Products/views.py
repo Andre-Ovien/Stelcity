@@ -141,17 +141,16 @@ class CartCheckoutView(generics.GenericAPIView):
 class SquadWebhookView(APIView):
     permission_classes = [AllowAny]
 
-    def post(self, request):
-        print("=== WEBHOOK HIT ===")
-        print("RAW BODY:", request.body)
-        print("DATA:", request.data)
-    
+    def post(self, request):    
         squad_signature = request.headers.get('x-squad-encrypted-body')
-        print("SIGNATURE:", squad_signature)
-    
+        
         if not squad_signature:
-            print("EXIT: no signature")
-            return Response({"detail": "Invalid signature."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "detail": "Invalid signature."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         computed = hmac.new(
             settings.SQUAD_SECRET_KEY.encode('utf-8'),
@@ -159,41 +158,35 @@ class SquadWebhookView(APIView):
             hashlib.sha512
         ).hexdigest().upper()
 
-        print("COMPUTED:", computed)
-        print("MATCH:", squad_signature == computed)
-
         if squad_signature != computed:
-            print("EXIT: signature mismatch")
-            return Response({"detail": "Invalid signature."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "detail": "Invalid signature."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         event = request.data
         body = event.get('Body', {})
         reference = body.get('transaction_ref')
         event_type = event.get('Event')
 
-        print("EVENT TYPE:", event_type)
-        print("REFERENCE:", reference)
-
         if not reference or event_type != 'charge_successful':
-            print("EXIT: no reference or wrong event type")
-            return Response(status=status.HTTP_200_OK)
+            return Response(
+                status=status.HTTP_200_OK
+            )
 
         try:
             payment = Payment.objects.get(reference=reference)
-            print("PAYMENT FOUND:", payment)
         except Payment.DoesNotExist:
-            print("EXIT: payment not found")
             return Response(status=status.HTTP_200_OK)
 
         if payment.status == Payment.StatusChoices.SUCCESS:
-            print("EXIT: already confirmed")
             return Response(status=status.HTTP_200_OK)
 
         verification = verify_squad_payment(reference)
-        print("VERIFICATION:", verification)
 
         transaction_status = verification.get('data', {}).get('transaction_status')
-        print("TRANSACTION STATUS:", transaction_status)
 
         if transaction_status.lower() == 'success':
             payment.status = Payment.StatusChoices.SUCCESS
