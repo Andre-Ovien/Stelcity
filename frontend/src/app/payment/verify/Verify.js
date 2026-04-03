@@ -23,7 +23,7 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     if (!hydrated) return
 
-    const reference = searchParams.get("transaction_ref")
+    const reference = searchParams.get("reference") || searchParams.get("transaction_ref")
     if (!reference || !token) {
       setStatus("failed")
       return
