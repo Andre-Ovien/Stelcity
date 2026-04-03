@@ -95,7 +95,7 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 xl:py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0 xl:py-10">
 
         <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center mb-6 xl:mb-8 tracking-tight">
           Shop Our Products
@@ -133,7 +133,7 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 items-stretch">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-4 lg:gap-6 items-stretch">
           {loading
             ? Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                 <ProductPageCardSkeleton key={i} />
