@@ -113,7 +113,7 @@ class CartCheckoutView(generics.GenericAPIView):
             name=request.user.full_name or request.user.email
         )
 
-        if not response.get('status'):
+        if response.get('status') != 200:
             order.delete()
             return Response(
                 {
@@ -134,7 +134,7 @@ class CartCheckoutView(generics.GenericAPIView):
             "subtotal": subtotal,
             "delivery_fee": delivery_fee,
             'amount': total,
-            'authorization_url': response['data']['callback_url']
+            'authorization_url': response['data']['checkout_url']
         }, status=status.HTTP_200_OK)
     
 
