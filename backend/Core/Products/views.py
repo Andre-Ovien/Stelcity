@@ -157,7 +157,7 @@ class SquadWebhookView(APIView):
             settings.SQUAD_SECRET_KEY.encode('utf-8'),
             request.body,
             hashlib.sha512
-        ).hexdigest()
+        ).hexdigest().upper()
 
         print("COMPUTED:", computed)
         print("MATCH:", squad_signature == computed)
