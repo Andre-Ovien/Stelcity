@@ -30,7 +30,7 @@ def send_welcome_newsletter(email):
 
         <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
         <p style="color: #888; font-size: 13px;">
-            You're receiving this because you subscribed at stelcity.vercel.app
+            You're receiving this because you subscribed at stelcity.com
         </p>
     </div>
     """
@@ -67,7 +67,7 @@ def send_newsletter_broadcast(newsletter, subscribers):
 
         <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
         <p style="color: #888; font-size: 13px;">
-            You're receiving this because you subscribed at stelcity.vercel.app
+            You're receiving this because you subscribed at stelcity.com
         </p>
     </div>
     """
