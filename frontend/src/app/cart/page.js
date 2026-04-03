@@ -1,5 +1,5 @@
 import React from 'react'
-import CartPage from './CartPage'
+import CartPage from './CartPages'
 
 export const metadata = {
   title: "Your Cart | Stelcity",
