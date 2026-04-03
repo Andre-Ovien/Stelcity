@@ -142,12 +142,16 @@ class SquadWebhookView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        print("=== WEBHOOK HIT ===")
+        print("RAW BODY:", request.body)
+        print("DATA:", request.data)
+    
         squad_signature = request.headers.get('x-squad-encrypted-body')
+        print("SIGNATURE:", squad_signature)
+    
         if not squad_signature:
-            return Response(
-                {"detail": "Invalid signature."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            print("EXIT: no signature")
+            return Response({"detail": "Invalid signature."}, status=status.HTTP_400_BAD_REQUEST)
 
         computed = hmac.new(
             settings.SQUAD_SECRET_KEY.encode('utf-8'),
@@ -155,37 +159,41 @@ class SquadWebhookView(APIView):
             hashlib.sha512
         ).hexdigest()
 
+        print("COMPUTED:", computed)
+        print("MATCH:", squad_signature == computed)
+
         if squad_signature != computed:
-            return Response(
-                {
-                    "detail": "Invalid signature."
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
+            print("EXIT: signature mismatch")
+            return Response({"detail": "Invalid signature."}, status=status.HTTP_400_BAD_REQUEST)
+
         event = request.data
         body = event.get('Body', {})
         reference = body.get('transaction_ref')
         event_type = event.get('Event')
 
-        if not reference:
-            return Response(status=status.HTTP_200_OK)
+        print("EVENT TYPE:", event_type)
+        print("REFERENCE:", reference)
 
-        if event_type != 'charge_successful':
+        if not reference or event_type != 'charge_successful':
+            print("EXIT: no reference or wrong event type")
             return Response(status=status.HTTP_200_OK)
 
         try:
             payment = Payment.objects.get(reference=reference)
+            print("PAYMENT FOUND:", payment)
         except Payment.DoesNotExist:
+            print("EXIT: payment not found")
             return Response(status=status.HTTP_200_OK)
 
         if payment.status == Payment.StatusChoices.SUCCESS:
-            return Response(
-                status=status.HTTP_200_OK
-            )
+            print("EXIT: already confirmed")
+            return Response(status=status.HTTP_200_OK)
 
-        verification = verify_squad_payment(reference)        
+        verification = verify_squad_payment(reference)
+        print("VERIFICATION:", verification)
+
         transaction_status = verification.get('data', {}).get('transaction_status')
+        print("TRANSACTION STATUS:", transaction_status)
 
         if transaction_status == 'Success':
             payment.status = Payment.StatusChoices.SUCCESS
