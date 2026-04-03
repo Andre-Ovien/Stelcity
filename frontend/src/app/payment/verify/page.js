@@ -4,6 +4,8 @@ import CheckoutSuccessPage  from './Verify'
 const page = () => {
   return (
     <CheckoutSuccessPage />
+
+    
   )
 }
 
