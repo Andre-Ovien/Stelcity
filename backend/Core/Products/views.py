@@ -355,30 +355,24 @@ class SquadWebhookView(APIView):
     
 
 class VerifyPaymentView(APIView):
-    permission_classes=[]
+    permission_classes = []
 
-    def get(self, reference=None):
+    def get(self, request, ref=None):
         try:
-            payment = Payment.objects.get(
-                reference=reference,
-            )
+            payment = Payment.objects.get(reference=ref)
         except Payment.DoesNotExist:
             return Response(
-                {
-                    "detail": "Payment not found."
-                },
+                {"detail": "Payment not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
         
-        return Response(
-            {
-                'reference': payment.reference,
-                'status': payment.status,
-                'amount': payment.amount,
-                'order_id': str(payment.order.order_id),
-                'order_status': payment.order.status,
-            }
-        )
+        return Response({
+            'reference': payment.reference,
+            'status': payment.status,
+            'amount': payment.amount,
+            'order_id': str(payment.order.order_id),
+            'order_status': payment.order.status,
+        })
     
 class OrderTrackingView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
