@@ -355,7 +355,7 @@ class SquadWebhookView(APIView):
     
 
 class VerifyPaymentView(APIView):
-    permission_classes=[IsAuthenticated]
+    permission_classes=[]
 
     def get(self, request, reference):
         try:
