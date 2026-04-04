@@ -229,7 +229,7 @@ const ProductGrid = () => {
       </p>
 
      
-      <div className="flex gap-2 mt-5 mb-6 overflow-x-auto scrollbar-hide pb-1">
+      <div className="flex gap-3 mt-5 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {TABS.map((tab) => (
           <button
             key={tab.value}
@@ -251,7 +251,7 @@ const ProductGrid = () => {
       </div>
 
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-5 sm:gap-5 lg:gap-5">
         {loading
           ? Array.from({ length: count }).map((_, i) => (
               <ProductCardSkeleton key={i} />
