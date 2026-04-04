@@ -77,7 +77,7 @@ def send_payment_failed(order):
         
         <p>Your cart items are still saved — you can go back and try again.</p>
 
-        <a href="https://stelcity.vercel.app/cart" 
+        <a href="https://www.stelcity.com/cart" 
            style="display: inline-block; margin-top: 16px; padding: 12px 24px; 
                   background: #e74c3c; color: white; text-decoration: none; 
                   border-radius: 6px;">

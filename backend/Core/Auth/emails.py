@@ -6,7 +6,7 @@ resend.api_key = settings.RESEND_API_KEY
 def send_welcome_newsletter(email):
     html_content = """
     <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 24px;">
-        <img src="https://stelcity.vercel.app/images/logo.png" 
+        <img src="https://www.stelcity.com/images/logo.png" 
              alt="Stelcity" style="width: 120px; margin-bottom: 24px;">
         
         <h2 style="color: #333;">Welcome to the Stelcity Community! 🌿</h2>
@@ -21,7 +21,7 @@ def send_welcome_newsletter(email):
             <li>🌿 Ingredient spotlights and education</li>
         </ul>
 
-        <a href="https://stelcity.vercel.app/products" 
+        <a href="https://www.stelcity.com/products" 
            style="display: inline-block; margin-top: 16px; padding: 12px 24px; 
                   background: #2d6a4f; color: white; text-decoration: none; 
                   border-radius: 6px;">
@@ -49,7 +49,7 @@ def send_welcome_newsletter(email):
 def send_newsletter_broadcast(newsletter, subscribers):
     html_content = f"""
     <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 24px;">
-        <img src="https://stelcity.vercel.app/images/logo.png" 
+        <img src="https://www.stelcity.com/images/logo.png" 
              alt="Stelcity" style="width: 120px; margin-bottom: 24px;">
         
         <h2 style="color: #333;">{newsletter.subject}</h2>
@@ -58,7 +58,7 @@ def send_newsletter_broadcast(newsletter, subscribers):
             {newsletter.content}
         </div>
 
-        <a href="https://stelcity.vercel.app/products"
+        <a href="https://www.stelcity.com/products"
            style="display: inline-block; margin-top: 24px; padding: 12px 24px;
                   background: #2d6a4f; color: white; text-decoration: none;
                   border-radius: 6px;">
