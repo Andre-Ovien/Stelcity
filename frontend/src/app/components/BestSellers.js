@@ -49,7 +49,7 @@ function BestSellerCard({ product }) {
   return (
     <Link href={`/products/${product.slug}`} className="self-stretch">
       <div className="
-        min-w-[160px] sm:min-w-[200px] md:min-w-[220px] lg:min-w-[240px] xl:min-w-[260px]
+        min-w-40 sm:min-w-50 md:min-w-55 lg:min-w-60 xl:min-w-65
         bg-white rounded-2xl p-3 flex flex-col gap-2
         border border-gray-100 shadow-sm h-full
         transition-all duration-200
@@ -90,10 +90,10 @@ function BestSellerCard({ product }) {
         {/* Info */}
         <div className="flex-1 flex flex-col gap-2">
           <div className="flex-1">
-            <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2 min-h-[2.5rem]">
+            <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2 min-h-10">
               {product.name}
             </h3>
-            <p className="text-[11px] sm:text-[12px] xl:text-sm text-gray-400 mt-0.5 leading-tight line-clamp-2 min-h-[2rem]">
+            <p className="text-[11px] sm:text-[12px] xl:text-sm text-gray-400 mt-0.5 leading-tight line-clamp-2 min-h-8">
               {product.description}
             </p>
           </div>
@@ -134,7 +134,7 @@ function BestSellerCard({ product }) {
 function BestSellerSkeleton() {
   return (
     <div className="
-      min-w-[160px] sm:min-w-[200px] md:min-w-[220px] lg:min-w-[240px] xl:min-w-[260px]
+      min-w-40 sm:min-w-50 md:min-w-55 lg:min-w-60 xl:min-w-65
       bg-white rounded-2xl p-3 flex flex-col gap-2
       border border-gray-100 animate-pulse shrink-0
     ">
@@ -190,7 +190,7 @@ const BestSellers = () => {
         onMouseLeave={() => (isHovered.current = false)}
         onTouchStart={() => (isHovered.current = true)}
         onTouchEnd={() => (isHovered.current = false)}
-        className="flex items-stretch gap-3 xl:gap-4 overflow-x-auto scrollbar-hide px-4 sm:px-6 lg:px-10 xl:px-14 pb-3"
+        className="flex items-stretch gap-5 xl:gap-5 overflow-x-auto scrollbar-hide px-4 sm:px-6 lg:px-10 xl:px-14 pb-3"
       >
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <BestSellerSkeleton key={i} />)
