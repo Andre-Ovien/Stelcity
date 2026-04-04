@@ -357,7 +357,7 @@ class SquadWebhookView(APIView):
 class VerifyPaymentView(APIView):
     permission_classes=[]
 
-    def get(self, reference):
+    def get(self, reference=None):
         try:
             payment = Payment.objects.get(
                 reference=reference,
