@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <footer className="bg-[#E8F0E8] px-5 py-8 mt-4">
       <div className="mb-6">
-        <Image src="/images/logo.png" alt="Stelcity" width={90} height={50}  className=" block -ml-2"/>
+        <Image src="/images/logo.png" alt="Stelcity" width={90} height={50}  className=" block -ml-1"/>
         <p className="text-[12px] text-gray-500 mt-1 max-w-xs">
           Bringing you clean, gentle and effective skincare for every skin type.
         </p>

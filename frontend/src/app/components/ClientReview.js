@@ -1,4 +1,6 @@
+'use client';
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const Testimonials = () => {
   const reviews = [
@@ -6,44 +8,91 @@ const Testimonials = () => {
       name: 'Esther',
       initial: 'E',
       text: 'The quality of the ingredients is top-notch! My formulations have never been more stable and effective.',
-      color: 'bg-[#A888FF]', 
-      rotation: '-rotate-6',
+      color: 'bg-[#A888FF]',
+      rotation: -6, 
     },
     {
       name: 'Rachel',
       initial: 'R',
       text: 'Gentle on my skin and it actually works. I noticed visible improvements within a few weeks.',
-      color: 'bg-[#89D46C]', 
-      rotation: 'rotate-6',
+      color: 'bg-[#89D46C]',
+      rotation: 6,
     },
     {
       name: 'Mercy',
       initial: 'M',
       text: 'Fast delivery and reliable products. My order arrived exactly as described and well-packaged.',
-      color: 'bg-[#F23D7A]', 
-      rotation: '-rotate-3',
+      color: 'bg-[#F23D7A]',
+      rotation: -3,
     },
   ];
 
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+
+  const cardVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20, 
+      rotate: 0 
+    },
+    visible: (rotation) => ({
+      opacity: 1,
+      y: 0,
+      rotate: rotation,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 12,
+      },
+    }),
+  };
+
   return (
     <section className="bg-[#D9E9D1] py-20 px-6 flex flex-col items-center overflow-hidden">
-      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+      <motion.h2 
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center"
+      >
         What Our Clients Say
-      </h2>
+      </motion.h2>
 
-      <div className="flex flex-col gap-8 w-full max-w-md">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+        className="flex flex-col gap-3 w-full max-w-md"
+      >
         {reviews.map((review, index) => (
-          <div
+          <motion.div
             key={index}
+            custom={review.rotation}
+            variants={cardVariants}
+            whileHover={{ 
+              rotate: 0, 
+              scale: 1.05,
+              zIndex: 10,
+              transition: { duration: 0.2 } 
+            }}
+            whileTap={{ scale: 0.98 }}
             className={`
               ${review.color} 
-              ${review.rotation} 
-              p-6 rounded-[20px]
-              transition-transform hover:rotate-0 hover:scale-105 duration-300
+              p-6 rounded-[20px] shadow-lg cursor-pointer
             `}
           >
             <div className="flex items-center gap-3 mb-3">
-            
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-black">
                 {review.initial}
               </div>
@@ -57,11 +106,11 @@ const Testimonials = () => {
               </div>
             </div>
             <p className="text-sm font-medium leading-relaxed text-gray-900">
-              {review.text} 
+              {review.text}
             </p>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };
