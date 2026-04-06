@@ -7,7 +7,7 @@ import Image from "next/image"
 import Header from "../../components/Header"
 import { getServices } from "../../lib/services"
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2348144316917"
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2348092221127"
 
 function ServiceDetailSkeleton() {
   return (

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import Header from "../components/Header"
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2348144316917"
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2348092221127"
 
 const WEEKS = [
   {

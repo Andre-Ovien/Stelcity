@@ -79,7 +79,7 @@ function ServiceCard({ service }) {
 
       
       <div className="p-3 flex flex-col gap-1 flex-1">
-        <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2 min-h-[2.5rem]">
+        <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2 min-h-10">
           {service.category}
         </h3>
 
