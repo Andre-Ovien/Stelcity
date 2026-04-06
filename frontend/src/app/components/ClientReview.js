@@ -1,118 +1,65 @@
-'use client';
-import React from 'react';
-import { motion } from 'framer-motion';
+"use client"
 
-const Testimonials = () => {
-  const reviews = [
-    {
-      name: 'Esther',
-      initial: 'E',
-      text: 'The quality of the ingredients is top-notch! My formulations have never been more stable and effective.',
-      color: 'bg-[#A888FF]',
-      rotation: -6, 
-    },
-    {
-      name: 'Rachel',
-      initial: 'R',
-      text: 'Gentle on my skin and it actually works. I noticed visible improvements within a few weeks.',
-      color: 'bg-[#89D46C]',
-      rotation: 6,
-    },
-    {
-      name: 'Mercy',
-      initial: 'M',
-      text: 'Fast delivery and reliable products. My order arrived exactly as described and well-packaged.',
-      color: 'bg-[#F23D7A]',
-      rotation: -3,
-    },
-  ];
+import { motion } from "framer-motion"
 
-  
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
+const testimonials = [
+  {
+    id: 1,
+    name: "Esther",
+    color: "bg-[#b8a1f8]",
+    rotate: -6,
+    text:  'I tried their body wash annd also got a massage seession. Everything felt premium and relaxing. I`ll definitely be coming back',
+  },
+  {
+    id: 2,
+    name: "Rachel",
+    color: "bg-[#98d67e]",
+    rotate: 6,
+    text: " I ordered raw materials for my skincare line and the quality was exaclty what i needed. My product felt better and last longer now. ",
+  },
+  {
+    id: 3,
+    name: "Mercy",
+    color: "bg-[#e94a86]",
+    rotate: -6,
+    text: "I`ve been using the face serum for a month now and my skin has never looked better. It absorbs quickly, and gives me a radiant glow.",
+  },
+]
 
-
-  const cardVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20, 
-      rotate: 0 
-    },
-    visible: (rotation) => ({
-      opacity: 1,
-      y: 0,
-      rotate: rotation,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 12,
-      },
-    }),
-  };
-
+const ClientReviews= () => {
   return (
-    <section className="bg-[#D9E9D1] py-20 px-6 flex flex-col items-center overflow-hidden">
-      <motion.h2 
-        initial={{ opacity: 0, y: -20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center"
-      >
+    <section className="bg-[#d5e4cc] py-10 px-4 flex flex-col items-center w-full overflow-hidden">
+      <h2 className="text-[26px] sm:text-[32px] md:text-[40px] font-bold mb-10 text-center">
         What Our Clients Say
-      </motion.h2>
+      </h2>
 
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        className="flex flex-col gap-3 w-full max-w-md"
-      >
-        {reviews.map((review, index) => (
+      <div className="flex flex-col items-center w-full max-w-[320px] sm:max-w-95 md:max-w-110">
+        {testimonials.map((card) => (
           <motion.div
-            key={index}
-            custom={review.rotation}
-            variants={cardVariants}
-            whileHover={{ 
-              rotate: 0, 
-              scale: 1.05,
-              zIndex: 10,
-              transition: { duration: 0.2 } 
-            }}
-            whileTap={{ scale: 0.98 }}
-            className={`
-              ${review.color} 
-              p-6 rounded-[20px] shadow-lg cursor-pointer
-            `}
+            key={card.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0, rotate: card.rotate }}
+            viewport={{ once: true }}
+            className={`${card.color} border border-black rounded-3xl p-5 w-full relative`}
+            style={{ marginTop: card.id === 1 ? 0 : "15px" }}
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-black">
-                {review.initial}
-              </div>
-              <div>
-                <p className="font-bold text-sm leading-none">{review.name}</p>
-                <div className="flex text-yellow-400 mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i}>★</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <p className="text-sm font-medium leading-relaxed text-gray-900">
-              {review.text}
+            <div className="flex text-yellow-400 text-[18px] mb-2">★★★★★</div>
+
+            <p className="text-black font-semibold text-[13px] sm:text-[14px] leading-snug">
+              {card.text}
             </p>
+
+            <div className="mt-4 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-white border border-black flex items-center justify-center font-bold text-[12px] shrink-0">
+                {card.name[0]}
+              </div>
+              <span className="font-bold text-[13px]">{card.name}</span>
+            </div>
           </motion.div>
         ))}
-      </motion.div>
+      </div>
     </section>
-  );
-};
+  )
+}
 
-export default Testimonials;
+export default ClientReviews
