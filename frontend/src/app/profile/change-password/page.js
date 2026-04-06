@@ -39,7 +39,7 @@ export default function ChangePasswordPage() {
     const allRequirementsMet = passwordRequirements.every((r) => r.test(form.new_password))
 
     if (form.new_password && !allRequirementsMet) {
-    newErrors.new_password = "Password does not meet all requirements"
+      newErrors.new_password = "Password does not meet all requirements"
     }
 
     if (!form.current_password) newErrors.current_password = "Current password is required"
@@ -109,105 +109,101 @@ export default function ChangePasswordPage() {
       errors[field] ? "border-red-400" : "border-gray-200"
     }`
 
+  const PasswordField = ({ label, field, show, setShow, onChangeSide }) => (
+    <div>
+      <label className="text-[12px] text-gray-500 mb-1 block">{label}</label>
+      <div className="relative">
+        <input
+          type={show ? "text" : "password"}
+          value={form[field]}
+          onChange={(e) => {
+            handleChange(field, e.target.value)
+            onChangeSide?.()
+          }}
+          placeholder={`Enter ${label.toLowerCase().replace(" *", "")}`}
+          className={inputClass(field)}
+        />
+        <button
+          onClick={() => setShow((p) => !p)}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+        >
+          {show ? <IoEyeOff size={18} /> : <IoEye size={18} />}
+        </button>
+      </div>
+      {errors[field] && (
+        <p className="text-red-400 text-[11px] mt-1 px-1">{errors[field]}</p>
+      )}
+    </div>
+  )
+
   return (
-    <div className="min-h-screen bg-[#D6E4D3] my-0">
+    <div className="min-h-screen bg-[#D6E4D3]">
       <Header />
 
-      <div className="px-4 pb-10 ">
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-0 pb-10">
         <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
           Change Password
         </h1>
 
-        <div className="flex flex-col gap-4">
+      
+        <div className="sm:bg-white sm:rounded-2xl sm:border sm:border-gray-100 sm:p-6 sm:shadow-sm">
+          <div className="flex flex-col gap-4">
 
-          <div>
-            <label className="text-[12px] text-gray-500 mb-1 block">Current Password *</label>
-            <div className="relative">
-              <input
-                type={showCurrent ? "text" : "password"}
-                value={form.current_password}
-                onChange={(e) => handleChange("current_password", e.target.value)}
-                placeholder="Enter current password"
-                className={inputClass("current_password")}
-              />
-              <button
-                onClick={() => setShowCurrent((p) => !p)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-              >
-                {showCurrent ? <IoEyeOff size={18} /> : <IoEye size={18} />}
-              </button>
-            </div>
-            {errors.current_password && (
-              <p className="text-red-400 text-[11px] mt-1 px-1">{errors.current_password}</p>
-            )}
-          </div>
+            <PasswordField
+              label="Current Password *"
+              field="current_password"
+              show={showCurrent}
+              setShow={setShowCurrent}
+            />
 
-           <div>
-                <label className="text-[12px] text-gray-500 mb-1 block">New Password *</label>
-                <div className="relative">
-                    <input
-                    type={showNew ? "text" : "password"}
-                    value={form.new_password}
-                    onChange={(e) => {
-                        handleChange("new_password", e.target.value)
-                        setNewPasswordTouched(true)
-                    }}
-                    placeholder="Enter new password"
-                    className={inputClass("new_password")}
-                    />
-                    <button
-                    onClick={() => setShowNew((p) => !p)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                    >
-                    {showNew ? <IoEyeOff size={18} /> : <IoEye size={18} />}
-                    </button>
+            <div>
+              <label className="text-[12px] text-gray-500 mb-1 block">New Password *</label>
+              <div className="relative">
+                <input
+                  type={showNew ? "text" : "password"}
+                  value={form.new_password}
+                  onChange={(e) => {
+                    handleChange("new_password", e.target.value)
+                    setNewPasswordTouched(true)
+                  }}
+                  placeholder="Enter new password"
+                  className={inputClass("new_password")}
+                />
+                <button
+                  onClick={() => setShowNew((p) => !p)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showNew ? <IoEyeOff size={18} /> : <IoEye size={18} />}
+                </button>
+              </div>
+              {errors.new_password && (
+                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.new_password}</p>
+              )}
+              {newPasswordTouched && form.new_password.length > 0 && (
+                <div className="mt-2">
+                  <PasswordRequirements password={form.new_password} />
                 </div>
-                {errors.new_password && (
-                    <p className="text-red-400 text-[11px] mt-1 px-1">{errors.new_password}</p>
-                )}
-                {newPasswordTouched && form.new_password.length > 0 && (
-                    <div className="mt-2">
-                    <PasswordRequirements password={form.new_password} />
-                    </div>
-                )}
-                </div>
-            {errors.new_password && (
-              <p className="text-red-400 text-[11px] mt-1 px-1">{errors.new_password}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="text-[12px] text-gray-500 mb-1 block">Confirm New Password *</label>
-            <div className="relative">
-              <input
-                type={showConfirm ? "text" : "password"}
-                value={form.confirm_password}
-                onChange={(e) => handleChange("confirm_password", e.target.value)}
-                placeholder="Confirm new password"
-                className={inputClass("confirm_password")}
-              />
-              <button
-                onClick={() => setShowConfirm((p) => !p)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-              >
-                {showConfirm ? <IoEyeOff size={18} /> : <IoEye size={18} />}
-              </button>
+              )}
             </div>
-            {errors.confirm_password && (
-              <p className="text-red-400 text-[11px] mt-1 px-1">{errors.confirm_password}</p>
-            )}
+
+            <PasswordField
+              label="Confirm New Password *"
+              field="confirm_password"
+              show={showConfirm}
+              setShow={setShowConfirm}
+            />
+
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
+            >
+              {loading ? "Changing..." : "Change Password"}
+            </button>
+
           </div>
-
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
-          >
-            {loading ? "Changing..." : "Change Password"}
-          </button>
-
         </div>
+      </div>
     </div>
-    
   )
 }

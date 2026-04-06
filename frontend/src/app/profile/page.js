@@ -14,13 +14,12 @@ import { getProfile } from "../lib/profile"
 
 const menuItems = [
   { label: "Edit Profile", href: "/profile/edit", icon: <FaRegUser size={16} className="text-white" />, bg: "bg-[#D65A5A]" },
-  { label: "Notifications", href: "/profile/notifications", icon: <IoNotificationsOutline size={16} className="text-white" />, bg: "bg-orange-400" },
+  // { label: "Notifications", href: "/profile/notifications", icon: <IoNotificationsOutline size={16} className="text-white" />, bg: "bg-orange-400" },
   { label: "Shipping Address", href: "/profile/shipping", icon: <IoLocationOutline size={16} className="text-white" />, bg: "bg-green-500" },
   { label: "Change Password", href: "/profile/change-password", icon: <IoLockClosedOutline size={16} className="text-white" />, bg: "bg-gray-500" },
 ]
 
 export default function ProfilePage() {
-  
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const [profileName, setProfileName] = useState(null)
   const user = useAuthStore((s) => s.user)
@@ -43,15 +42,16 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3] my-0">
+    <div className="min-h-screen bg-[#D6E4D3]">
       <Header />
 
-      <div className="px-4 pb-10 ">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-0 pb-10">
 
         <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
           Account
         </h1>
 
+        
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 rounded-full border-2 border-gray-200 flex items-center justify-center bg-gray-50">
             <FiUser size={40} className="text-gray-400" />
@@ -61,28 +61,29 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        <div className="flex flex-col divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden mb-6">
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           {menuItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="flex items-center justify-between px-4 py-4 bg-white hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between px-4 py-4 bg-white rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full ${item.bg} flex items-center justify-center`}>
+                <div className={`w-8 h-8 rounded-full ${item.bg} flex items-center justify-center shrink-0`}>
                   {item.icon}
                 </div>
                 <span className="text-[14px] font-medium text-gray-700">{item.label}</span>
               </div>
-              <ChevronRight size={18} className="text-gray-400" />
+              <ChevronRight size={18} className="text-gray-400 shrink-0" />
             </Link>
           ))}
         </div>
 
+      
         <p className="text-[13px] font-semibold text-[#D65A5A] text-center mb-3">
           — My Orders —
         </p>
-
         <div className="flex flex-col divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden mb-8">
           <Link
             href="/profile/orders"
@@ -93,6 +94,7 @@ export default function ProfilePage() {
           </Link>
         </div>
 
+        
         <button
           onClick={() => setShowLogoutModal(true)}
           className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors"
@@ -102,6 +104,7 @@ export default function ProfilePage() {
 
       </div>
 
+      
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
           <div className="bg-white rounded-3xl px-6 py-8 w-full max-w-sm flex flex-col gap-4 shadow-xl">
