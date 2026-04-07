@@ -4,6 +4,7 @@ import uuid
 from django.conf import settings
 from cloudinary_storage.storage import MediaCloudinaryStorage
 from django.db.models import Q
+from django.utils.text import slugify
 # Create your models here.
 
 
@@ -20,6 +21,19 @@ class Product(models.Model):
     image = models.ImageField(storage=MediaCloudinaryStorage(),upload_to="Stelcity/Products", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            # handle duplicate slugs
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     # @property
     # def in_stock(self):
