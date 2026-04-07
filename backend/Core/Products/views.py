@@ -65,6 +65,7 @@ class ProductDetailApiView(generics.RetrieveAPIView):
         return super().get(request, *args, **kwargs)
     queryset = Product.objects.prefetch_related('variants').all()
     serializer_class = ProductSerializer
+    lookup_field = 'slug'
 
 class OrderListApiView(generics.ListAPIView):
     serializer_class = OrderHistorySerializer
