@@ -64,9 +64,9 @@ const Footer = () => {
           <h4 className="font-semibold text-gray-800 mb-1">Shop</h4>
           {[
             { label: "Products", href: "/products" },
-            { label: "Raw Materials", href: "/rawMaterials" },
-            { label: "Services", href: "/services" },
-            { label: "Training", href: "/training" },
+            { label: "Raw Materials", href: "/raw-materials" },
+            { label: "Services", href: "/our-services" },
+            { label: "Training", href: "/training-programs" },
           ].map((item) => (
             <Link key={item.label} href={item.href} className="text-gray-500 hover:text-gray-800 transition-colors">
               {item.label}

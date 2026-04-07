@@ -15,7 +15,7 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
   const isFav = useFavStore((s) => s.isFav(product.id))
   const router = useRouter()
 
-  const isRawMaterial = basePath === "rawMaterials"
+  const isRawMaterial = basePath === "raw-materials"
 
   const handleAddToCart = (e) => {
     e.preventDefault()
@@ -53,10 +53,10 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
   }
 
   return (
-    <Link href={`/${basePath}/${product.slug}`} className="h-full">
+    <Link href={`/${basePath}/${product.slug}`} className="flex flex-col h-full">
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex flex-col gap-2 h-full">
 
-        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50">
+        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50 shrink-0">
           {product.badge && (
             <span className="absolute top-2 left-2 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide">
               {product.badge}
@@ -73,21 +73,21 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
             alt={product.name}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 50vw, 25vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         </div>
 
-        <h3 className="text-[13px] font-semibold text-gray-800 leading-tight xl:text-xl">
+        <h3 className="text-[13px] font-semibold text-gray-800 leading-tight xl:text-xl line-clamp-2">
           {product.name}
         </h3>
 
-        <p className="text-[11px] text-gray-400 leading-tight line-clamp-2 xl:text-lg">
+        <p className="text-[11px] text-gray-400 leading-tight line-clamp-2 xl:text-lg flex-1">
           {product.description}
         </p>
 
         <div className="flex items-center gap-2">
           {product.originalPrice && (
-            <span className="text-[11px] text-gray-400 line-through  ">
+            <span className="text-[11px] text-gray-400 line-through">
               ₦{product.originalPrice.toLocaleString()}
             </span>
           )}
@@ -103,10 +103,10 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
 
         <button
           onClick={handleAddToCart}
-          className="flex items-center justify-center gap-1.5 bg-[#D65A5A] text-white rounded-full py-2 text-[12px] font-medium hover:bg-[#c44f4f] transition-colors w-full mt-auto xl:text-xl "
+          className="flex items-center justify-center gap-1.5 bg-[#D65A5A] text-white rounded-full py-2 text-[12px] font-medium hover:bg-[#c44f4f] transition-colors w-full mt-auto xl:text-xl shrink-0"
         >
           {isRawMaterial ? "Select Weight" : "Add to Cart"}
-          <IoAddCircleOutline size={15}  />
+          <IoAddCircleOutline size={15} />
         </button>
 
       </div>

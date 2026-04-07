@@ -13,10 +13,10 @@ import { useCartStore } from "../store/cartStore"
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/products" },
-  { label: "Raw Materials", href: "/rawMaterials" },
-  { label: "Services", href: "/services" },
-  { label: "Training", href: "/training" },
-  { label: "Favourites", href: "/fav" },
+  { label: "Raw Materials", href: "/raw-materials" },
+  { label: "Services", href: "/our-services" },
+  { label: "Training", href: "/training-programs" },
+  { label: "Favourites", href: "/My-Favourites" },
 ]
 
 const Header = () => {

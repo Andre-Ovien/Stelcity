@@ -12,7 +12,7 @@ export async function getProducts(page = 1) {
       image: p.image,
       badge: p.stock <= 3 ? "LIMITED" : null,
       rating: 5,
-      slug: p.id,
+      slug: p.slug,
     })),
     count: data.count,
     next: data.next,
