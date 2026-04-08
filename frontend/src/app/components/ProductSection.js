@@ -1,43 +1,45 @@
-"use client"
+// src/app/components/ProductPageCard.jsx
+"use client";
 
-import Image from "next/image"
-import { FaHeart } from "react-icons/fa"
-import { IoAddCircleOutline } from "react-icons/io5"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useCartStore } from "../store/cartStore"
-import { useFavStore } from "../store/favStore"
-import toast from "react-hot-toast"
+import Image from "next/image";
+import { FaHeart } from "react-icons/fa";
+import { IoAddCircleOutline } from "react-icons/io5";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCartStore } from "../store/cartStore";
+import { useFavStore } from "../store/favStore";
+import toast from "react-hot-toast";
 
 const ProductPageCard = ({ product, basePath = "products" }) => {
-  const addItem = useCartStore((s) => s.addItem)
-  const toggleFav = useFavStore((s) => s.toggleFav)
-  const isFav = useFavStore((s) => s.isFav(product.id))
-  const router = useRouter()
+  const addItem = useCartStore((s) => s.addItem);
+  const toggleFav = useFavStore((s) => s.toggleFav);
+  const isFav = useFavStore((s) => s.isFav(product.slug)); 
+  const router = useRouter();
 
-  const isRawMaterial = basePath === "raw-materials"
+  const isRawMaterial = basePath === "raw-materials";
 
   const handleAddToCart = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (isRawMaterial) {
-      router.push(`/${basePath}/${product.slug}`)
-      return
+      router.push(`/${basePath}/${product.slug}`);
+      return;
     }
     addItem({
-      id: product.id,
+      id: product.id, 
       name: product.name,
       price: product.price,
       image: product.image,
       quantity: 1,
       variant: null,
-    })
-    toast.success("Added to cart!")
-  }
+    });
+    toast.success("Added to cart!");
+  };
 
   const handleToggleFav = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     toggleFav({
       id: product.id,
+      slug: product.slug, // critical: put slug
       name: product.name,
       price: product.price,
       priceLabel: product.priceLabel,
@@ -45,17 +47,17 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
       description: product.description,
       badge: product.badge,
       rating: product.rating,
-      slug: product.slug,
       variants: product.variants || [],
       type: isRawMaterial ? "raw" : "product",
-    })
-    toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
-  }
+    });
+    toast.success(
+      isFav ? "Removed from favourites" : "Added to favourites!"
+    );
+  };
 
   return (
     <Link href={`/${basePath}/${product.slug}`} className="flex flex-col h-full">
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex flex-col gap-2 h-full">
-
         <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50 shrink-0">
           {product.badge && (
             <span className="absolute top-2 left-2 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide">
@@ -66,7 +68,10 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
             onClick={handleToggleFav}
             className="absolute top-2 right-2 z-10 bg-white rounded-full p-1.5 shadow-sm"
           >
-            <FaHeart className={isFav ? "text-red-400" : "text-gray-300"} size={12} />
+            <FaHeart
+              className={isFav ? "text-red-400" : "text-gray-300"}
+              size={12}
+            />
           </button>
           <Image
             src={product.image}
@@ -97,7 +102,9 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
         </div>
 
         <div className="flex items-center gap-1">
-          <span className="text-yellow-400 text-[11px] xl:text-xl">{"★".repeat(product.rating)}</span>
+          <span className="text-yellow-400 text-[11px] xl:text-xl">
+            {"★".repeat(product.rating)}
+          </span>
           <span className="text-[11px] text-gray-400">{product.rating}.0</span>
         </div>
 
@@ -108,10 +115,9 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
           {isRawMaterial ? "Select Weight" : "Add to Cart"}
           <IoAddCircleOutline size={15} />
         </button>
-
       </div>
     </Link>
-  )
-}
+  );
+};
 
-export default ProductPageCard
+export default ProductPageCard;
