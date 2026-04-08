@@ -23,7 +23,7 @@ function FavCard({ product }) {
   const isRawMaterial = product.type === "raw"
 
   const href = isService
-    ? `/services/${product.slug}`
+    ? `/our-services/${product.slug}`
     : isRawMaterial
     ? `/raw-materials/${product.slug}`
     : `/products/${product.slug}`
@@ -66,7 +66,7 @@ function FavCard({ product }) {
         hover:-translate-y-1 hover:shadow-md
         active:scale-95
       ">
-        {/* Image */}
+        
         <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50 shrink-0">
           {product.badge && (
             <span className="absolute top-2 left-2 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide">
@@ -104,11 +104,11 @@ function FavCard({ product }) {
           )}
         </div>
 
-        {/* Info */}
-        <h3 className="text-[13px] sm:text-[14px] font-semibold text-gray-800 leading-tight line-clamp-2 min-h-[2.5rem]">
+      
+        <h3 className="text-[13px] sm:text-[14px] font-semibold text-gray-800 leading-tight line-clamp-2 min-h-10">
           {product.name}
         </h3>
-        <p className="text-[11px] text-gray-400 leading-tight line-clamp-2 min-h-[2rem]">
+        <p className="text-[11px] text-gray-400 leading-tight line-clamp-2 min-h-8">
           {product.description}
         </p>
 
@@ -148,10 +148,10 @@ export default function FavouritesPage() {
   const paginated = items.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#D6E4D3]">
       <Header />
 
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
         <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center my-6 xl:my-10 tracking-tight">
           My Favourites
         </h1>

@@ -11,7 +11,7 @@ import toast from "react-hot-toast"
 
 function ServiceCard({ service }) {
   const toggleFav = useFavStore((s) => s.toggleFav)
-  const isFav = useFavStore((s) => s.isFav(`service-${service.id}`))
+  const isFav = useFavStore((s) => s.isFav(service.slug))
   const router = useRouter()
 
   const minPrice = service.items.length > 0
@@ -21,7 +21,7 @@ function ServiceCard({ service }) {
   const handleToggleFav = (e) => {
     e.stopPropagation()
     toggleFav({
-      id: `service-${service.id}`,
+      slug: service.slug,
       name: service.category,
       price: minPrice ?? 0,
       priceLabel: minPrice ? `From ₦${minPrice.toLocaleString()}` : "",
@@ -29,13 +29,12 @@ function ServiceCard({ service }) {
       description: null,
       badge: null,
       rating: 5,
-      slug: null,
       type: "service",
     })
     toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
   }
 
-  const handleNavigate = () => router.push(`/services/${service.id}`)
+  const handleNavigate = () => router.push(`/our-services/${service.slug}`)
 
   return (
     <div
@@ -61,8 +60,6 @@ function ServiceCard({ service }) {
         ) : (
           <span className="text-[40px]">✨</span>
         )}
-
-        
         <button
           onClick={handleToggleFav}
           className="
@@ -77,7 +74,7 @@ function ServiceCard({ service }) {
         </button>
       </div>
 
-      
+      {/* Content */}
       <div className="p-3 flex flex-col gap-1 flex-1">
         <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2 min-h-10">
           {service.category}
@@ -94,7 +91,6 @@ function ServiceCard({ service }) {
           </p>
         )}
 
-        
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -110,7 +106,7 @@ function ServiceCard({ service }) {
             active:scale-95 active:bg-[#b84444] active:shadow-none
           "
         >
-          View Services
+          View Service
         </button>
       </div>
     </div>
@@ -149,17 +145,17 @@ export default function ServicesPage() {
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 xl:pb-14">
-        <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center mt-1 mb-4 xl:my-10 tracking-tight">
+        <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center mb-4 xl:my-10 tracking-tight">
           Our Services
         </h1>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 sm:gap-5 lg:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <ServiceCardSkeleton key={i} />
               ))
             : services.map((service) => (
-                <ServiceCard key={service.id} service={service} />
+                <ServiceCard key={service.slug} service={service} />
               ))
           }
         </div>
