@@ -91,14 +91,14 @@ export const metadata = {
     images: ["/images/og-banner.jpeg"],
   },
   verification:{
-    google:"google6a0f20f6c2efe122.html",
+    google:"6a0f20f6c2efe122",
   }
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${poppins.variable} antialiased`}>
+      <body className={`${inter.variable} ${poppins.variable} antialiased`}>
         <OrgSchema />
         {children}
         <Toaster position="top-center" />

@@ -1,45 +1,46 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { FaHeart } from "react-icons/fa"
-import { IoAddCircleOutline } from "react-icons/io5"
-import { getCollectionPreview } from "../lib/homeCollection"
-import { useFavStore } from "../store/favStore"
-import { useCartStore } from "../store/cartStore"
-import toast from "react-hot-toast"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { FaHeart } from "react-icons/fa";
+import { IoAddCircleOutline } from "react-icons/io5";
+import { getCollectionPreview } from "../lib/homeCollection";
+import { useFavStore } from "../store/favStore";
+import { useCartStore } from "../store/cartStore";
+import toast from "react-hot-toast";
 
 const TABS = [
   { label: "All", value: "all" },
   { label: "Products", value: "products" },
   { label: "Raw Materials", value: "raw" },
   { label: "Services", value: "services" },
-]
+];
 
 const showMore = {
   all:      { label: "Show more", href: "/products" },
   products: { label: "Show more products", href: "/products" },
   raw:      { label: "Show more raw materials", href: "/raw-materials" },
   services: { label: "View all services", href: "/our-services" },
-}
+};
 
 function ProductCard({ product }) {
-  const toggleFav = useFavStore((s) => s.toggleFav)
-  const isFav = useFavStore((s) => s.isFav(product.id))
-  const addItem = useCartStore((s) => s.addItem)
+  const toggleFav = useFavStore((s) => s.toggleFav);
+  const isFav = useFavStore((s) => s.isFav(product.slug)); 
+  const addItem = useCartStore((s) => s.addItem);
 
   const href =
     product.type === "service"
       ? "/services"
       : product.type === "raw"
       ? `/raw-materials/${product.slug}`
-      : `/products/${product.slug}`
+      : `/products/${product.slug}`;
 
   const handleToggleFav = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     toggleFav({
       id: product.id,
+      slug: product.slug, 
       name: product.name,
       price: product.price,
       priceLabel: product.priceLabel,
@@ -47,24 +48,25 @@ function ProductCard({ product }) {
       description: product.description,
       badge: product.badge,
       rating: product.rating,
-      slug: product.slug,
       variants: product.variants || [],
       type: product.type,
-    })
-    toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
-  }
+    });
+    toast.success(
+      isFav ? "Removed from favourites" : "Added to favourites!"
+    );
+  };
 
   const handleAddToCart = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (product.type === "service") {
-      window.location.href = "/services"
-      return
+      window.location.href = "/our-services";
+      return;
     }
 
     if (product.type === "raw") {
-      window.location.href = `/raw-materials/${product.slug}`
-      return
+      window.location.href = `/raw-materials/${product.slug}`;
+      return;
     }
 
     addItem({
@@ -75,21 +77,20 @@ function ProductCard({ product }) {
       quantity: 1,
       variant: null,
       variantId: null,
-    })
-    toast.success("Added to cart!")
-  }
+    });
+    toast.success("Added to cart!");
+  };
 
   const buttonLabel =
     product.type === "service"
       ? "View Service"
       : product.type === "raw"
       ? "Select Weight"
-      : "Add to Cart"
+      : "Add to Cart";
 
   return (
     <Link href={href} className="h-full">
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 relative flex flex-col h-full transition-transform duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95">
-
         {product.badge && (
           <span className="absolute top-3 left-3 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase">
             {product.badge}
@@ -160,10 +161,9 @@ function ProductCard({ product }) {
             <IoAddCircleOutline size={14} className="xl:w-4 xl:h-4 shrink-0" />
           </button>
         </div>
-
       </div>
     </Link>
-  )
+  );
 }
 
 function ProductCardSkeleton() {
@@ -175,51 +175,50 @@ function ProductCardSkeleton() {
       <div className="h-3 bg-gray-200 rounded w-1/4" />
       <div className="h-8 bg-gray-200 rounded-full w-full mt-2" />
     </div>
-  )
+  );
 }
 
 const ProductGrid = () => {
-  const [category, setCategory] = useState("all")
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [count, setCount] = useState(6)
+  const [category, setCategory] = useState("all");
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState(6);
 
   useEffect(() => {
     const updateCount = () => {
       if (window.innerWidth >= 1024) {
-        setCount(12)
+        setCount(12);
       } else if (window.innerWidth >= 768) {
-        setCount(8)
+        setCount(8);
       } else {
-        setCount(6)
+        setCount(6);
       }
-    }
+    };
 
-    updateCount()
-    window.addEventListener("resize", updateCount)
-    return () => window.removeEventListener("resize", updateCount)
-  }, [])
+    updateCount();
+    window.addEventListener("resize", updateCount);
+    return () => window.removeEventListener("resize", updateCount);
+  }, []);
 
   useEffect(() => {
-    let mounted = true
-    setLoading(true)
+    let mounted = true;
+    setLoading(true);
 
     getCollectionPreview(category).then((data) => {
       if (mounted) {
-        setItems(data || [])
-        setLoading(false)
+        setItems(data || []);
+        setLoading(false);
       }
-    })
+    });
 
-    return () => { mounted = false }
-  }, [category])
+    return () => { mounted = false };
+  }, [category]);
 
   return (
     <section
-      className="px-4 sm:px-6 lg:px-10 xl:px-14 py-10 xl:py-14 bg-[#F7F6F6] "
+      className="px-4 sm:px-6 lg:px-10 xl:px-14 py-10 xl:py-14 bg-[#F7F6F6]"
       id="collection"
     >
-      
       <h2 className="font-bold text-[22px] sm:text-2xl xl:text-3xl text-gray-900 underline">
         Browse Our Collection
       </h2>
@@ -228,7 +227,6 @@ const ProductGrid = () => {
         Explore our skincare categories to find what works best for your skin.
       </p>
 
-     
       <div className="flex gap-3 mt-5 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {TABS.map((tab) => (
           <button
@@ -239,9 +237,10 @@ const ProductGrid = () => {
               text-[13px] sm:text-sm xl:text-base font-medium
               transition-all duration-200
               active:scale-95
-              ${category === tab.value
-                ? "bg-[#D65A5A] text-white border-[#D65A5A] shadow-sm"
-                : "bg-white text-gray-600 border-gray-200 hover:border-[#D65A5A] hover:text-[#D65A5A]"
+              ${
+                category === tab.value
+                  ? "bg-[#D65A5A] text-white border-[#D65A5A] shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-[#D65A5A] hover:text-[#D65A5A]"
               }
             `}
           >
@@ -250,7 +249,6 @@ const ProductGrid = () => {
         ))}
       </div>
 
-      
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-5 sm:gap-5 lg:gap-5">
         {loading
           ? Array.from({ length: count }).map((_, i) => (
@@ -258,8 +256,7 @@ const ProductGrid = () => {
             ))
           : items.slice(0, count).map((item) => (
               <ProductCard key={item.id} product={item} />
-            ))
-        }
+            ))}
       </div>
 
       {!loading && items.length === 0 && (
@@ -268,7 +265,6 @@ const ProductGrid = () => {
         </div>
       )}
 
-      
       <div className="text-center mt-8">
         <Link
           href={showMore[category].href}
@@ -283,9 +279,8 @@ const ProductGrid = () => {
           {showMore[category].label}
         </Link>
       </div>
-
     </section>
-  )
-}
+  );
+};
 
-export default ProductGrid
+export default ProductGrid;
