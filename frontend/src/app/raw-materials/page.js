@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Header from "../components/Header"
 import ProductPageCard from "../components/ProductSection"
 import Pagination from "../components/pagination"
-import { getProducts } from "../lib/product"
+import { getRawMaterials } from "../lib/rawMaterials"
 
 const ITEMS_PER_PAGE = 10
 
@@ -13,7 +13,7 @@ const sortOptions = [
   { label: "Default", value: "default" },
   { label: "Price: Low to High", value: "price_asc" },
   { label: "Price: High to Low", value: "price_desc" },
-  { label: "Go to Raw Materials", value: "rawMaterials" },
+  { label: "Go to Products", value: "products" },
   { label: "Go to Services", value: "Services" },
 ]
 
@@ -29,7 +29,7 @@ function ProductPageCardSkeleton() {
   )
 }
 
-function ProductsContent() {
+function RawMaterialsContent() {
   const [allProducts, setAllProducts] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -40,10 +40,10 @@ function ProductsContent() {
   const searchParams = useSearchParams()
   const currentPage = Number(searchParams.get("page") || 1)
 
-  const fetchProducts = useCallback((page) => {
+  const fetchRawMaterials = useCallback((page) => {
     setLoading(true)
     let mounted = true
-    getProducts(page).then((data) => {
+    getRawMaterials(page).then((data) => {
       if (mounted) {
         setAllProducts(data.products || [])
         setTotalCount(data.count || 0)
@@ -54,24 +54,24 @@ function ProductsContent() {
   }, [])
 
   useEffect(() => {
-    const cleanup = fetchProducts(currentPage)
+    const cleanup = fetchRawMaterials(currentPage)
     return cleanup
-  }, [currentPage, fetchProducts])
+  }, [currentPage, fetchRawMaterials])
 
   const handleSort = (value) => {
-    if (value === "rawMaterials") return router.push("/raw-materials")
+    if (value === "products") return router.push("/products")
     if (value === "Services") return router.push("/our-services")
     setSort(value)
-    router.push("/products?page=1")
+    router.push("/raw-materials?page=1")
   }
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
-    router.push("/products?page=1")
+    router.push("/raw-materials?page=1")
   }
 
   const handlePageChange = (page) => {
-    router.push(`/products?page=${page}`)
+    router.push(`/raw-materials?page=${page}`)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -90,7 +90,7 @@ function ProductsContent() {
   return (
     <div className="w-full px-4 sm:px-6 xl:px-10 py-0 xl:py-10">
       <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center mb-6 xl:mb-8 tracking-tight xl:pt-0">
-        Shop Our Products
+        Shop Our Raw Materials
       </h1>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 xl:mb-8">
@@ -104,7 +104,7 @@ function ProductsContent() {
             type="text"
             value={search}
             onChange={handleSearchChange}
-            placeholder="Search products..."
+            placeholder="Search raw materials..."
             className="w-full border border-gray-200 bg-white rounded-full pl-9 pr-4 py-2.5 text-sm xl:text-base text-gray-700 placeholder-gray-400 outline-none transition-all duration-200 hover:border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           />
         </div>
@@ -135,7 +135,7 @@ function ProductsContent() {
                 key={`${product.id}-${index}`}
                 className="transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] rounded-2xl overflow-hidden"
               >
-                <ProductPageCard product={product} />
+                <ProductPageCard product={product} basePath="raw-materials" />
               </div>
             ))
         }
@@ -143,7 +143,7 @@ function ProductsContent() {
 
       {!loading && sorted.length === 0 && (
         <div className="text-center py-20 text-gray-400 text-sm xl:text-base">
-          No products found for &ldquo;{search}&rdquo;
+          No raw materials found for &ldquo;{search}&rdquo;
         </div>
       )}
 
@@ -160,12 +160,12 @@ function ProductsContent() {
   )
 }
 
-export default function ProductsPage() {
+export default function RawMaterialsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <Suspense fallback={<div className="p-10 text-center text-gray-400">Loading...</div>}>
-        <ProductsContent />
+        <RawMaterialsContent />
       </Suspense>
     </div>
   )

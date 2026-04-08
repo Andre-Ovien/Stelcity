@@ -8,21 +8,21 @@ const testimonials = [
     name: "Esther",
     color: "bg-[#b8a1f8]",
     rotate: -6,
-    text:  'I tried their body wash annd also got a massage seession. Everything felt premium and relaxing. I`ll definitely be coming back',
+    text:  'The quality of the ingredients is top-notch! My formulation have been more stable and effective.',
   },
   {
     id: 2,
     name: "Rachel",
     color: "bg-[#98d67e]",
     rotate: 6,
-    text: " I ordered raw materials for my skincare line and the quality was exaclty what i needed. My product felt better and last longer now. ",
+    text: " Gentle on my skin aand it actually works. I noticed visible improvements within a few weeks. ",
   },
   {
     id: 3,
     name: "Mercy",
     color: "bg-[#e94a86]",
     rotate: -6,
-    text: "I`ve been using the face serum for a month now and my skin has never looked better. It absorbs quickly, and gives me a radiant glow.",
+    text: "Fast delivery and reliable products. My order arrived exaclty as described and well-packaged.",
   },
 ]
 

@@ -123,10 +123,11 @@ export default function OrdersPage() {
     : (Array.isArray(orders) ? orders : []).filter((o) => o.status === filter)
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3] my-0">
+    <div className="min-h-screen bg-[#D6E4D3]">
       <Header />
 
-      <div className="px-4 pb-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-0 pb-10">
+
         <button
           onClick={() => router.back()}
           className="flex items-center gap-1 text-gray-600 text-[13px] mb-4 hover:text-gray-900 transition-colors"
@@ -139,6 +140,7 @@ export default function OrdersPage() {
           My Orders
         </h1>
 
+        
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 mb-5">
           {STATUS_FILTERS.map((status) => (
             <button
@@ -156,8 +158,8 @@ export default function OrdersPage() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col gap-3">
-            {[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[1, 2, 3, 4].map((i) => <OrderSkeleton key={i} />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -172,12 +174,13 @@ export default function OrdersPage() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {filtered.map((order) => (
               <OrderCard key={order.order_id} order={order} />
             ))}
           </div>
         )}
+
       </div>
     </div>
   )

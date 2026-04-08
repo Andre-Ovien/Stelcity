@@ -19,7 +19,7 @@ function mapProduct(p, type) {
     image: p.image,
     badge: p.stock <= 3 ? "LIMITED" : null,
     rating: 5,
-    slug: p.id,
+    slug: p.slug,
     variants: p.variants || [],
     type,
   }

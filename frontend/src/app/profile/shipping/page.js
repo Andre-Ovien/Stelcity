@@ -22,18 +22,14 @@ const SHIPPING_CACHE_KEY = "stelcity_shipping_address"
 const citiesCache = new Map()
 
 function saveAddressToLocal(data) {
-  try {
-    localStorage.setItem(SHIPPING_CACHE_KEY, JSON.stringify(data))
-  } catch {}
+  try { localStorage.setItem(SHIPPING_CACHE_KEY, JSON.stringify(data)) } catch {}
 }
 
 function getAddressFromLocal() {
   try {
     const raw = localStorage.getItem(SHIPPING_CACHE_KEY)
     return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
+  } catch { return null }
 }
 
 function ShippingAddressContent() {
@@ -67,7 +63,6 @@ function ShippingAddressContent() {
     if (!token || addressFetched.current) return
     addressFetched.current = true
 
-    
     const cached = getAddressFromLocal()
     if (cached) {
       setExisting(cached)
@@ -84,7 +79,6 @@ function ShippingAddressContent() {
       setFetching(false)
     }
 
-    
     getShippingAddress(token)
       .then((data) => {
         if (data) {
@@ -119,10 +113,8 @@ function ShippingAddressContent() {
       setCities(citiesCache.get(state))
       return
     }
-
     setLoadingCities(true)
     cityFetchController.current = new AbortController()
-
     try {
       const res = await fetch(
         `https://nga-states-lga.onrender.com/?state=${encodeURIComponent(state)}`,
@@ -170,7 +162,6 @@ function ShippingAddressContent() {
       } else {
         await saveShippingAddress(addressData, token)
       }
-      
       saveAddressToLocal(addressData)
       toast.success("Shipping address saved!")
       router.push(redirect || "/profile")
@@ -192,132 +183,144 @@ function ShippingAddressContent() {
     }`
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3] my-0">
+    <div className="min-h-screen bg-[#D6E4D3]">
       <Header />
 
-      <div className="px-4 pb-10 ">
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-0 pb-10">
         <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
           Shipping Address
         </h1>
 
-        {fetching && !existing ? (
-          <div className="flex flex-col gap-3 animate-pulse">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded-xl" />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
+     
+        <div className="sm:bg-white sm:rounded-2xl sm:border sm:border-gray-100 sm:p-6 sm:shadow-sm">
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Full Name *</label>
-              <input
-                type="text"
-                value={form.full_name}
-                onChange={(e) => handleChange("full_name", e.target.value)}
-                placeholder="John Doe"
-                className={inputClass("full_name")}
-              />
-              {errors.full_name && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.full_name}</p>}
+          {fetching && !existing ? (
+            <div className="flex flex-col gap-3 animate-pulse">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-12 bg-gray-100 rounded-xl" />
+              ))}
             </div>
+          ) : (
+            <div className="flex flex-col gap-4">
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Phone Number *</label>
-              <input
-                type="tel"
-                value={form.phone_number}
-                onChange={(e) => handleChange("phone_number", e.target.value)}
-                placeholder="08012345678"
-                className={inputClass("phone_number")}
-              />
-              {errors.phone_number && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.phone_number}</p>}
-            </div>
-
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Street Address *</label>
-              <input
-                type="text"
-                value={form.street_address}
-                onChange={(e) => handleChange("street_address", e.target.value)}
-                placeholder="123 Lekki Phase 1"
-                className={inputClass("street_address")}
-              />
-              {errors.street_address && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.street_address}</p>}
-            </div>
-
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">State *</label>
-              <select
-                value={form.state}
-                onChange={(e) => handleChange("state", e.target.value)}
-                className={`${inputClass("state")} appearance-none`}
-              >
-                <option value="">Select a state</option>
-                {NIGERIAN_STATES.map((state) => (
-                  <option key={state} value={state}>{state}</option>
-                ))}
-              </select>
-              {errors.state && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.state}</p>}
-            </div>
-
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">City *</label>
-              {loadingCities ? (
-                <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400">
-                  Loading cities...
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">Full Name *</label>
+                  <input
+                    type="text"
+                    value={form.full_name}
+                    onChange={(e) => handleChange("full_name", e.target.value)}
+                    placeholder="John Doe"
+                    className={inputClass("full_name")}
+                  />
+                  {errors.full_name && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.full_name}</p>}
                 </div>
-              ) : cities.length > 0 ? (
-                <select
-                  value={form.city}
-                  onChange={(e) => handleChange("city", e.target.value)}
-                  className={`${inputClass("city")} appearance-none`}
-                >
-                  <option value="">Select a city</option>
-                  {cities.map((city) => (
-                    <option key={city} value={city}>{city}</option>
-                  ))}
-                </select>
-              ) : (
+
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">Phone Number *</label>
+                  <input
+                    type="tel"
+                    value={form.phone_number}
+                    onChange={(e) => handleChange("phone_number", e.target.value)}
+                    placeholder="08012345678"
+                    className={inputClass("phone_number")}
+                  />
+                  {errors.phone_number && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.phone_number}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[12px] text-gray-500 mb-1 block">Street Address *</label>
                 <input
                   type="text"
-                  value={form.city}
-                  onChange={(e) => handleChange("city", e.target.value)}
-                  placeholder={form.state ? "Enter city manually" : "Select a state first"}
-                  className={inputClass("city")}
-                  disabled={!form.state}
+                  value={form.street_address}
+                  onChange={(e) => handleChange("street_address", e.target.value)}
+                  placeholder="123 Lekki Phase 1"
+                  className={inputClass("street_address")}
                 />
-              )}
-              {errors.city && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.city}</p>}
-            </div>
-
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Country</label>
-              <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400 bg-gray-50">
-                Nigeria
+                {errors.street_address && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.street_address}</p>}
               </div>
+
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">State *</label>
+                  <select
+                    value={form.state}
+                    onChange={(e) => handleChange("state", e.target.value)}
+                    className={`${inputClass("state")} appearance-none`}
+                  >
+                    <option value="">Select a state</option>
+                    {NIGERIAN_STATES.map((state) => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
+                  </select>
+                  {errors.state && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.state}</p>}
+                </div>
+
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">City *</label>
+                  {loadingCities ? (
+                    <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400">
+                      Loading cities...
+                    </div>
+                  ) : cities.length > 0 ? (
+                    <select
+                      value={form.city}
+                      onChange={(e) => handleChange("city", e.target.value)}
+                      className={`${inputClass("city")} appearance-none`}
+                    >
+                      <option value="">Select a city</option>
+                      {cities.map((city) => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={form.city}
+                      onChange={(e) => handleChange("city", e.target.value)}
+                      placeholder={form.state ? "Enter city manually" : "Select a state first"}
+                      className={inputClass("city")}
+                      disabled={!form.state}
+                    />
+                  )}
+                  {errors.city && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.city}</p>}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">Country</label>
+                  <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400 bg-gray-50">
+                    Nigeria
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">Postal Code</label>
+                  <input
+                    type="text"
+                    value={form.postal_code}
+                    onChange={(e) => handleChange("postal_code", e.target.value)}
+                    placeholder="100271"
+                    className={inputClass("postal_code")}
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
+              >
+                {loading ? "Saving..." : existing ? "Update Address" : "Save Address"}
+              </button>
+
             </div>
+          )}
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Postal Code</label>
-              <input
-                type="text"
-                value={form.postal_code}
-                onChange={(e) => handleChange("postal_code", e.target.value)}
-                placeholder="100271"
-                className={inputClass("postal_code")}
-              />
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
-            >
-              {loading ? "Saving..." : existing ? "Update Address" : "Save Address"}
-            </button>
-
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )
@@ -326,7 +329,7 @@ function ShippingAddressContent() {
 export default function ShippingAddressPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#D6E4D3] flex items-center justify-center">
         <p className="text-gray-400 text-[13px]">Loading...</p>
       </div>
     }>

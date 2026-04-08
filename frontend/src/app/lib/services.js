@@ -25,14 +25,16 @@ export async function getServices() {
     const categories = await fetchCategories()
 
     const result = await Promise.all(
-      categories.map(async (cat, index) => {
+      categories.map(async (cat) => {
         const items = await fetchItemsByCategory(cat.name)
+        const slug = cat.name.toLowerCase().replace(/\s+/g, "-")
         return {
-          id: index + 1,
+          slug,
           category: cat.name,
+          description: cat.description || null,
           image: cat.image || null,
-          items: items.map((item) => ({
-            id: `${cat.name}-${item.name}`,
+          items: items.map((item, index) => ({
+            id: `${slug}-${index}`,
             name: item.name,
             price: parseFloat(item.price),
             description: item.description || null,
@@ -47,4 +49,8 @@ export async function getServices() {
     console.error("getServices error:", err)
     return []
   }
+}
+
+export function clearServicesCache() {
+  servicesCache = null
 }

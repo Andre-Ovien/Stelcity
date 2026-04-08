@@ -20,8 +20,8 @@ const TABS = [
 const showMore = {
   all:      { label: "Show more", href: "/products" },
   products: { label: "Show more products", href: "/products" },
-  raw:      { label: "Show more raw materials", href: "/rawMaterials" },
-  services: { label: "View all services", href: "/services" },
+  raw:      { label: "Show more raw materials", href: "/raw-materials" },
+  services: { label: "View all services", href: "/our-services" },
 }
 
 function ProductCard({ product }) {
@@ -33,7 +33,7 @@ function ProductCard({ product }) {
     product.type === "service"
       ? "/services"
       : product.type === "raw"
-      ? `/rawMaterials/${product.slug}`
+      ? `/raw-materials/${product.slug}`
       : `/products/${product.slug}`
 
   const handleToggleFav = (e) => {
@@ -63,7 +63,7 @@ function ProductCard({ product }) {
     }
 
     if (product.type === "raw") {
-      window.location.href = `/rawMaterials/${product.slug}`
+      window.location.href = `/raw-materials/${product.slug}`
       return
     }
 

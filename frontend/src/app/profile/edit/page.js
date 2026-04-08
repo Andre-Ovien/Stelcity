@@ -95,95 +95,105 @@ export default function EditProfilePage() {
     }`
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3] my-0">
+    <div className="min-h-screen bg-[#D6E4D3]">
       <Header />
 
-      <div className="px-4 pb-10 ">
+      
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-0 pb-10">
+
         <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
           Edit Profile
         </h1>
 
-        {fetching ? (
-          <div className="flex flex-col gap-3 animate-pulse">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded-xl" />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
+        
+        <div className="sm:bg-white sm:rounded-2xl sm:border sm:border-gray-100 sm:p-6 sm:shadow-sm">
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Email</label>
-              <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400 bg-gray-50">
-                {form.email}
+          {fetching ? (
+            <div className="flex flex-col gap-3 animate-pulse">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-12 bg-gray-100 rounded-xl" />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+
+              <div>
+                <label className="text-[12px] text-gray-500 mb-1 block">Email</label>
+                <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400 bg-gray-50">
+                  {form.email}
+                </div>
+                <p className="text-[11px] text-gray-400 mt-1 px-1">Email cannot be changed</p>
               </div>
-              <p className="text-[11px] text-gray-400 mt-1 px-1">Email cannot be changed</p>
-            </div>
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Full Name *</label>
-              <input
-                type="text"
-                value={form.full_name}
-                onChange={(e) => handleChange("full_name", e.target.value)}
-                placeholder="John Doe"
-                className={inputClass("full_name")}
-              />
-              {errors.full_name && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.full_name}</p>
-              )}
-            </div>
+              <div>
+                <label className="text-[12px] text-gray-500 mb-1 block">Full Name *</label>
+                <input
+                  type="text"
+                  value={form.full_name}
+                  onChange={(e) => handleChange("full_name", e.target.value)}
+                  placeholder="John Doe"
+                  className={inputClass("full_name")}
+                />
+                {errors.full_name && (
+                  <p className="text-red-400 text-[11px] mt-1 px-1">{errors.full_name}</p>
+                )}
+              </div>
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Phone Number *</label>
-              <input
-                type="tel"
-                value={form.phone_number}
-                onChange={(e) => handleChange("phone_number", e.target.value)}
-                placeholder="08012345678"
-                className={inputClass("phone_number")}
-              />
-              {errors.phone_number && (
-                <p className="text-red-400 text-[11px] mt-1 px-1">{errors.phone_number}</p>
-              )}
-            </div>
+              <div>
+                <label className="text-[12px] text-gray-500 mb-1 block">Phone Number *</label>
+                <input
+                  type="tel"
+                  value={form.phone_number}
+                  onChange={(e) => handleChange("phone_number", e.target.value)}
+                  placeholder="08012345678"
+                  className={inputClass("phone_number")}
+                />
+                {errors.phone_number && (
+                  <p className="text-red-400 text-[11px] mt-1 px-1">{errors.phone_number}</p>
+                )}
+              </div>
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Gender</label>
-              <select
-                value={form.gender}
-                onChange={(e) => handleChange("gender", e.target.value)}
-                className={`${inputClass("gender")} appearance-none`}
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">Gender</label>
+                  <select
+                    value={form.gender}
+                    onChange={(e) => handleChange("gender", e.target.value)}
+                    className={`${inputClass("gender")} appearance-none`}
+                  >
+                    <option value="">Select gender</option>
+                    {GENDER_OPTIONS.map((g) => (
+                      <option key={g} value={g}>
+                        {g.charAt(0).toUpperCase() + g.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[12px] text-gray-500 mb-1 block">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={form.date_of_birth}
+                    onChange={(e) => handleChange("date_of_birth", e.target.value)}
+                    className={inputClass("date_of_birth")}
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
               >
-                <option value="">Select gender</option>
-                {GENDER_OPTIONS.map((g) => (
-                  <option key={g} value={g}>
-                    {g.charAt(0).toUpperCase() + g.slice(1)}
-                  </option>
-                ))}
-              </select>
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+
             </div>
+          )}
 
-            <div>
-              <label className="text-[12px] text-gray-500 mb-1 block">Date of Birth</label>
-              <input
-                type="date"
-                value={form.date_of_birth}
-                onChange={(e) => handleChange("date_of_birth", e.target.value)}
-                className={inputClass("date_of_birth")}
-              />
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
-            >
-              {loading ? "Saving..." : "Save Changes"}
-            </button>
-
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )
