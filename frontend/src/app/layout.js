@@ -90,9 +90,9 @@ export const metadata = {
       "Premium skincare products, raw materials and professional services.",
     images: ["/images/og-banner.jpeg"],
   },
-  verification:{
-    google:"6a0f20f6c2efe122",
-  }
+  verification: {
+  google: "NU24pPefYwBVi4eXe8KuNyKyc-Zkc_16LofW-qZF9kg",
+}
 }
 
 export default function RootLayout({ children }) {

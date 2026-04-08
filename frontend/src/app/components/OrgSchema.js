@@ -1,11 +1,11 @@
 export default function OrgSchema() {
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'HealthAndBeautyBusiness',  
+    '@type': 'Organization',  
     name: 'Stelcity',
-    url: 'https://stelcity.com',
-    logo: 'https://stelcity.com/images/logo.png',  
-    image: 'https://stelcity.com/images/og-banner.jpeg',
+    url: 'https://www.stelcity.com',
+    logo: 'https://www.stelcity.com/images/logo.png',  
+    image: 'https://www.stelcity.com/images/og-banner.jpeg',
     description: 'Premium skincare products, raw materials, and beauty services in Nigeria.',
     telephone: '+234-809-222-1127',
     email: 'stellaefeturi1@gmail.com',
