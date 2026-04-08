@@ -1,6 +1,7 @@
 import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "react-hot-toast"
+import OrgSchema from "./components/OrgSchema"
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -66,14 +67,14 @@ export const metadata = {
   },
   icons: "/favicon.png",
   openGraph: {
-    title: "Stelcity — Healthy Skin Starts Here",
+    title: "Stelcity - Healthy Skin Starts Here",
     description:
       "Premium skincare products, raw materials and professional services.",
     url: "https://stelcity.com",
     siteName: "Stelcity",
     images: [
       {
-        url: "/images/og-banner.png",
+        url: "/images/og-banner.jpeg",
         width: 1200,
         height: 630,
         alt: "Stelcity Skincare Products",
@@ -84,10 +85,10 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stelcity — Healthy Skin Starts Here",
+    title: "Stelcity - Healthy Skin Starts Here",
     description:
       "Premium skincare products, raw materials and professional services.",
-    images: ["/images/og-banner.png"],
+    images: ["/images/og-banner.jpeg"],
   },
 }
 
@@ -95,6 +96,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className} ${poppins.variable} antialiased`}>
+        <OrgSchema />
         {children}
         <Toaster position="top-center" />
       </body>
