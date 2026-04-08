@@ -57,9 +57,9 @@ export const metadata = {
     "Skincare for glowing skin Nigeria",
     "Skincare for healthy skin Nigeria",
   ],
-  metadataBase: new URL("https://stelcity.com"),
+  metadataBase: new URL("https://www.stelcity.com"),
   alternates: {
-    canonical: "https://stelcity.com",
+    canonical: "https://www.stelcity.com",
   },
   robots: {
     index: true,
@@ -70,7 +70,7 @@ export const metadata = {
     title: "Stelcity - Healthy Skin Starts Here",
     description:
       "Premium skincare products, raw materials and professional services.",
-    url: "https://stelcity.com",
+    url: "https://www.stelcity.com",
     siteName: "Stelcity",
     images: [
       {
@@ -90,6 +90,9 @@ export const metadata = {
       "Premium skincare products, raw materials and professional services.",
     images: ["/images/og-banner.jpeg"],
   },
+  verification:{
+    google:"google6a0f20f6c2efe122.html",
+  }
 }
 
 export default function RootLayout({ children }) {

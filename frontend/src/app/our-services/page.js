@@ -26,7 +26,7 @@ function ServiceCard({ service }) {
       price: minPrice ?? 0,
       priceLabel: minPrice ? `From ₦${minPrice.toLocaleString()}` : "",
       image: service.image,
-      description: null,
+      description: service.description,
       badge: null,
       rating: 5,
       type: "service",
@@ -47,7 +47,6 @@ function ServiceCard({ service }) {
         active:scale-95
       "
     >
-      
       <div className="relative w-full aspect-square bg-[#EEF5EE] flex items-center justify-center shrink-0">
         {service.image ? (
           <Image
@@ -60,6 +59,7 @@ function ServiceCard({ service }) {
         ) : (
           <span className="text-[40px]">✨</span>
         )}
+
         <button
           onClick={handleToggleFav}
           className="
@@ -74,11 +74,16 @@ function ServiceCard({ service }) {
         </button>
       </div>
 
-      {/* Content */}
-      <div className="p-3 flex flex-col gap-1 flex-1">
-        <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2 min-h-10">
+      <div className="p-3 flex flex-col gap-1.5 flex-1">
+        <h3 className="text-[13px] sm:text-[14px] xl:text-base font-semibold text-gray-800 leading-tight line-clamp-2">
           {service.category}
         </h3>
+
+        {service.description && (
+          <p className="text-[11px] sm:text-[12px] text-gray-400 line-clamp-2">
+            {service.description}
+          </p>
+        )}
 
         <div className="flex items-center gap-1 mt-1">
           <span className="text-yellow-400 text-[11px] sm:text-[12px]">★★★★★</span>
@@ -86,7 +91,7 @@ function ServiceCard({ service }) {
         </div>
 
         {minPrice && (
-          <p className="text-[11px] sm:text-[12px] xl:text-sm font-medium text-gray-900 mt-0.5">
+          <p className="text-[11px] sm:text-[12px] xl:text-sm font-medium text-gray-900">
             From ₦{minPrice.toLocaleString()}
           </p>
         )}
@@ -118,8 +123,8 @@ function ServiceCardSkeleton() {
     <div className="bg-white rounded-2xl border border-gray-100 p-3 flex flex-col gap-2 animate-pulse">
       <div className="w-full aspect-square rounded-xl bg-gray-200" />
       <div className="h-4 bg-gray-200 rounded w-3/4 mt-1" />
+      <div className="h-3 bg-gray-200 rounded w-full" />
       <div className="h-3 bg-gray-200 rounded w-1/2" />
-      <div className="h-3 bg-gray-200 rounded w-1/3" />
       <div className="h-8 bg-gray-200 rounded-full w-full mt-2" />
     </div>
   )

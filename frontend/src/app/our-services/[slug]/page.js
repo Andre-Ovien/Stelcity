@@ -170,7 +170,7 @@ export default function ServiceDetailPage({ params }) {
               </div>
             </div>
 
-            <button
+            {/* <button
               onClick={() => {
                 const message = encodeURIComponent(
                   `Hello, I would like to enquire about your *${service.category}* services.`
@@ -187,7 +187,7 @@ export default function ServiceDetailPage({ params }) {
               "
             >
               General Enquiry via WhatsApp
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

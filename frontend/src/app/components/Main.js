@@ -68,9 +68,10 @@ const Main = () => {
           <div className="mt-8 sm:hidden">
             <Image
               src="/images/lady.png"
-              alt="lady"
+              alt="Stelcity skincare model with glowing healthy skin"
               width={400}
               height={400}
+              priority
               className="w-full h-auto object-contain"
             />
           </div>
@@ -78,15 +79,15 @@ const Main = () => {
           
           <div className="flex items-center gap-3 sm:gap-4 xl:gap-6 mt-6 xl:mt-10 flex-wrap">
             <div className="flex items-center gap-1.5">
-              <Image src="/images/tested.png" width={18} height={20} alt="Dermatologist Tested" className="xl:w-7 xl:h-7 shrink-0" />
+              <Image src="/images/tested.png" width={18} height={20} alt="Dermatologist tested badge" className="xl:w-7 xl:h-7 shrink-0" />
               <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Dermatologist Tested</p>
             </div>
             <div className="flex items-center gap-1.5">
-              <Image src="/images/nature.png" width={18} height={20} alt="Natural Ingredients" className="xl:w-7 xl:h-7 shrink-0" />
+              <Image src="/images/nature.png" width={18} height={20} alt="Natural Ingredients badge" className="xl:w-7 xl:h-7 shrink-0" />
               <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Natural Ingredients</p>
             </div>
             <div className="flex items-center gap-1.5">
-              <Image src="/images/free.png" width={18} height={20} alt="Cruelty Free" className="xl:w-7 xl:h-7 shrink-0" />
+              <Image src="/images/free.png" width={18} height={20} alt="Cruelty Free badge" className="xl:w-7 xl:h-7 shrink-0" />
               <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Cruelty-free</p>
             </div>
           </div>
@@ -102,9 +103,10 @@ const Main = () => {
         <div className="hidden sm:flex flex-1 justify-center items-center">
           <Image
             src="/images/lady.png"
-            alt="lady"
-            width={500}
-            height={500}
+            alt="Stelcity skincare model with glowing healthy skin"
+            width={600}
+            height={600}
+            priority
             className="object-contain w-full max-w-sm lg:max-w-md xl:max-w-lg h-auto"
           />
         </div>
