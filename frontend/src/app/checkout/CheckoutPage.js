@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { Pencil } from "lucide-react"
+import { Pencil, MapPin, Store } from "lucide-react"
 import Header from "../components/Header"
 import { useCartStore } from "../store/cartStore"
 import { useAuthStore } from "../store/authStore"
@@ -13,6 +13,9 @@ import toast from "react-hot-toast"
 import { handleSessionExpiry } from "../lib/handleSessionExpiry"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+
+
+const SHOP_ADDRESS = "No 430 Jida Plaza, Opp Redeem Church, Agbara Bus Stop, Along Badagry Express Way, Lagos State"
 
 export default function CheckoutPage() {
   const items = useCartStore((s) => s.items)
@@ -26,11 +29,13 @@ export default function CheckoutPage() {
   const [deliveryFee, setDeliveryFee] = useState(null)
   const [deliveryLoading, setDeliveryLoading] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+  const [deliveryMethod, setDeliveryMethod] = useState("delivery") 
 
   const addressFetched = useRef(false)
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const total = subtotal + (deliveryFee || 0)
+  
+  const total = subtotal + (deliveryMethod === "delivery" ? (deliveryFee || 0) : 0)
 
   const hasValidAddress = address &&
     address.street_address?.trim() &&
@@ -57,9 +62,14 @@ export default function CheckoutPage() {
         }
         setAddressLoading(false)
       })
-  }, [token,router, softLogout])
+  }, [token, router, softLogout])
 
   useEffect(() => {
+    
+    if (deliveryMethod === "pickup") {
+      setDeliveryFee(null)
+      return
+    }
     if (!address?.state?.trim() || !address?.city?.trim()) {
       setDeliveryFee(null)
       return
@@ -85,7 +95,7 @@ export default function CheckoutPage() {
         setDeliveryFee(0)
         setDeliveryLoading(false)
       })
-  }, [address?.state, address?.city])
+  }, [address?.state, address?.city, deliveryMethod]) 
 
   const handlePay = async () => {
     if (!token || !isAuth) {
@@ -98,7 +108,7 @@ export default function CheckoutPage() {
       router.push("/products")
       return
     }
-    if (!hasValidAddress) {
+    if (deliveryMethod === "delivery" && !hasValidAddress) {
       toast.error("Please add a shipping address first")
       router.push("/profile/shipping?redirect=/checkout")
       return
@@ -115,7 +125,15 @@ export default function CheckoutPage() {
         if (item.variantId) obj.variant_id = item.variantId
         return obj
       })
-      const data = await createCheckout(orderItems, token, address.state, address.city)
+
+      const data = await createCheckout(
+        orderItems,
+        token,
+        deliveryMethod,                                  
+        deliveryMethod === "delivery" ? address.state : null,
+        deliveryMethod === "delivery" ? address.city : null,
+      )
+
       if (!data.authorization_url) throw new Error("Payment initialization failed")
       window.location.href = data.authorization_url
     } catch (err) {
@@ -166,7 +184,6 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-[#D6E4D3] py-0">
       <Header />
 
-  
       <div className="px-4 md:px-8 lg:px-16 pb-36 md:pb-10">
         <h1 className="text-[22px] font-bold text-gray-900 text-center mb-6">
           Checkout
@@ -174,59 +191,128 @@ export default function CheckoutPage() {
 
         <div className="flex flex-col md:flex-row md:gap-6 md:items-start max-w-5xl mx-auto">
 
-         
           <div className="flex-1 flex flex-col gap-4">
 
-            
             <div className="bg-white rounded-2xl overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-                <h2 className="text-[14px] font-semibold text-gray-800">Shipping Info</h2>
-                <button
-                  onClick={() => router.push("/profile/shipping?redirect=/checkout")}
-                  className="text-gray-400 hover:text-[#D65A5A] transition-colors"
-                >
-                  <Pencil size={15} />
-                </button>
+              <div className="px-4 py-3 border-b border-gray-100">
+                <h2 className="text-[14px] font-semibold text-gray-800">Delivery Method</h2>
               </div>
-
-              {addressLoading ? (
-                <div className="px-4 py-4 animate-pulse flex flex-col gap-2">
-                  <div className="h-3 bg-gray-200 rounded w-3/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/2" />
-                  <div className="h-3 bg-gray-200 rounded w-2/3" />
-                </div>
-              ) : hasValidAddress ? (
-                <div className="px-4 py-4 flex flex-col gap-1.5">
-                  <div className="flex gap-2">
-                    <span className="text-[12px] text-gray-400 w-24 shrink-0">Address</span>
-                    <span className="text-[12px] text-gray-700">{address.street_address}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-[12px] text-gray-400 w-24 shrink-0">City</span>
-                    <span className="text-[12px] text-gray-700">{address.city}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-[12px] text-gray-400 w-24 shrink-0">State</span>
-                    <span className="text-[12px] text-gray-700">{address.state}</span>
-                  </div>
-                  {address.postal_code && (
-                    <div className="flex gap-2">
-                      <span className="text-[12px] text-gray-400 w-24 shrink-0">Postal Code</span>
-                      <span className="text-[12px] text-gray-700">{address.postal_code}</span>
-                    </div>
-                  )}
-                </div>
-              ) : (
+              <div className="p-3 grid grid-cols-2 gap-3">
                 <button
-                  onClick={() => router.push("/profile/shipping?redirect=/checkout")}
-                  className="w-full px-4 py-4 flex items-center text-left hover:bg-gray-50 transition-colors"
+                  onClick={() => setDeliveryMethod("delivery")}
+                  className={`
+                    flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200
+                    ${deliveryMethod === "delivery"
+                      ? "border-[#D65A5A] bg-[#D65A5A]/5"
+                      : "border-gray-100 hover:border-gray-200"
+                    }
+                  `}
                 >
-                  <span className="text-[13px] text-[#D65A5A] font-medium">
-                    + Add shipping address
+                  <MapPin
+                    size={22}
+                    className={deliveryMethod === "delivery" ? "text-[#D65A5A]" : "text-gray-400"}
+                  />
+                  <span className={`text-[13px] font-semibold ${deliveryMethod === "delivery" ? "text-[#D65A5A]" : "text-gray-500"}`}>
+                    Delivery
+                  </span>
+                  <span className="text-[10px] text-gray-400 text-center leading-tight">
+                    Delivered to your address
                   </span>
                 </button>
-              )}
+
+                <button
+                  onClick={() => setDeliveryMethod("pickup")}
+                  className={`
+                    flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200
+                    ${deliveryMethod === "pickup"
+                      ? "border-[#D65A5A] bg-[#D65A5A]/5"
+                      : "border-gray-100 hover:border-gray-200"
+                    }
+                  `}
+                >
+                  <Store
+                    size={22}
+                    className={deliveryMethod === "pickup" ? "text-[#D65A5A]" : "text-gray-400"}
+                  />
+                  <span className={`text-[13px] font-semibold ${deliveryMethod === "pickup" ? "text-[#D65A5A]" : "text-gray-500"}`}>
+                    Pick Up
+                  </span>
+                  <span className="text-[10px] text-gray-400 text-center leading-tight">
+                    Collect from our store
+                  </span>
+                </button>
+              </div>
             </div>
+
+            
+            {deliveryMethod === "delivery" ? (
+              <div className="bg-white rounded-2xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                  <h2 className="text-[14px] font-semibold text-gray-800">Shipping Info</h2>
+                  <button
+                    onClick={() => router.push("/profile/shipping?redirect=/checkout")}
+                    className="text-gray-400 hover:text-[#D65A5A] transition-colors"
+                  >
+                    <Pencil size={15} />
+                  </button>
+                </div>
+
+                {addressLoading ? (
+                  <div className="px-4 py-4 animate-pulse flex flex-col gap-2">
+                    <div className="h-3 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-2/3" />
+                  </div>
+                ) : hasValidAddress ? (
+                  <div className="px-4 py-4 flex flex-col gap-1.5">
+                    <div className="flex gap-2">
+                      <span className="text-[12px] text-gray-400 w-24 shrink-0">Address</span>
+                      <span className="text-[12px] text-gray-700">{address.street_address}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-[12px] text-gray-400 w-24 shrink-0">City</span>
+                      <span className="text-[12px] text-gray-700">{address.city}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-[12px] text-gray-400 w-24 shrink-0">State</span>
+                      <span className="text-[12px] text-gray-700">{address.state}</span>
+                    </div>
+                    {address.postal_code && (
+                      <div className="flex gap-2">
+                        <span className="text-[12px] text-gray-400 w-24 shrink-0">Postal Code</span>
+                        <span className="text-[12px] text-gray-700">{address.postal_code}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => router.push("/profile/shipping?redirect=/checkout")}
+                    className="w-full px-4 py-4 flex items-center text-left hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="text-[13px] text-[#D65A5A] font-medium">
+                      + Add shipping address
+                    </span>
+                  </button>
+                )}
+              </div>
+            ) : (
+              
+              <div className="bg-white rounded-2xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h2 className="text-[14px] font-semibold text-gray-800">Pick Up Address</h2>
+                </div>
+                <div className="px-4 py-4 flex items-start gap-3">
+                  <Store size={18} className="text-[#D65A5A] shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[13px] font-semibold text-gray-800">Stelcity Store</p>
+                    <p className="text-[12px] text-gray-500 mt-0.5 leading-relaxed">{SHOP_ADDRESS}</p>
+                    <p className="text-[11px] text-[#D65A5A] font-medium mt-2">
+                      Ready for pickup after 24 hours after payment
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
           
             <div className="bg-white rounded-2xl overflow-hidden">
@@ -270,8 +356,12 @@ export default function CheckoutPage() {
                 <span className="text-[13px] text-gray-700 font-medium">₦{subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[13px] text-gray-500">Delivery</span>
-                {deliveryLoading ? (
+                <span className="text-[13px] text-gray-500">
+                  {deliveryMethod === "pickup" ? "Pick Up" : "Delivery"} {/* ← NEW */}
+                </span>
+                {deliveryMethod === "pickup" ? ( // ← NEW
+                  <span className="text-[13px] text-green-600 font-medium">Free</span>
+                ) : deliveryLoading ? (
                   <div className="h-3 bg-gray-200 rounded w-16 animate-pulse" />
                 ) : (
                   <span className="text-[13px] text-gray-700 font-medium">
@@ -282,7 +372,7 @@ export default function CheckoutPage() {
               <div className="h-px bg-gray-100 my-1" />
               <div className="flex justify-between items-center">
                 <span className="text-[15px] font-bold text-gray-900">Total</span>
-                {deliveryLoading ? (
+                {deliveryLoading && deliveryMethod === "delivery" ? (
                   <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
                 ) : (
                   <span className="text-[15px] font-bold text-[#D65A5A]">₦{total.toLocaleString()}</span>
@@ -297,14 +387,16 @@ export default function CheckoutPage() {
             </div>
 
             
-            <div className=" hidden sm:block bg-gray-50 text-gray-600 text-[12px] text-center py-3 px-4 rounded-2xl border border-gray-200">
-              Estimated Delivery: Lagos – within 24 hours.<br />Outside Lagos – 2 – 3 business days.
+            <div className="hidden sm:block bg-gray-50 text-gray-600 text-[12px] text-center py-3 px-4 rounded-2xl border border-gray-200">
+              {deliveryMethod === "pickup"
+                ? "Pick up from our store within 24 hours after payment."
+                : <>Estimated Delivery: Lagos – within 24 hours.<br />Outside Lagos – 2 – 3 business days.</>
+              }
             </div>
 
-            
             <button
               onClick={handlePay}
-              disabled={loading || deliveryLoading}
+              disabled={loading || (deliveryLoading && deliveryMethod === "delivery")}
               className="hidden md:block w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60"
             >
               {loading ? "Processing..." : `Pay ₦${total.toLocaleString()}`}
@@ -314,16 +406,18 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      
+    
       <div className="md:hidden fixed bottom-16 left-0 right-0 bg-gray-50 text-gray-600 text-[12px] text-center py-2 px-4 border-t border-b border-gray-200 z-50">
-        Estimated Delivery: Lagos- within 24 hours. Outside Lagos- 2-3 business days.
+        {deliveryMethod === "pickup"
+          ? "Pick up from our store within 24 hours after payment."
+          : "Estimated Delivery: Lagos- within 24 hours. Outside Lagos- 2-3 business days."
+        }
       </div>
 
-      
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 z-50">
         <button
           onClick={handlePay}
-          disabled={loading || deliveryLoading}
+          disabled={loading || (deliveryLoading && deliveryMethod === "delivery")}
           className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60"
         >
           {loading ? "Processing..." : `Pay ₦${total.toLocaleString()}`}

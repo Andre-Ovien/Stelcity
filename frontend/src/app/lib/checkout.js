@@ -1,14 +1,26 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const CALLBACK_URL = process.env.NEXT_PUBLIC_SQUAD_CALLBACK_URL
 
-export async function createCheckout(items, token, state, city) {
+export async function createCheckout(items, token, fulfillmentType, state, city) {
+  const body = {
+    items,
+    fulfillment_type: fulfillmentType,
+    callback_url: CALLBACK_URL,
+  }
+
+  
+  if (fulfillmentType === "delivery") {
+    body.state = state
+    body.city = city
+  }
+
   const res = await fetch(`${BASE_URL}/api/products/cart/checkout/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
     },
-    body: JSON.stringify({ items, state, city, callback_url: CALLBACK_URL }),
+    body: JSON.stringify(body),
   })
 
   if (res.status === 401) throw new Error("SESSION_EXPIRED")
