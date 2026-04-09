@@ -106,6 +106,8 @@ class OrderSerializer(serializers.ModelSerializer):
             'order_id',
             'items',
             'total_price',
+            'delivery_fee',
+            'fulfillment_type',
             'created_at',
             'user',
             'status',
@@ -135,8 +137,19 @@ class DeliveryFeeSerializer(serializers.Serializer):
 
 class CartSyncCheckoutSerializer(serializers.Serializer):
     items = serializers.ListField(child=serializers.DictField(), min_length=1)
-    state = serializers.CharField(required=True)
-    city = serializers.CharField(required=False, allow_blank=True, default='')
+    fulfillment_type = serializers.ChoiceField(choices=['delivery', 'pickup'])
+    state = serializers.CharField(required=False, allow_blank=True, allow_null=True, default='')
+    city = serializers.CharField(required=False, allow_blank=True, allow_null=True, default='')
+
+    def validate(self, attrs):
+        fulfillment_type = attrs.get('fulfillment_type')
+        state = attrs.get('state', '')
+
+        if fulfillment_type == 'delivery' and not state:
+            raise serializers.ValidationError(
+                {"state": "State is required for delivery orders."}
+            )
+        return attrs
 
     def validate_items(self, items):
         validated_items = []
@@ -194,10 +207,14 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
 
     def save(self, user):
         validated_items = self.validated_data['items']
+        fulfillment_type = self.validated_data['fulfillment_type']
         state = self.validated_data['state']
         city = self.validated_data.get('city', '')
 
-        delivery_fee = get_delivery_fee(state, city)
+        if fulfillment_type == 'pickup':
+            delivery_fee = 0
+        else:
+            delivery_fee = get_delivery_fee(state, city)
 
         Order.objects.filter(
             user=user,
@@ -210,7 +227,8 @@ class CartSyncCheckoutSerializer(serializers.Serializer):
         order = Order.objects.create(
             user=user,
             status=Order.StatusChoices.PENDING,
-            delivery_fee=delivery_fee
+            delivery_fee=delivery_fee,
+            fulfillment_type=fulfillment_type,
         )
 
         OrderItem.objects.bulk_create([
