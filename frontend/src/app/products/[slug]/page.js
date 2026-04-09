@@ -25,7 +25,7 @@ export async function generateMetadata({ params }) {
         description: product.description,
         images: [product.image],
       },
-    }F
+    }
   } catch {
     return { title: "Product | Stelcity" }
   }
