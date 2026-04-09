@@ -20,13 +20,13 @@ export async function generateMetadata({ params }) {
         url: `https://www.stelcity.com/our-services/${params.slug}`,
         images: service.image
           ? [{ url: service.image, width: 800, height: 800, alt: service.category }]
-          : [{ url: "/images/og-banner.jpeg", width: 1200, height: 630 }],
+          : [{ url: "/images/og-banner.png", width: 1200, height: 630 }],
       },
       twitter: {
         card: "summary_large_image",
         title: service.category,
         description: service.description || `Book ${service.category} at Stelcity Lagos`,
-        images: service.image ? [service.image] : ["/images/og-banner.jpeg"],
+        images: service.image ? [service.image] : ["/images/og-banner.png"],
       },
     }
   } catch {
