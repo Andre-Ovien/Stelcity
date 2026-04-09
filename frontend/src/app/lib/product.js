@@ -1,10 +1,15 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
-export async function getProducts(page = 1) {
-  const res = await fetch(`${BASE_URL}/api/products/categories/?category=product&page=${page}`)
-  const data = await res.json()
-  return {
-    products: data.results.map((p) => ({
+export async function getAllProducts() {
+  let allProducts = []
+  let page = 1
+  let hasMore = true
+
+  while (hasMore) {
+    const res = await fetch(`${BASE_URL}/api/products/categories/?category=product&page=${page}`)
+    const data = await res.json()
+
+    const mapped = data.results.map((p) => ({
       id: p.id,
       name: p.name,
       description: p.description,
@@ -13,11 +18,14 @@ export async function getProducts(page = 1) {
       badge: p.stock <= 3 ? "LIMITED" : null,
       rating: 5,
       slug: p.slug,
-    })),
-    count: data.count,
-    next: data.next,
-    previous: data.previous,
+    }))
+
+    allProducts = [...allProducts, ...mapped]
+    hasMore = !!data.next
+    page++
   }
+
+  return allProducts
 }
 
 export async function getCollectionPreview(category = "all") {

@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback, Suspense } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Header from "../components/Header"
 import ProductPageCard from "../components/ProductSection"
 import Pagination from "../components/pagination"
-import { getRawMaterials } from "../lib/rawMaterials"
+import { getAllRawMaterials } from "../lib/rawMaterials"
 
 const ITEMS_PER_PAGE = 10
 
@@ -31,7 +31,6 @@ function ProductPageCardSkeleton() {
 
 function RawMaterialsContent() {
   const [allProducts, setAllProducts] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [sort, setSort] = useState("default")
   const [search, setSearch] = useState("")
@@ -39,35 +38,44 @@ function RawMaterialsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentPage = Number(searchParams.get("page") || 1)
+  const debounceRef = useRef(null)
 
-  const fetchRawMaterials = useCallback((page) => {
-    setLoading(true)
-    let mounted = true
-    getRawMaterials(page).then((data) => {
-      if (mounted) {
-        setAllProducts(data.products || [])
-        setTotalCount(data.count || 0)
-        setLoading(false)
-      }
-    })
-    return () => { mounted = false }
-  }, [])
 
   useEffect(() => {
-    const cleanup = fetchRawMaterials(currentPage)
-    return cleanup
-  }, [currentPage, fetchRawMaterials])
+    let mounted = true
+
+    async function fetchData() {
+      setLoading(true)
+      try {
+        const products = await getAllRawMaterials()
+        if (mounted) {
+          setAllProducts(products)
+        }
+      } catch (err) {
+        console.error("Failed to fetch raw materials:", err)
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    fetchData()
+    return () => { mounted = false }
+  }, []) // empty dep array — only runs once
 
   const handleSort = (value) => {
     if (value === "products") return router.push("/products")
     if (value === "Services") return router.push("/our-services")
     setSort(value)
-    router.push("/raw-materials?page=1")
   }
 
   const handleSearchChange = (e) => {
-    setSearch(e.target.value)
-    router.push("/raw-materials?page=1")
+    const value = e.target.value
+    setSearch(value)
+    // reset to page 1 when searching
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      router.push("/raw-materials?page=1")
+    }, 300)
   }
 
   const handlePageChange = (page) => {
@@ -75,17 +83,21 @@ function RawMaterialsContent() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  const searched = allProducts.filter((p) =>
+  
+  const filtered = allProducts.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  const sorted = [...searched].sort((a, b) => {
+  const sorted = [...filtered].sort((a, b) => {
     if (sort === "price_asc") return a.price - b.price
     if (sort === "price_desc") return b.price - a.price
     return 0
   })
 
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
+  
+  const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const paginated = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
   return (
     <div className="w-full px-4 sm:px-6 xl:px-10 py-0 xl:py-10">
@@ -130,20 +142,19 @@ function RawMaterialsContent() {
           ? Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
               <ProductPageCardSkeleton key={i} />
             ))
-          : sorted.map((product, index) => (
+          : paginated.map((product, index) => (
               <div
                 key={`${product.id}-${index}`}
                 className="transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] rounded-2xl overflow-hidden"
               >
                 <ProductPageCard product={product} basePath="raw-materials" />
               </div>
-            ))
-        }
+            ))}
       </div>
 
-      {!loading && sorted.length === 0 && (
+      {!loading && paginated.length === 0 && (
         <div className="text-center py-20 text-gray-400 text-sm xl:text-base">
-          No raw materials found for &ldquo;{search}&rdquo;
+          No raw materials found{search ? ` for "${search}"` : ""}
         </div>
       )}
 

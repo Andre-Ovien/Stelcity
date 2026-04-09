@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback, Suspense } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Header from "../components/Header"
 import ProductPageCard from "../components/ProductSection"
 import Pagination from "../components/pagination"
-import { getProducts } from "../lib/product"
+import { getAllProducts } from "../lib/product"
 
 const ITEMS_PER_PAGE = 10
 
@@ -31,7 +31,6 @@ function ProductPageCardSkeleton() {
 
 function ProductsContent() {
   const [allProducts, setAllProducts] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [sort, setSort] = useState("default")
   const [search, setSearch] = useState("")
@@ -39,35 +38,42 @@ function ProductsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentPage = Number(searchParams.get("page") || 1)
-
-  const fetchProducts = useCallback((page) => {
-    setLoading(true)
-    let mounted = true
-    getProducts(page).then((data) => {
-      if (mounted) {
-        setAllProducts(data.products || [])
-        setTotalCount(data.count || 0)
-        setLoading(false)
-      }
-    })
-    return () => { mounted = false }
-  }, [])
+  const debounceRef = useRef(null)
 
   useEffect(() => {
-    const cleanup = fetchProducts(currentPage)
-    return cleanup
-  }, [currentPage, fetchProducts])
+    let mounted = true
+
+    async function fetchData() {
+      setLoading(true)
+      try {
+        const products = await getAllProducts()
+        if (mounted) {
+          setAllProducts(products)
+        }
+      } catch (err) {
+        console.error("Failed to fetch products:", err)
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    fetchData()
+    return () => { mounted = false }
+  }, [])
 
   const handleSort = (value) => {
     if (value === "rawMaterials") return router.push("/raw-materials")
     if (value === "Services") return router.push("/our-services")
     setSort(value)
-    router.push("/products?page=1")
   }
 
   const handleSearchChange = (e) => {
-    setSearch(e.target.value)
-    router.push("/products?page=1")
+    const value = e.target.value
+    setSearch(value)
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      router.push("/products?page=1")
+    }, 300)
   }
 
   const handlePageChange = (page) => {
@@ -75,17 +81,22 @@ function ProductsContent() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  const searched = allProducts.filter((p) =>
+
+  const filtered = allProducts.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  const sorted = [...searched].sort((a, b) => {
+
+  const sorted = [...filtered].sort((a, b) => {
     if (sort === "price_asc") return a.price - b.price
     if (sort === "price_desc") return b.price - a.price
     return 0
   })
 
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
+
+  const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const paginated = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
   return (
     <div className="w-full px-4 sm:px-6 xl:px-10 py-0 xl:py-10">
@@ -130,20 +141,19 @@ function ProductsContent() {
           ? Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
               <ProductPageCardSkeleton key={i} />
             ))
-          : sorted.map((product, index) => (
+          : paginated.map((product, index) => (
               <div
                 key={`${product.id}-${index}`}
                 className="transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] rounded-2xl overflow-hidden"
               >
                 <ProductPageCard product={product} />
               </div>
-            ))
-        }
+            ))}
       </div>
 
-      {!loading && sorted.length === 0 && (
+      {!loading && paginated.length === 0 && (
         <div className="text-center py-20 text-gray-400 text-sm xl:text-base">
-          No products found for &ldquo;{search}&rdquo;
+          No products found{search ? ` for "${search}"` : ""}
         </div>
       )}
 
