@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: 'Skincare Raw Materials | Stelcity',
     url: 'https://www.stelcity.com/raw-materials',
-    images: [{ url: '/images/og-banner.jpeg', width: 1200, height: 630 }],
+    images: [{ url: '/images/og-banner.png', width: 1200, height: 630 }],
   },
 }
 const page = () => {
