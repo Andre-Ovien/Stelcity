@@ -10,7 +10,7 @@ export const metadata = {
     title: 'Shop Skincare Products | Stelcity',
     description: 'Browse premium skincare products delivered across Nigeria.',
     url: 'https://www.stelcity.com/products',
-    images: [{ url: '/images/og-banner.png', width: 1200, height: 630 }],
+    images: [{ url: '/images/og-banner.jpg', width: 1200, height: 630 }],
   },
 }
 const page = () => {
