@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: 'Beauty & Skincare Training | Stelcity',
     url: 'https://www.stelcity.com/training-programs',
-    images: [{ url: '/images/og-banner.png', width: 1200, height: 630 }],
+    images: [{ url: '/images/og-banner.jpg', width: 1200, height: 630 }],
   },
 }
 

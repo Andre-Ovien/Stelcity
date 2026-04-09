@@ -16,7 +16,7 @@ export const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "Stelcity — Premium Skincare Products in Nigeria",
+    default: "Stelcity - Best Skincare Products in Nigeria",
     template: "%s | Stelcity",
   },
   description:
@@ -84,7 +84,7 @@ export const metadata = {
     siteName: "Stelcity",
     images: [
       {
-        url: "/images/og-banner.png",
+        url: "/images/og-banner.jpg?v=2",
         width: 1200,
         height: 630,
         alt: "Stelcity Skincare Products — Healthy Skin Starts Here",
@@ -98,7 +98,7 @@ export const metadata = {
     title: "Stelcity — Premium Skincare Products in Nigeria",
     description:
       "Shop dermatologist-tested skincare products, raw materials and professional beauty services in Nigeria. Trusted by 10,000+ happy customers.",
-    images: ["/images/og-banner.png"],
+    images: ["/images/og-banner.jpg?v=2"],
   },
   verification: {
     google: "NU24pPefYwBVi4eXe8KuNyKyc-Zkc_16LofW-qZF9kg",
