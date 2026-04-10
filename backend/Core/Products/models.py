@@ -68,6 +68,10 @@ class Order(models.Model):
         CONFIRMED = 'Confirmed'
         CANCELLED = 'Cancelled'
 
+    class FulfillmentChoices(models.TextChoices):
+        DELIVERY = 'delivery', 'Delivery'
+        PICKUP = 'pickup', 'Pickup'  
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -81,6 +85,11 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     delivery_fee = models.DecimalField(
         max_digits=10, decimal_places=2, default=0
+    )
+    fulfillment_type = models.CharField(
+        max_length=10,
+        choices=FulfillmentChoices.choices,
+        default=FulfillmentChoices.DELIVERY
     )
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
