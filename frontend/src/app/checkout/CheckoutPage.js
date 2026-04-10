@@ -307,7 +307,7 @@ export default function CheckoutPage() {
                     <p className="text-[13px] font-semibold text-gray-800">Stelcity Store</p>
                     <p className="text-[12px] text-gray-500 mt-0.5 leading-relaxed">{SHOP_ADDRESS}</p>
                     <p className="text-[11px] text-[#D65A5A] font-medium mt-2">
-                      Ready for pickup after 24 hours after payment
+                      Ready for pickup after payment
                     </p>
                   </div>
                 </div>
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
             
             <div className="hidden sm:block bg-gray-50 text-gray-600 text-[12px] text-center py-3 px-4 rounded-2xl border border-gray-200">
               {deliveryMethod === "pickup"
-                ? "Pick up from our store within 24 hours after payment."
+                ? "Pickup is available at our store after payment"
                 : <>Estimated Delivery: Lagos – within 24 hours.<br />Outside Lagos – 2 – 3 business days.</>
               }
             </div>
