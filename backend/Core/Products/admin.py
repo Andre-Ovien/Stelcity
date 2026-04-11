@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Product,ProductVariant,Order,OrderItem,DeliveryZone, DeliverySettings, OrderTracking, Payment
-from Notifications.utils import create_notification 
+from Notifications.utils import create_notification
+from Auth.models import ShippingAddress 
 # Register your models here.
 
 admin.site.register(Product)
@@ -13,12 +14,43 @@ class OrderTrackingInline(admin.TabularInline):
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
+    readonly_fields = ('product', 'variant', 'quantity', 'price')
+    extra = 0
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('order_id', 'user', 'status', 'created_at')
     list_filter = ('status',)
     search_fields = ('user__email',)
+    readonly_fields = ('order_id', 'created_at', 'get_shipping_address')
     inlines = [OrderItemInline, OrderTrackingInline]
+
+    def get_shipping_address(self, obj):
+        if obj.fulfillment_type == 'pickup':
+            return 'Customer will pick up — no delivery needed'
+        
+        try:
+            address = obj.user.shipping_address
+            return (
+                f"Name: {address.full_name} | "
+                f"Phone: {address.phone_number} | "
+                f"Address: {address.street_address}, "
+                f"{address.city}, {address.state}, "
+                f"{address.country} "
+                f"{address.postal_code or ''}"
+            )
+        except ShippingAddress.DoesNotExist:
+            return 'No shipping address saved for this user'
+
+    get_shipping_address.short_description = 'Shipping Address'
+
+    fieldsets = (
+        ('Order Info', {
+            'fields': ('order_id', 'user', 'status', 'fulfillment_type', 'delivery_fee', 'created_at')
+        }),
+        ('Delivery Details', {
+            'fields': ('get_shipping_address',)
+        }),
+    )
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
