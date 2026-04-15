@@ -32,7 +32,7 @@ export default function Why() {
   }, [])
 
   return (
-    <section className="my-6 bg-[#EEF5EE] px-5 py-8 md:py-16">
+    <section className="my-6 bg-[#EEF5EE] px-5 py-8 md:py-16  md:px-15 lg:px-20 xl:px-25" id="why">
       
       <div className="max-w-6xl mx-auto">
         

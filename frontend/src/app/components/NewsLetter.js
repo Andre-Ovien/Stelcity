@@ -81,7 +81,7 @@ const Newsletter = () => {
   }
 
   return (
-    <section className="py-10 px-5 text-center">
+    <section className="py-10 px-5 text-center bg-white">
       <h2 className="text-[22px] font-bold text-gray-900">
         Want Updates?
       </h2>

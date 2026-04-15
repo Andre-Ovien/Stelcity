@@ -219,11 +219,11 @@ const ProductGrid = () => {
       className="px-4 sm:px-6 lg:px-10 xl:px-14 py-10 xl:py-14 bg-[#F7F6F6]"
       id="collection"
     >
-      <h2 className="font-bold text-[22px] sm:text-2xl xl:text-3xl text-gray-900 underline">
+      <h2 className="font-bold text-[22px] sm:text-2xl xl:text-3xl text-gray-900 underline text-center ">
         Browse Our Collection
       </h2>
 
-      <p className="text-[13px] sm:text-sm xl:text-lg text-gray-500 mt-1 max-w-xl md:mt-4">
+      <p className="text-[13px] sm:text-sm xl:text-lg text-gray-500 mt-1 max-w-xl md:mt-4 text-center mx-auto">
         Explore our skincare categories to find what works best for your skin.
       </p>
 
