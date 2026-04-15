@@ -13,7 +13,7 @@ const Main = () => {
   }
 
   return (
-    <div className="w-full px-5 sm:px-8 lg:px-10 xl:px-16 2xl:px-24  sm:py-0 md:pt-0">
+    <div className="w-full px-5 sm:px-8 lg:px-10 xl:px-16 2xl:px-24 sm:py-30">
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-10 lg:gap-16 xl:gap-20">
 
@@ -23,7 +23,7 @@ const Main = () => {
           
           <h1 className="text-[32px] leading-tight font-black sm:text-[36px] md:text-[40px] lg:text-[44px] xl:text-[52px] 2xl:text-[58px]">
             Healthy{" "}
-            <span className="text-[#C94F5C] play">
+            <span className="text-[#C94F5C] play ">
               Skin{" "}
               <br className="sm:hidden" />
             </span>
@@ -77,23 +77,23 @@ const Main = () => {
           </div>
 
           
-          <div className="flex items-center gap-3 sm:gap-4 xl:gap-6 mt-6 xl:mt-10 flex-wrap">
-            <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-3 sm:gap-4 xl:gap-6 mt-6 xl:mt-10 flex-wrap justify-center sm:justify-start">
+            <div className="flex items-center gap-1 -ml-2">
               <Image src="/images/tested.png" width={18} height={20} alt="Dermatologist tested badge" className="xl:w-7 xl:h-7 shrink-0" />
               <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Dermatologist Tested</p>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <Image src="/images/nature.png" width={18} height={20} alt="Natural Ingredients badge" className="xl:w-7 xl:h-7 shrink-0" />
               <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Natural Ingredients</p>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <Image src="/images/free.png" width={18} height={20} alt="Cruelty Free badge" className="xl:w-7 xl:h-7 shrink-0" />
               <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Cruelty-free</p>
             </div>
           </div>
 
           
-          <p className="text-[#D65A5A] text-[13px] xl:text-[17px] font-bold mt-4 mb-4 sm:mb-0">
+          <p className="text-[#D65A5A] text-[13px] xl:text-[17px] font-bold mt-4 mb-4 sm:mb-0  text-center  sm:text-left">
             Trusted by 10,000+ happy customers.
           </p>
 
