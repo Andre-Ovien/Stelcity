@@ -15,14 +15,14 @@ const testimonials = [
     name: "Rachel",
     color: "bg-[#98d67e]",
     rotate: 6,
-    text: " Gentle on my skin aand it actually works. I noticed visible improvements within a few weeks. ",
+    text: " Gentle on my skin and it actually works. I noticed visible improvements within a few weeks. ",
   },
   {
     id: 3,
     name: "Mercy",
     color: "bg-[#e94a86]",
     rotate: -6,
-    text: "Fast delivery and reliable products. My order arrived exaclty as described and well-packaged.",
+    text: "Fast delivery and reliable products. My order arrived exactly as described and well-packaged.",
   },
 ]
 
