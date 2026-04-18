@@ -15,7 +15,7 @@ body{
   flex-direction: column;
 
   @media screen and (min-width:640px){
-    background-image: url("/images/image8.png");
+    background-image: url("/images/image8.webp");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

@@ -210,7 +210,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.variable} ${poppins.variable} antialiased`}>
         <OrgSchema />
-        {children}
+        <main>{children}</main>
+        
         <Toaster position="top-center" />
       </body>
     </html>
