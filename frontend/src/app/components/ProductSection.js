@@ -65,6 +65,7 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
             </span>
           )}
           <button
+            aria-label={isFav ? "Remove from favourites" : "Add to favourites"}
             onClick={handleToggleFav}
             className="absolute top-2 right-2 z-10 bg-white rounded-full p-1.5 shadow-sm"
           >
@@ -79,6 +80,7 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
             fill
             className="object-cover"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            
           />
         </div>
 
