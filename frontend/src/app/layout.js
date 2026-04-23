@@ -2,6 +2,7 @@ import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "react-hot-toast"
 import OrgSchema from "./components/OrgSchema"
+import TikTokPixel from "./components/TiktokPixel"
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -210,6 +211,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.variable} ${poppins.variable} antialiased`}>
         <OrgSchema />
+        <TikTokPixel />
         <main>{children}</main>
         
         <Toaster position="top-center" />
