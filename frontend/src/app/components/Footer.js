@@ -73,6 +73,21 @@ const Footer = () => {
             </Link>
           ))}
         </div>
+
+        <div className="flex flex-col gap-1.5">
+          <h4 className="font-semibold text-gray-800 mb-1">Explore</h4>
+          {[
+            { label: "Skincare in Lagos", href: "/skincare-in-lagos" },
+            { label: "Skincare Blog", href: "/blog" },
+            { label: "Skincare Tips Nigeria", href: "/blog/best-skincare-routine-for-oily-skin-nigeria" },
+            { label: "Glowing Skin Lagos", href: "/blog/how-to-get-glowing-skin-naturally-lagos" },
+            { label: "Buy Skincare Nigeria", href: "/blog/where-to-buy-affordable-skincare-products-nigeria" },
+          ].map((item) => (
+            <Link key={item.label} href={item.href} className="text-gray-500 hover:text-gray-800 transition-colors">
+              {item.label}
+            </Link>
+          ))}
+        </div>
         <div className="flex flex-col gap-1.5">
           <h4 className="font-semibold text-gray-800 mb-1">Support</h4>
           <Link href="/profile/orders" className="text-gray-500 hover:text-gray-800 transition-colors">

@@ -4,19 +4,19 @@ import { getProductDetail } from "../../lib/productDetail"
 
 export async function generateMetadata({ params }) {
   try {
-    const product = await getProductDetail(params.slug)
+    const product = await getProductDetail(slug)
     if (!product) return { title: "Product Not Found" }
 
     return {
       title: product.name,
       description: product.description,
       alternates: {
-        canonical: `https://www.stelcity.com/products/${params.slug}`,
+        canonical: `https://www.stelcity.com/products/${slug}`,
       },
       openGraph: {
         title: `${product.name} | Stelcity`,
         description: product.description,
-        url: `https://www.stelcity.com/products/${params.slug}`,
+        url: `https://www.stelcity.com/products/${slug}`,
         images: [{ url: product.image, width: 800, height: 800, alt: product.name }],
       },
       twitter: {
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
 export default async function ProductPage({ params }) {
   let product = null
   try {
-    product = await getProductDetail(params.slug)
+    product = await getProductDetail(slug)
   } catch {
     
   }

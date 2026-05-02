@@ -39,7 +39,7 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
     e.preventDefault();
     toggleFav({
       id: product.id,
-      slug: product.slug, // critical: put slug
+      slug: product.slug, 
       name: product.name,
       price: product.price,
       priceLabel: product.priceLabel,
@@ -65,11 +65,13 @@ const ProductPageCard = ({ product, basePath = "products" }) => {
             </span>
           )}
           <button
+            suppressHydrationWarning
             aria-label={isFav ? "Remove from favourites" : "Add to favourites"}
             onClick={handleToggleFav}
             className="absolute top-2 right-2 z-10 bg-white rounded-full p-1.5 shadow-sm"
           >
             <FaHeart
+              suppressHydrationWarning
               className={isFav ? "text-red-400" : "text-gray-300"}
               size={12}
             />
