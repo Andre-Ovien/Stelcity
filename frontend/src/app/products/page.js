@@ -1,6 +1,5 @@
-import React from 'react'
 import ProductsPage from './ProductsPage'
-
+import { getAllProducts } from '../lib/product'
 
 export const metadata = {
   title: 'Shop Skincare Products',
@@ -13,10 +12,14 @@ export const metadata = {
     images: [{ url: '/images/og-banner.jpg', width: 1200, height: 630 }],
   },
 }
-const page = () => {
-  return (
-    <ProductsPage/>
-  )
-}
 
-export default page
+export default async function ProductsServerPage() {
+  let initialProducts = []
+  try {
+    initialProducts = await getAllProducts()
+  } catch {
+    initialProducts = []
+  }
+
+  return <ProductsPage initialProducts={initialProducts} />
+}

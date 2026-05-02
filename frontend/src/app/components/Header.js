@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { label: "Services", href: "/our-services" },
   { label: "Training", href: "/training-programs" },
   { label: "Favourites", href: "/My-Favourites" },
+  { label: "Blog", href: "/blog" },
 ]
 
 const Header = () => {

@@ -60,7 +60,7 @@ function RawMaterialsContent() {
 
     fetchData()
     return () => { mounted = false }
-  }, []) // empty dep array — only runs once
+  }, []) 
 
   const handleSort = (value) => {
     if (value === "products") return router.push("/products")
@@ -71,7 +71,6 @@ function RawMaterialsContent() {
   const handleSearchChange = (e) => {
     const value = e.target.value
     setSearch(value)
-    // reset to page 1 when searching
     clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       router.push("/raw-materials?page=1")

@@ -3,21 +3,22 @@ import ServiceSchema from "../../components/ServiceSchema"
 import { getServices } from "../../lib/services"
 
 export async function generateMetadata({ params }) {
+  const { slug } = await params
   try {
     const services = await getServices()
-    const service = services.find((s) => s.slug === params.slug)
+    const service = services.find((s) => s.slug === slug)
     if (!service) return { title: "Service Not Found" }
 
     return {
       title: service.category,
       description: service.description || `Book ${service.category} at Stelcity Lagos`,
       alternates: {
-        canonical: `https://www.stelcity.com/our-services/${params.slug}`,
+        canonical: `https://www.stelcity.com/our-services/${slug}`,
       },
       openGraph: {
         title: `${service.category} | Stelcity`,
         description: service.description || `Book ${service.category} at Stelcity Lagos`,
-        url: `https://www.stelcity.com/our-services/${params.slug}`,
+        url: `https://www.stelcity.com/our-services/${slug}`,
         images: service.image
           ? [{ url: service.image, width: 800, height: 800, alt: service.category }]
           : [{ url: "/images/og-banner.jpg", width: 1200, height: 630 }],
@@ -35,10 +36,11 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ServicePage({ params }) {
+  const { slug } = await params
   let service = null
   try {
     const services = await getServices()
-    service = services.find((s) => s.slug === params.slug) || null
+    service = services.find((s) => s.slug === slug) || null
   } catch {}
 
   return (

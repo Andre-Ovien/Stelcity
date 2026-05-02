@@ -3,20 +3,21 @@ import ProductSchema from "../../components/ProductSchema"
 import { getProductDetail } from "../../lib/productDetail"
 
 export async function generateMetadata({ params }) {
+  const { slug } = await params  
   try {
-    const product = await getProductDetail(params.slug)
+    const product = await getProductDetail(slug)  
     if (!product) return { title: "Product Not Found" }
 
     return {
       title: product.name,
       description: product.description,
       alternates: {
-        canonical: `https://www.stelcity.com/raw-materials/${params.slug}`,
+        canonical: `https://www.stelcity.com/raw-materials/${slug}`, 
       },
       openGraph: {
         title: `${product.name} | Stelcity`,
         description: product.description,
-        url: `https://www.stelcity.com/raw-materials/${params.slug}`,
+        url: `https://www.stelcity.com/raw-materials/${slug}`, 
         images: [{ url: product.image, width: 800, height: 800, alt: product.name }],
       },
       twitter: {
@@ -32,15 +33,16 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function RawMaterialPage({ params }) {
+  const { slug } = await params 
   let product = null
   try {
-    product = await getProductDetail(params.slug)
+    product = await getProductDetail(slug) 
   } catch {}
 
   return (
     <>
       {product && <ProductSchema product={product} />}
-      <RawMaterialClient params={params} />
+      <RawMaterialClient params={Promise.resolve({ slug })} />  
     </>
   )
 }

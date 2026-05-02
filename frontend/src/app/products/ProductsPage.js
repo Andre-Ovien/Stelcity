@@ -29,9 +29,9 @@ function ProductPageCardSkeleton() {
   )
 }
 
-function ProductsContent() {
-  const [allProducts, setAllProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+function ProductsContent({ initialProducts }) {
+  const [allProducts, setAllProducts] = useState(initialProducts || [])
+  const [loading, setLoading] = useState(initialProducts?.length === 0)
   const [sort, setSort] = useState("default")
   const [search, setSearch] = useState("")
 
@@ -41,22 +41,21 @@ function ProductsContent() {
   const debounceRef = useRef(null)
 
   useEffect(() => {
-    let mounted = true
+    
+    if (initialProducts?.length > 0) return
 
+    let mounted = true
     async function fetchData() {
       setLoading(true)
       try {
         const products = await getAllProducts()
-        if (mounted) {
-          setAllProducts(products)
-        }
+        if (mounted) setAllProducts(products)
       } catch (err) {
         console.error("Failed to fetch products:", err)
       } finally {
         if (mounted) setLoading(false)
       }
     }
-
     fetchData()
     return () => { mounted = false }
   }, [])
@@ -81,18 +80,15 @@ function ProductsContent() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-
   const filtered = allProducts.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
-
 
   const sorted = [...filtered].sort((a, b) => {
     if (sort === "price_asc") return a.price - b.price
     if (sort === "price_desc") return b.price - a.price
     return 0
   })
-
 
   const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -170,12 +166,13 @@ function ProductsContent() {
   )
 }
 
-export default function ProductsPage() {
+
+export default function ProductsPage({ initialProducts = [] }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <Suspense fallback={<div className="p-10 text-center text-gray-400">Loading...</div>}>
-        <ProductsContent />
+        <ProductsContent initialProducts={initialProducts} />
       </Suspense>
     </div>
   )
