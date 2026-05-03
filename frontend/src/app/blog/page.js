@@ -18,19 +18,19 @@ const posts = [
     slug: "best-skincare-routine-for-oily-skin-nigeria",
     title: "Best Skincare Routine for Oily Skin in Nigeria",
     excerpt: "If you have oily skin in Nigeria, you know the struggle. Here is a simple routine that actually works.",
-    date: "April 15, 2026",
+    date: "May 3, 2026",
   },
   {
     slug: "where-to-buy-affordable-skincare-products-nigeria",
     title: "Where to Buy Affordable Skincare Products in Nigeria",
     excerpt: "Finding quality skincare products in Nigeria that are affordable and genuine can be challenging.",
-    date: "April 15, 2026",
+    date: "May 1, 2026",
   },
   {
     slug: "how-to-get-glowing-skin-naturally-lagos",
     title: "How to Get Glowing Skin Naturally in Lagos",
     excerpt: "Everyone wants glowing healthy skin. The good news is you do not need expensive treatments.",
-    date: "April 15, 2026",
+    date: "April 27, 2026",
   },
 ]
 

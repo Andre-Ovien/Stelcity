@@ -21,7 +21,7 @@ export const metadata = {
     template: "%s | Stelcity",
   },
   description:
-    "Shop dermatologist-tested skincare products, raw materials and professional beauty services in Nigeria. Trusted by 10,000+ happy customers across Lagos.",
+    "Shop dermatologist-tested skincare products, raw materials and professional beauty services in Lagos Nigeria. Trusted by 10,000+ happy customers across Lagos.",
   applicationName: "Stelcity",
   creator: "Stelcity",
   publisher: "Stelcity",
@@ -38,6 +38,7 @@ export const metadata = {
   "Stelcity skincare",
   "skincare consultation Lagos",
   "professional spa services Lagos",
+  "Skincare in Agbara Lagos",
   ],
     
 
