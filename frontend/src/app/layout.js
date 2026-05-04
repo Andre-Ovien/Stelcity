@@ -40,8 +40,13 @@ export const metadata = {
   "professional spa services Lagos",
   "Skincare in Agbara Lagos",
   ],
-    
 
+  verification: {
+    google: "NU24pPefYwBVi4eXe8KuNyKyc-Zkc_16LofW-qZF9kg",
+    other: {
+      "p:domain_verify": "cc74998e20ef106bf21017318d86493b",
+    },
+  },
 
   metadataBase: new URL("https://www.stelcity.com"),
   alternates: {
@@ -88,6 +93,9 @@ export const metadata = {
   },
   verification: {
     google: "NU24pPefYwBVi4eXe8KuNyKyc-Zkc_16LofW-qZF9kg",
+    other: {
+      "p:domain_verify": "cc74998e20ef106bf21017318d86493b",
+    },
   },
 }
 

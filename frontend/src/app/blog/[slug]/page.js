@@ -34,7 +34,7 @@ const posts = {
       { heading: "3. Return policy", body: "A trustworthy skincare store will have a clear return or exchange policy." },
       { heading: "4. Customer reviews", body: "Real reviews from verified customers give you confidence in the product before buying." },
       { heading: "Why Stelcity", body: "Stelcity is a Nigerian skincare brand based in Lagos offering premium, dermatologist-tested skincare products, raw materials and professional beauty services. All products are cruelty-free and made with natural ingredients. We offer fast delivery across Nigeria and our products are trusted by over 10,000 happy customers." },
-      { heading: "Tips for Saving Money on Skincare", body: "Buy in bundles - it is almost always cheaper per item. Follow Stelcity on Instagram for discount announcements. Subscribe to our newsletter for early access to sales. Buy raw materials and make your own products,we stock everything you need." },
+      { heading: "Tips for Saving Money on Skincare", body: "Buy in bundles, it is almost always cheaper per item. Follow Stelcity on Instagram for discount announcements. Subscribe to our newsletter for early access to sales. Buy raw materials and make your own products,we stock everything you need." },
     ],
   },
   "how-to-get-glowing-skin-naturally-lagos": {
