@@ -4,7 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
-from .throttles import LoginRateThrottle, RegisterRateThrottle
+from .throttles import LoginBurstRateThrottle, LoginRateThrottle, RegisterRateThrottle
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import ShippingAddress, NewsletterSubscriber, Newsletter
 from .emails import send_welcome_newsletter
@@ -39,7 +39,7 @@ class RegisterView(APIView):
         )
     
 class LoginView(APIView):
-    throttle_classes = [LoginRateThrottle]
+    throttle_classes = [LoginRateThrottle, LoginBurstRateThrottle]
     serializer_class = LoginSerializer
 
     def post(self, request):
