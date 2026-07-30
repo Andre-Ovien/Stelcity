@@ -74,34 +74,42 @@ function WishlistRow({ product, isDesktop }) {
   const actionLabel = isService ? "View service" : isRawMaterial ? "Select option" : "Add to bag"
 
   return (
-    <article className="border-t py-7 sm:py-8" style={{ borderColor: "#d9ddd6" }}>
+    <article className="border-t py-5 sm:py-8" style={{ borderColor: "#d9ddd6" }}>
       <div
-        className="wishlist-row-grid items-center gap-6"
+        className={`wishlist-row-grid ${
+          isDesktop ? "items-center gap-6" : "items-start gap-4"
+        }`}
         style={{
           display: "grid",
-          gridTemplateColumns: isDesktop ? "minmax(0, 1fr) 150px" : "minmax(0, 1fr)",
+          gridTemplateColumns: isDesktop
+            ? "minmax(0, 1fr) 150px"
+            : "96px minmax(0, 1fr)",
         }}
       >
         <div className="min-w-0">
           <Link href={productHref(product)} className="block w-fit transition hover:text-[#b54e47]">
-            <h2 className="text-[21px] font-black leading-[1.05] tracking-[-0.035em] text-[#1d241e] sm:text-[25px]">
+            <h2 className="text-[19px] font-black leading-[1.08] tracking-[-0.035em] text-[#1d241e] sm:text-[25px]">
               {product.name}
             </h2>
           </Link>
-          <p className="mt-2 text-[15px] font-semibold text-[#52604f]">
+          <p className="mt-1.5 text-sm font-semibold text-[#52604f] sm:mt-2 sm:text-[15px]">
             {product.priceLabel || `₦${Number(product.price || 0).toLocaleString()}`}
           </p>
-          <p className="mt-1 text-xs text-[#7d877a]">{itemKind(product)}</p>
+          <p className="mt-0.5 text-[11px] text-[#7d877a] sm:mt-1 sm:text-xs">{itemKind(product)}</p>
 
           <button
             type="button"
             onClick={handleAddToBag}
-            className="mt-6 inline-flex h-10 min-w-[180px] items-center justify-center border border-[#1d241e] px-5 text-xs font-black text-[#1d241e] transition hover:bg-[#1d241e] hover:text-white"
+            className={`inline-flex h-10 items-center justify-center border border-[#1d241e] text-xs font-black text-[#1d241e] transition hover:bg-[#1d241e] hover:text-white ${
+              isDesktop
+                ? "mt-6 min-w-[180px] px-5"
+                : "mt-3.5 w-full min-w-0 px-3"
+            }`}
           >
             {actionLabel}
           </button>
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-bold">
+          <div className={`${isDesktop ? "mt-5 gap-x-5" : "mt-3 gap-x-4"} flex flex-wrap items-center gap-y-2 text-xs font-bold`}>
             <Link href={productHref(product)} className="text-[#52604f] transition hover:text-[#1d241e]">View item</Link>
             <button type="button" onClick={handleRemove} className="text-[#b54e47] transition hover:text-[#772e29]">Remove item</button>
           </div>
@@ -109,14 +117,18 @@ function WishlistRow({ product, isDesktop }) {
 
         <Link
           href={productHref(product)}
-          className={`relative justify-self-end overflow-hidden bg-[#f0f2ee] ${isDesktop ? "h-[150px] w-[150px]" : "order-first h-[118px] w-[118px]"}`}
+          className={`relative overflow-hidden bg-[#f0f2ee] ${
+            isDesktop
+              ? "h-[150px] w-[150px] justify-self-end"
+              : "order-first h-24 w-24 justify-self-start"
+          }`}
         >
           {product.image ? (
             <Image
               src={product.image}
               alt={product.name}
               fill
-              sizes={isDesktop ? "150px" : "118px"}
+              sizes={isDesktop ? "150px" : "96px"}
               className="object-cover"
             />
           ) : (
