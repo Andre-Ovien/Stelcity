@@ -40,5 +40,9 @@ class ServiceListCreateApiView(generics.ListCreateAPIView):
         return qs
 
 class ServiceView(generics.ListAPIView):
-    queryset = ServiceCategory.objects.all()
+    @method_decorator(cache_page(60 * 10))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    queryset = ServiceCategory.objects.prefetch_related('services').all()
     serializer_class = ServiceCategoryWithServicesSerializer
