@@ -29,8 +29,13 @@ function CheckoutSuccessContent() {
 
     const check = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/products/payment/verify/${reference}/`)
-        const data = await res.json()
+        const safeReference = encodeURIComponent(reference)
+        const res = await fetch(`${BASE_URL}/api/products/payment/verify/${safeReference}/`)
+        const data = await res.json().catch(() => ({}))
+
+        if (!res.ok) {
+          throw new Error(data.detail || "Payment verification failed")
+        }
 
         if (data.order_status === "Confirmed") {
           clearCart()

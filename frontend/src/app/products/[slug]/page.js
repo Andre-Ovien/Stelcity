@@ -1,48 +1,73 @@
 import ProductClient from "./ProductClient"
+import { notFound } from "next/navigation"
 import ProductSchema from "../../components/ProductSchema"
+import BreadcrumbSchema from "../../components/BreadcrumbSchema"
 import { getProductDetail } from "../../lib/productDetail"
 
 export async function generateMetadata({ params }) {
+  const { slug } = await params
   try {
     const product = await getProductDetail(slug)
-    if (!product) return { title: "Product Not Found" }
+    if (!product || product.category !== "product") {
+      return {
+        title: "Product Not Found",
+        robots: { index: false, follow: true },
+      }
+    }
 
     return {
       title: product.name,
-      description: product.description,
+      description:
+        product.description ||
+        `Shop ${product.name} from Stelcity with delivery across Nigeria.`,
       alternates: {
-        canonical: `https://www.stelcity.com/products/${slug}`,
+        canonical: `/products/${slug}`,
       },
       openGraph: {
         title: `${product.name} | Stelcity`,
         description: product.description,
         url: `https://www.stelcity.com/products/${slug}`,
-        images: [{ url: product.image, width: 800, height: 800, alt: product.name }],
+        images: product.image ? [{ url: product.image, width: 800, height: 800, alt: product.name }] : [],
       },
       twitter: {
         card: "summary_large_image",
         title: product.name,
         description: product.description,
-        images: [product.image],
+        images: product.image ? [product.image] : [],
       },
     }
   } catch {
-    return { title: "Product | Stelcity" }
+    return {
+      title: "Skincare Product",
+      robots: { index: false, follow: true },
+    }
   }
 }
 
 export default async function ProductPage({ params }) {
+  const { slug } = await params
   let product = null
   try {
     product = await getProductDetail(slug)
-  } catch {
-    
+  } catch (error) {
+    if (error?.status === 404) notFound()
   }
+
+  if (product && product.category !== "product") notFound()
 
   return (
     <>
-      {product && <ProductSchema product={product} />}
-      <ProductClient params={params} />
+      {product?.category === "product" && <ProductSchema product={product} />}
+      {product?.category === "product" && (
+        <BreadcrumbSchema
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Skincare Products", url: "/products" },
+            { name: product.name, url: `/products/${product.slug}` },
+          ]}
+        />
+      )}
+      <ProductClient params={params} initialProduct={product} />
     </>
   )
 }

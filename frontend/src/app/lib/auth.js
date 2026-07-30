@@ -7,10 +7,10 @@ export async function registerUser(name, email, password) {
     body: JSON.stringify({ name, email, password }),
   })
 
-  const data = await res.json()
+  const data = await res.json().catch(() => ({}))
 
   if (!res.ok) {
-    throw new Error(data.message || "Registration failed")
+    throw new Error(data.detail || data.message || "Registration failed")
   }
 
   return {
@@ -27,10 +27,10 @@ export async function loginUser(email, password) {
     body: JSON.stringify({ email, password }),
   })
 
-  const data = await res.json()
+  const data = await res.json().catch(() => ({}))
 
   if (!res.ok) {
-    throw new Error(data.message || "Login failed")
+    throw new Error(data.detail || data.message || "Login failed")
   }
 
   return {
@@ -46,12 +46,15 @@ export async function logoutUser() {
 }
 
 export async function refreshAccessToken(refreshToken) {
-  const res = await fetch(`${BASE_URL}/api/auth/token/refresh/`, {
+  const res = await fetch(`${BASE_URL}/api/token/refresh/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh: refreshToken }),
   })
-  const data = await res.json()
+  const data = await res.json().catch(() => ({}))
   if (!res.ok) throw new Error("Session expired")
-  return data.access
+  return {
+    access: data.access,
+    refresh: data.refresh || refreshToken,
+  }
 }

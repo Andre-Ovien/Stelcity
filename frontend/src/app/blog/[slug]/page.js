@@ -1,177 +1,280 @@
-import { notFound } from "next/navigation"
+import Image from "next/image"
 import Link from "next/link"
+import { notFound } from "next/navigation"
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react"
 import Header from "../../components/Header"
+import Footer from "../../components/Footer"
+import BreadcrumbSchema from "../../components/BreadcrumbSchema"
+import StructuredData from "../../components/StructuredData"
+import { getBlogPost, getRelatedBlogPosts } from "../../lib/blogPosts"
 
-const posts = {
-  "best-skincare-routine-for-oily-skin-nigeria": {
-    title: "Best Skincare Routine for Oily Skin in Nigeria",
-    date: "May 2, 2026",
-    description: "If you have oily skin in Nigeria, you know the struggle, the heat and humidity make it worse. Here is a simple routine that actually works.",
-    content: [
-      { heading: null, body: "If you have oily skin in Nigeria, you know the struggle, the heat and humidity make it worse. Here is a simple skincare routine that actually works." },
-      { heading: "Morning Routine", body: null },
-      { heading: "Step 1: Cleanser", body: "Use a gentle foaming cleanser to remove excess oil without stripping your skin. Look for ingredients like salicylic acid or niacinamide." },
-      { heading: "Step 2: Toner", body: "A lightweight toner helps balance your skin's pH and minimise pores. Avoid alcohol-based toners as they dry out the skin and cause more oil production." },
-      { heading: "Step 3: Moisturiser", body: "Yes, oily skin still needs moisture. Use a lightweight, oil free moisturiser. Skipping this step makes your skin produce more oil." },
-      { heading: "Step 4: Sunscreen", body: "This is non negotiable. Use SPF 30 or higher every morning, even on cloudy days." },
-      { heading: "Evening Routine", body: null },
-      { heading: "Step 1: Double Cleanse", body: "Remove makeup and sunscreen with a cleansing oil first, then follow with your foaming cleanser." },
-      { heading: "Step 2: Treatment", body: "Use a niacinamide or retinol serum to reduce oil production and improve skin texture over time." },
-      { heading: "Step 3: Moisturiser", body: "A lightweight gel moisturiser works best at night for oily skin." },
-      { heading: "Final Tips", body: "Wash your pillowcase every week. Never sleep with makeup on. Drink at least 2 litres of water daily. Avoid touching your face throughout the day. Consistency is key, stick to this routine for at least 4 weeks before judging the results." },
-    ],
-  },
-  "where-to-buy-affordable-skincare-products-nigeria": {
-    title: "Where to Buy Affordable Skincare Products in Nigeria",
-    date: "April 30, 2026",
-    description: "Finding quality skincare products in Nigeria that are affordable and genuine can be challenging. Here is what you need to know.",
-    content: [
-      { heading: null, body: "Finding quality skincare products in Nigeria that are affordable and genuine can be challenging. Here is what you need to know before buying." },
-      { heading: "The Problem With Buying Skincare in Nigeria", body: "Many skincare products sold in local markets and on social media are counterfeit. Using fake products can damage your skin permanently. Always buy from a trusted source." },
-      { heading: "What to Look For When Buying Skincare Online", body: null },
-      { heading: "1. Clear ingredient list", body: "Any legitimate skincare product will display its full ingredient list. Avoid products with no ingredient information." },
-      { heading: "2. Dermatologist tested", body: "Look for products that have been tested and approved by dermatologists. This ensures they are safe for your skin type." },
-      { heading: "3. Return policy", body: "A trustworthy skincare store will have a clear return or exchange policy." },
-      { heading: "4. Customer reviews", body: "Real reviews from verified customers give you confidence in the product before buying." },
-      { heading: "Why Stelcity", body: "Stelcity is a Nigerian skincare brand based in Lagos offering premium, dermatologist-tested skincare products, raw materials and professional beauty services. All products are cruelty-free and made with natural ingredients. We offer fast delivery across Nigeria and our products are trusted by over 10,000 happy customers." },
-      { heading: "Tips for Saving Money on Skincare", body: "Buy in bundles, it is almost always cheaper per item. Follow Stelcity on Instagram for discount announcements. Subscribe to our newsletter for early access to sales. Buy raw materials and make your own products,we stock everything you need." },
-    ],
-  },
-  "how-to-get-glowing-skin-naturally-lagos": {
-    title: "How to Get Glowing Skin Naturally in Lagos",
-    date: "April 27, 2026",
-    description: "Everyone wants glowing healthy skin. The good news is you do not need expensive treatments to achieve it.",
-    content: [
-      { heading: null, body: "Everyone wants glowing, healthy skin. The good news is you do not need expensive treatments to achieve it. Here is how." },
-      { heading: "Why Lagos Skin Needs Extra Care", body: "Lagos weather,the heat, humidity, dust and pollution takes a toll on your skin. A proper skincare routine is not a luxury, it is necessary." },
-      { heading: "5 Things That Give You Glowing Skin", body: null },
-      { heading: "1. Hydration", body: "Drink at least 2 litres of water daily. No skincare product can replace what water does for your skin from the inside." },
-      { heading: "2. Vitamin C Serum", body: "Vitamin C brightens the skin, fades dark spots and protects against environmental damage. Apply every morning before your moisturiser." },
-      { heading: "3. Exfoliation", body: "Exfoliate 2–3 times per week to remove dead skin cells that make skin look dull. Use a gentle chemical exfoliant, avoid harsh physical scrubs." },
-      { heading: "4. Sunscreen", body: "This is the single most effective anti-ageing and brightening product available. UV damage is the number one cause of dull, uneven skin tone. Use SPF 30 or higher every single day." },
-      { heading: "5. Sleep", body: "Your skin repairs itself while you sleep. Getting 7–8 hours consistently makes a visible difference within weeks." },
-      { heading: "What to Avoid", body: "Bleaching creams damage the skin barrier permanently. Harsh soaps with high pH, they strip natural oils. Skipping moisturiser even oily skin needs hydration. Inconsistency, skincare only works when done daily." },
-      {heading: "Products We Recommend", body: "Stelcity stocks everything you need for a glowing skin routine. Browse our skincare products in Lagos at stelcity.com/products or learn more about skincare in Lagos at stelcity.com/skincare-in-lagos"},
-    ],
-  },
+function StoryMeta({ post }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#747a72]">
+      <span>{post.category}</span>
+      <span aria-hidden="true" className="h-1 w-1 rounded-full bg-current opacity-60" />
+      <span>{post.date}</span>
+      <span aria-hidden="true" className="h-1 w-1 rounded-full bg-current opacity-60" />
+      <span>{post.readTime}</span>
+    </div>
+  )
+}
+
+function SidebarPost({ post }) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group flex gap-3 py-3 transition hover:opacity-70"
+    >
+      <div className="relative h-14 w-16 shrink-0 overflow-hidden rounded-[5px] bg-[#e9ede7]">
+        <Image
+          src={post.image}
+          alt={post.imageAlt}
+          fill
+          sizes="64px"
+          className={`object-cover transition duration-500 group-hover:scale-105 ${post.imagePosition}`}
+        />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[8px] font-black uppercase tracking-[0.14em] text-[#858b82]">
+          {post.category}
+        </p>
+        <p className="mt-1 text-xs font-black leading-[1.2] tracking-[-0.025em] text-[#1d241e]">
+          {post.title}
+        </p>
+      </div>
+    </Link>
+  )
+}
+
+function ArticleSidebar({ relatedPosts }) {
+  return (
+    <aside className="min-w-0" aria-label="More journal notes">
+      <div className="border-t pt-5" style={{ borderColor: "#d9ddd6" }}>
+        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#747a72]">
+          Read next
+        </p>
+        <div className="mt-2 divide-y" style={{ borderColor: "#d9ddd6" }}>
+          {relatedPosts.map((relatedPost) => (
+            <SidebarPost key={relatedPost.slug} post={relatedPost} />
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 border-t pt-5" style={{ borderColor: "#d9ddd6" }}>
+        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#747a72]">
+          Explore Stelcity
+        </p>
+        <div className="mt-3 flex flex-col divide-y" style={{ borderColor: "#d9ddd6" }}>
+          <Link
+            href="/products"
+            className="flex items-center justify-between py-2.5 text-xs font-bold text-[#1d241e] transition hover:text-[#778c73]"
+          >
+            Skincare products
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+          <Link
+            href="/raw-materials"
+            className="flex items-center justify-between py-2.5 text-xs font-bold text-[#1d241e] transition hover:text-[#778c73]"
+          >
+            Raw materials
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+          <Link
+            href="/our-services"
+            className="flex items-center justify-between py-2.5 text-xs font-bold text-[#1d241e] transition hover:text-[#778c73]"
+          >
+            Beauty services
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-8 border-t pt-5" style={{ borderColor: "#d9ddd6" }}>
+        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#747a72]">
+          Keep in touch
+        </p>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+          <a
+            href="https://www.instagram.com/stelcityskincare_aesthetics"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] text-[#1d241e] transition hover:text-[#778c73]"
+          >
+            Instagram
+            <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+          </a>
+          <a
+            href="https://www.facebook.com/Stelcityskincarenspa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] text-[#1d241e] transition hover:text-[#778c73]"
+          >
+            Facebook
+            <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </aside>
+  )
 }
 
 export async function generateMetadata({ params }) {
-  const resolvedParams = await params
-  const post = posts[resolvedParams.slug]
+  const { slug } = await params
+  const post = getBlogPost(slug)
+
   if (!post) return { title: "Post Not Found" }
+
   return {
     title: post.title,
     description: post.description,
     alternates: {
-      canonical: `https://www.stelcity.com/blog/${resolvedParams.slug}`,
+      canonical: `https://www.stelcity.com/blog/${post.slug}`,
     },
     openGraph: {
       title: `${post.title} | Stelcity`,
       description: post.description,
-      url: `https://www.stelcity.com/blog/${resolvedParams.slug}`,
-      images: [{ url: "/images/og-banner.jpg", width: 1200, height: 630 }],
+      url: `https://www.stelcity.com/blog/${post.slug}`,
+      images: [{ url: post.image, width: 1200, height: 630, alt: post.imageAlt }],
+      type: "article",
+      publishedTime: post.publishedAt,
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: ["/images/og-banner.jpg"],
+      images: [post.image],
     },
   }
 }
 
 export default async function BlogPost({ params }) {
-  const resolvedParams = await params
-  const post = posts[resolvedParams.slug]
+  const { slug } = await params
+  const post = getBlogPost(slug)
+
   if (!post) notFound()
 
+  const relatedPosts = getRelatedBlogPosts(post.slug)
+  const articleSections = post.content.slice(1)
+  const imageUrl = post.image.startsWith("http")
+    ? post.image
+    : `https://www.stelcity.com${post.image}`
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `https://www.stelcity.com/blog/${post.slug}#article`,
+    headline: post.title,
+    description: post.description,
+    image: imageUrl,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    inLanguage: "en-NG",
+    mainEntityOfPage: `https://www.stelcity.com/blog/${post.slug}`,
+    author: {
+      "@id": "https://www.stelcity.com/#organization",
+    },
+    publisher: {
+      "@id": "https://www.stelcity.com/#organization",
+    },
+  }
+
   return (
-    <div className="min-h-screen bg-[#D6E4D3]">
+    <div className="min-h-screen bg-[#f8f7f2] text-[#1d241e]">
+      <StructuredData data={articleSchema} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Skincare Journal", url: "/blog" },
+          { name: post.title, url: `/blog/${post.slug}` },
+        ]}
+      />
       <Header />
-      <main className="max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-7">
 
-        <Link
-          href="/blog"
-          className="text-sm text-gray-400 hover:text-[#D65A5A] mb-8 inline-block transition-colors"
-        >
-          ← Back to Blog
-        </Link>
-
-        <p className="text-xs text-gray-400 mb-3">{post.date}</p>
-
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-          {post.title}
-        </h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10 lg:gap-16 items-start">
-
-          
-          <div className="flex flex-col gap-6">
-            {post.content.map((section, i) => (
-              <div key={i}>
-                {section.heading && (
-                  <h2 className="text-[15px] sm:text-[16px] lg:text-[18px] xl:text-[20px] font-bold text-gray-900 mb-2">
-                    {section.heading}
-                  </h2>
-                )}
-                {section.body && (
-                  <p className="text-[14px] sm:text-[15px] lg:text-[16px] xl:text-[17px] text-gray-600 leading-relaxed">
-                    {section.body}
-                  </p>
-                )}
-              </div>
-            ))}
+      <main className="px-5 pb-16 pt-6 sm:px-8 sm:pb-20 sm:pt-8 lg:px-12 lg:pb-24">
+        <div className="mx-auto max-w-[1040px]">
+          <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 border-b pb-5" style={{ borderColor: "#d9ddd6" }}>
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#637060] transition hover:text-[#1d241e]"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+              Back to journal
+            </Link>
+            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#858b82]">
+              Stelcity journal
+            </p>
           </div>
 
-          
-          <aside className="hidden lg:flex flex-col gap-6 sticky top-6">
-            <div className="p-6 bg-[#F7F6F6] rounded-2xl text-center">
-              <p className="text-sm font-semibold text-gray-800 mb-4">
-                Ready to start your skincare journey?
-              </p>
-              <Link
-                href="/products"
-                className="inline-block bg-[#D65A5A] text-white font-semibold px-6 py-3 rounded-full text-sm hover:bg-[#c44f4f] transition-all active:scale-95 w-full text-center"
-              >
-                Shop Products
-              </Link>
-            </div>
-
-            <div className="p-6 border border-gray-100 rounded-2xl">
-              <p className="text-sm font-bold text-gray-800 mb-4">More Posts</p>
-              <div className="flex flex-col gap-3">
-                {Object.entries(posts)
-                  .filter(([slug]) => slug !== resolvedParams.slug)
-                  .map(([slug, p]) => (
-                    <Link
-                      key={slug}
-                      href={`/blog/${slug}`}
-                      className="text-sm text-gray-600 hover:text-[#D65A5A] transition-colors leading-snug"
-                    >
-                      {p.title}
-                    </Link>
-                  ))}
+          <div className="journal-article-grid mt-9 sm:mt-12">
+            <article className="min-w-0">
+              <div className="relative aspect-[1.56] overflow-hidden rounded-[8px] bg-[#e9ede7]">
+                <Image
+                  src={post.image}
+                  alt={post.imageAlt}
+                  fill
+                  priority
+                  sizes="(max-width: 859px) calc(100vw - 40px), 700px"
+                  className={`object-cover ${post.imagePosition}`}
+                />
               </div>
-            </div>
-          </aside>
 
+              <div className="mt-7 border-b pb-7 sm:mt-8 sm:pb-8" style={{ borderColor: "#d9ddd6" }}>
+                <StoryMeta post={post} />
+                <h1 className="mt-4 max-w-[720px] text-[36px] font-black leading-[0.98] tracking-[-0.055em] text-[#1d241e] sm:text-[48px] lg:text-[56px]">
+                  {post.title}
+                </h1>
+                <p className="mt-5 max-w-[650px] font-serif text-[21px] leading-[1.4] tracking-[-0.025em] text-[#4d594d] sm:text-[25px]">
+                  {post.description}
+                </p>
+              </div>
+
+              <div className="mt-8 space-y-8 sm:mt-10 sm:space-y-10">
+                {articleSections.map((section, index) => (
+                  <section key={`${section.heading ?? "section"}-${index}`}>
+                    {section.heading && !section.body && (
+                      <h2 className="border-y py-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#667364]" style={{ borderColor: "#d9ddd6" }}>
+                        {section.heading}
+                      </h2>
+                    )}
+                    {section.heading && section.body && (
+                      <h2 className="text-[23px] font-black leading-[1.08] tracking-[-0.035em] text-[#1d241e] sm:text-[27px]">
+                        {section.heading}
+                      </h2>
+                    )}
+                    {section.body && (
+                      <p className="mt-3 text-[15px] leading-7 text-[#586257] sm:mt-4 sm:text-[16px] sm:leading-8">
+                        {section.body}
+                      </p>
+                    )}
+                  </section>
+                ))}
+              </div>
+
+              <section className="mt-12 border p-6 sm:mt-14 sm:p-7" style={{ borderColor: "#ccd5ca", backgroundColor: "#e3e9e1" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64735f]">Bring it to your routine</p>
+                <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+                  <p className="max-w-[420px] font-serif text-[22px] font-semibold leading-[1.2] tracking-[-0.025em] text-[#1d241e] sm:text-[26px]">
+                    Find skincare that suits the way your skin actually feels.
+                  </p>
+                  <Link
+                    href="/products"
+                    className="inline-flex w-fit items-center gap-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#1d241e] transition hover:text-[#6e8069]"
+                  >
+                    Shop products
+                    <span className="grid h-8 w-8 place-items-center rounded-full border border-[#8d9b8b]">
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                    </span>
+                  </Link>
+                </div>
+              </section>
+            </article>
+
+            <ArticleSidebar relatedPosts={relatedPosts} />
+          </div>
         </div>
-
-    
-        <div className="mt-14 p-6 bg-[#F7F6F6] rounded-2xl text-center lg:hidden">
-          <p className="text-sm font-semibold text-gray-800 mb-4">
-            Ready to start your skincare journey?
-          </p>
-          <Link
-            href="/products"
-            className="inline-block bg-[#D65A5A] text-white font-semibold px-8 py-3 rounded-full text-sm hover:bg-[#c44f4f] transition-all active:scale-95"
-          >
-            Shop Stelcity Products
-          </Link>
-        </div>
-
       </main>
+
+      <Footer />
     </div>
   )
 }

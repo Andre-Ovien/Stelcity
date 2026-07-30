@@ -3,7 +3,7 @@ import React from 'react'
 import FavouritesPage from './FavouritesPage'
 
 export const metadata = {
-  title: "Your Favorites | Stelcity",
+  title: "Wishlist",
   description: "View and manage your saved skincare products.",
   robots: {
     index: false,

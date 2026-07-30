@@ -2,7 +2,7 @@ import React from 'react'
 import CartPage from './CartPage'
 
 export const metadata = {
-  title: "Your Cart | Stelcity",
+  title: "Your Cart",
   description: "Review your selected skincare products and proceed to checkout.",
   robots: {
     index: false,

@@ -1,38 +1,77 @@
 import Link from "next/link"
 import Image from "next/image"
 import Header from "../components/Header"
+import Footer from "../components/Footer"
+import BreadcrumbSchema from "../components/BreadcrumbSchema"
+import StructuredData from "../components/StructuredData"
 
 export const metadata = {
-  title: "Best Skincare in Lagos | Products, Facials & Training - Stelcity",
+  title: "Skincare in Lagos: Products, Facials & Training",
   description:
-    "Looking for the best skincare in Lagos? Stelcity offers dermatologist tested skincare products, professional facial treatments, acne treatment and beauty training in Lagos Nigeria.",
+    "Shop skincare products in Lagos, book professional facial treatments and explore practical beauty training with Stelcity. Visit us or order across Nigeria.",
   alternates: {
-    canonical: "https://www.stelcity.com/skincare-in-lagos",
+    canonical: "/skincare-in-lagos",
   },
   openGraph: {
-    title: "Best Skincare in Lagos | Products, Facials & Training - Stelcity",
+    title: "Skincare in Lagos: Products, Facials & Training | Stelcity",
     description:
-      "Looking for the best skincare in Lagos? Stelcity offers dermatologist-tested skincare products, professional facial treatments, acne treatment and beauty training in Lagos Nigeria.",
-    url: "https://www.stelcity.com/skincare-in-lagos",
-    images: [{ url: "/images/og-banner.jpg", width: 1200, height: 630 }],
+      "Shop skincare products, book professional facial treatments and explore practical beauty training with Stelcity.",
+    url: "/skincare-in-lagos",
+    images: [{ url: "/images/og-banner.jpg", width: 1200, height: 634 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Skincare in Lagos: Products, Facials & Training | Stelcity",
+    description:
+      "Shop skincare products, book facial treatments and explore beauty training with Stelcity.",
+    images: ["/images/og-banner.jpg"],
   },
 }
 
+const FAQS = [
+  {
+    q: "Where can I buy genuine skincare products in Lagos?",
+    a: "Stelcity is a trusted source for genuine, dermatologist-tested skincare products in Lagos. We offer fast 24-hour delivery across Lagos.",
+  },
+  {
+    q: "Do you offer acne treatment in Lagos?",
+    a: "Yes — we offer professional acne facial treatments at our Agbara Lagos location. We also have acne skincare product sets for home use.",
+  },
+  {
+    q: "What facial treatments are available in Lagos at Stelcity?",
+    a: "We offer acne facials, brightening facials, chemical peels, microdermabrasion, hydrating facials and more at our Agbara spa.",
+  },
+  {
+    q: "Do you deliver skincare products across Lagos?",
+    a: "Yes — we offer 24-hour delivery within Lagos and nationwide shipping across Nigeria.",
+  },
+  {
+    q: "Are your skincare products safe for sensitive skin?",
+    a: "All Stelcity products are dermatologist tested and suitable for all skin types including sensitive and acne-prone skin.",
+  },
+  {
+    q: "Do I need to book an appointment for facial treatments?",
+    a: "Yes, we recommend booking in advance. Chat with us on WhatsApp to schedule your appointment.",
+  },
+]
+
 export default function SkincareInLagosPage() {
-  const schema = {
+  const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "BeautySalon",
+    "@id": "https://www.stelcity.com/skincare-in-lagos#location",
     name: "Stelcity",
     description:
-      "Premium skincare products, professional facial treatments and beauty training in Lagos Nigeria.",
-    url: "https://www.stelcity.com",
+      "Skincare products, professional facial treatments and beauty training in Lagos, Nigeria.",
+    url: "https://www.stelcity.com/skincare-in-lagos",
+    image: "https://www.stelcity.com/images/og-banner.jpg",
     telephone: "+2348092221127",
     email: "stellaefeturi1@gmail.com",
     address: {
       "@type": "PostalAddress",
       streetAddress: "No 430 Jida Plaza, Opp Redeem Church, Agbara Bus Stop",
-      addressLocality: "Lagos",
-      addressRegion: "Lagos",
+      addressLocality: "Agbara",
+      addressRegion: "Lagos State",
       addressCountry: "NG",
     },
     geo: {
@@ -40,9 +79,24 @@ export default function SkincareInLagosPage() {
       latitude: "6.5116",
       longitude: "3.0690",
     },
-    openingHours: "Mo-Sa 09:00-19:00",
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ],
+      opens: "09:00",
+      closes: "19:00",
+    },
     priceRange: "₦₦",
-    servesCuisine: null,
+    currenciesAccepted: "NGN",
+    parentOrganization: {
+      "@id": "https://www.stelcity.com/#organization",
+    },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Skincare Services",
@@ -58,12 +112,28 @@ export default function SkincareInLagosPage() {
       "https://www.instagram.com/stelcityskincare_aesthetics",
     ],
   }
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQS.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  }
 
   return (
     <div className="min-h-screen bg-[#D6E4D3] ">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      <StructuredData data={localBusinessSchema} />
+      <StructuredData data={faqSchema} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Skincare in Lagos", url: "/skincare-in-lagos" },
+        ]}
       />
 
       <Header />
@@ -330,32 +400,7 @@ export default function SkincareInLagosPage() {
             Frequently Asked Questions About Skincare in Lagos
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {[
-              {
-                q: "Where can I buy genuine skincare products in Lagos?",
-                a: "Stelcity is a trusted source for genuine, dermatologist-tested skincare products in Lagos. We offer fast 24-hour delivery across Lagos.",
-              },
-              {
-                q: "Do you offer acne treatment in Lagos?",
-                a: "Yes — we offer professional acne facial treatments at our Agbara Lagos location. We also have acne skincare product sets for home use.",
-              },
-              {
-                q: "What facial treatments are available in Lagos at Stelcity?",
-                a: "We offer acne facials, brightening facials, chemical peels, microdermabrasion, hydrating facials and more at our Agbara spa.",
-              },
-              {
-                q: "Do you deliver skincare products across Lagos?",
-                a: "Yes — we offer 24-hour delivery within Lagos and nationwide shipping across Nigeria.",
-              },
-              {
-                q: "Are your skincare products safe for sensitive skin?",
-                a: "All Stelcity products are dermatologist tested and suitable for all skin types including sensitive and acne-prone skin.",
-              },
-              {
-                q: "Do I need to book an appointment for facial treatments?",
-                a: "Yes, we recommend booking in advance. Chat with us on WhatsApp to schedule your appointment.",
-              },
-            ].map((faq, i) => (
+            {FAQS.map((faq, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100">
                 <p className="text-[13px] lg:text-[14px] font-semibold text-gray-800 mb-2">
                   {faq.q}
@@ -394,6 +439,7 @@ export default function SkincareInLagosPage() {
         </div>
       </section>
 
+      <Footer />
     </div>
   )
 }

@@ -42,6 +42,186 @@ body{
   font-family: playfair display;
 }
 
+/* Storefront layout uses named grids so its desktop columns remain stable
+   across Safari, Chromium, and cached Tailwind development styles. */
+.catalog-heading-grid,
+.catalog-layout-grid,
+.catalog-product-grid,
+.catalog-fallback-grid {
+  display: grid;
+  min-width: 0;
+}
+
+.catalog-heading-grid,
+.catalog-layout-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.catalog-product-grid,
+.catalog-fallback-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media screen and (min-width: 640px) {
+  .catalog-fallback-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .catalog-heading-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 0.72fr);
+  }
+
+  .catalog-layout-grid {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .catalog-fallback-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .catalog-layout-grid {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+
+  .catalog-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.routine-handwriting-wrap {
+  color: #748071;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  max-width: min(94vw, 1280px);
+  filter: drop-shadow(0 10px 20px rgba(42, 30, 18, 0.08));
+}
+
+.routine-handwriting-text {
+  display: inline-block;
+  letter-spacing: 0;
+  clip-path: inset(0 100% 0 0);
+  transform: rotate(-1.5deg);
+  animation: handwriting-reveal 3.6s cubic-bezier(0.72, 0, 0.12, 1) 0.2s forwards;
+  white-space: normal;
+}
+
+.routine-handwriting-stroke {
+  display: block;
+  width: min(70vw, 560px);
+  height: 12px;
+  border-bottom: 3px solid rgba(116, 128, 113, 0.58);
+  border-radius: 999px;
+  transform: scaleX(0) rotate(-2.5deg);
+  transform-origin: left center;
+  animation: handwriting-stroke 1.4s ease 2.35s forwards;
+}
+
+/* The journal uses explicit grids so its editorial layout stays stable across
+   desktop and mobile browser style caches. */
+.journal-feature-grid,
+.journal-update-grid,
+.journal-card-grid,
+.journal-article-grid,
+.learn-hero-grid,
+.learn-curriculum-grid,
+.learn-week-grid,
+.account-workspace-grid,
+.profile-form-grid {
+  display: grid;
+  min-width: 0;
+}
+
+.journal-feature-grid,
+.journal-update-grid,
+.journal-article-grid,
+.learn-hero-grid,
+.learn-curriculum-grid,
+.learn-week-grid,
+.account-workspace-grid,
+.profile-form-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.journal-card-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media screen and (min-width: 720px) {
+  .journal-feature-grid {
+    grid-template-columns: minmax(0, 0.38fr) minmax(0, 0.62fr);
+  }
+
+  .journal-update-grid {
+    grid-template-columns: minmax(0, 0.72fr) minmax(190px, 0.28fr);
+  }
+
+  .journal-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media screen and (min-width: 960px) {
+  .journal-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .journal-article-grid {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 3.5rem;
+  }
+
+  .learn-hero-grid {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  }
+
+  .learn-curriculum-grid {
+    grid-template-columns: minmax(0, 1fr) 270px;
+  }
+
+  .learn-week-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .account-workspace-grid {
+    grid-template-columns: 250px minmax(0, 1fr);
+  }
+
+  .profile-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@keyframes handwriting-reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes handwriting-stroke {
+  to {
+    transform: scaleX(1) rotate(-2.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .routine-handwriting-text {
+    animation: none;
+    clip-path: inset(0 0 0 0);
+  }
+
+  .routine-handwriting-stroke {
+    animation: none;
+    transform: scaleX(1) rotate(-2.5deg);
+  }
+}
+
 
 @media screen and (min-width:375px){
   #space{

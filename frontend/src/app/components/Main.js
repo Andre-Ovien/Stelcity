@@ -1,116 +1,91 @@
-"use client"
+import Image from "next/image"
+import { CircleCheck, Droplets, Leaf, Sparkles, Star } from "lucide-react"
 
-import Image from 'next/image'
-import Link from 'next/link'
+const HERO_CHIPS = [
+  "Vitamin glow",
+  "Hydration",
+  "Pure oils",
+  "Even tone",
+  "No harshness",
+  "Glow masks",
+  "Daily repair",
+  "Soft texture",
+  "Clean routine",
+  "Bright finish",
+  "Skin barrier",
+]
 
 const Main = () => {
-
-  const scrollToCollection = () => {
-    const section = document.getElementById("collection")
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
   return (
-    <div className="w-full px-5 sm:px-8 lg:px-10 xl:px-16 2xl:px-24 sm:py-30">
+    <div className="relative min-h-screen overflow-hidden bg-[#f7f5ef]">
+      <Image
+        src="/images/skincare-hero-glow-studio.png"
+        alt="Woman applying a creamy face mask in a bright skincare studio"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-[72%_center] sm:object-center"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(247,245,239,0.98)_0%,rgba(247,245,239,0.9)_31%,rgba(247,245,239,0.35)_56%,rgba(247,245,239,0.04)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(247,245,239,0.78)_0%,rgba(247,245,239,0)_28%,rgba(247,245,239,0.5)_100%)] lg:bg-none" />
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-10 lg:gap-16 xl:gap-20">
-
-       
-        <div className="flex-1">
-
-          
-          <h1 className="text-[32px] leading-tight font-black sm:text-[36px] md:text-[40px] lg:text-[44px] xl:text-[52px] 2xl:text-[58px]">
-            Healthy{" "}
-            <span className="text-[#C94F5C] play ">
-              Skin{" "}
-              <br className="sm:hidden" />
-            </span>
-            Starts Here
-          </h1>
-
-          
-          <p className="text-[#826E70] text-[15px] font-normal mt-3 leading-relaxed sm:text-[16px] lg:text-[18px] xl:text-[22px] 2xl:text-[26px] max-w-xl">
-            Indulge in a premium skincare experience crafted by experts, designed to transform your complexion and turn your daily routine into a moment of pure self-care.
-          </p>
-
-          
-          <div className="mt-8 xl:mt-10 flex items-center gap-3 flex-wrap">
-            <button
-              onClick={scrollToCollection}
-              className="
-                bg-[#D65A5A] text-white font-bold rounded-3xl
-                w-28 h-11 xl:w-36 xl:h-13 xl:text-[20px]
-                shadow-[0px_4px_15px_rgba(214,90,90,0.45)]
-                transition-all duration-200
-                hover:bg-[#C44F4F] hover:shadow-[0px_6px_20px_rgba(214,90,90,0.55)] hover:-translate-y-0.5
-                active:scale-95 active:shadow-none
-              "
-            >
-              Shop Now
-            </button>
-
-            <Link href="/products">
-              <button className="
-                bg-[#DAB9A8] text-[#B6454F] font-bold border border-[#B6454F] rounded-3xl
-                w-36 h-11 xl:w-44 xl:h-13 xl:text-[18px]
-                transition-all duration-200
-                hover:bg-[#e9b8a1] hover:-translate-y-0.5 hover:shadow-md
-                active:scale-95 active:bg-[#d9a98e]
-              ">
-                View Collection
-              </button>
-            </Link>
-          </div>
-
-         
-          <div className="mt-8 sm:hidden">
-            <Image
-              src="/images/lady.png"
-              alt="Stelcity skincare model with glowing healthy skin"
-              width={400}
-              height={400}
-              priority
-              className="w-full h-auto object-contain"
-            />
-          </div>
-
-          
-          <div className="flex items-center gap-3 sm:gap-4 xl:gap-6 mt-6 xl:mt-10 flex-wrap justify-center sm:justify-start">
-            <div className="flex items-center gap-1 -ml-2">
-              <Image src="/images/tested.png" width={18} height={20} alt="Dermatologist tested badge" className="xl:w-7 xl:h-7 shrink-0" />
-              <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Dermatologist Tested</p>
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-[1480px] flex-col px-5 pb-5 pt-28 sm:px-8 lg:px-10 lg:pt-32">
+        <div className="flex flex-1 items-center">
+          <div className="max-w-[660px] pb-20 lg:pb-24">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#ded8cc] bg-white/72 px-3 py-2 text-xs font-bold text-[#504b45] shadow-[0_12px_30px_rgba(31,28,24,0.06)] backdrop-blur-md">
+              <span className="grid h-5 w-5 place-items-center rounded-full bg-[#eaff51] text-[#17130f]">
+                <Sparkles className="h-3 w-3" aria-hidden="true" />
+              </span>
+              For skin that glows
             </div>
-            <div className="flex items-center gap-1">
-              <Image src="/images/nature.png" width={18} height={20} alt="Natural Ingredients badge" className="xl:w-7 xl:h-7 shrink-0" />
-              <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Natural Ingredients</p>
-            </div>
-            <div className="flex items-center gap-1">
-              <Image src="/images/free.png" width={18} height={20} alt="Cruelty Free badge" className="xl:w-7 xl:h-7 shrink-0" />
-              <p className="text-[#494848] text-[10px] sm:text-[11px] lg:text-[13px] xl:text-[16px] whitespace-nowrap">Cruelty-free</p>
+
+            <h1 className="max-w-[590px] text-[42px] font-black leading-[0.95] text-[#17130f] sm:text-[60px] lg:text-[70px]">
+              Skincare Products That Let Your Inner Glow Shine Through
+            </h1>
+
+            <p className="mt-5 max-w-[520px] text-sm leading-6 text-[#5f5952] sm:text-base">
+              Reveal your skin&apos;s beauty with nourishing skincare, raw materials,
+              and expert care designed for radiant, healthy skin.
+            </p>
+
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <a
+                href="#collection"
+                className="rounded-full bg-[#eaff51] px-6 py-3 text-sm font-black text-[#17130f] shadow-[0_14px_30px_rgba(194,218,42,0.28)] transition hover:-translate-y-0.5 hover:bg-[#f2ff68] focus:outline-none focus:ring-2 focus:ring-[#17130f]/20"
+              >
+                Shop Now
+              </a>
+
+              <span className="flex items-center gap-2 text-xs font-bold text-[#5f5952]">
+                <CircleCheck className="h-4 w-4 text-[#8a9b42]" aria-hidden="true" />
+                Made for your skin
+              </span>
             </div>
           </div>
-
-          
-          <p className="text-[#D65A5A] text-[13px] xl:text-[17px] font-bold mt-4 mb-4 sm:mb-0  text-center  sm:text-left">
-            Trusted by 10,000+ happy customers.
-          </p>
-
         </div>
 
-        
-        <div className="hidden sm:flex flex-1 justify-center items-center">
-          <Image
-            src="/images/lady.png"
-            alt="Stelcity skincare model with glowing healthy skin"
-            width={600}
-            height={600}
-            priority
-            className="object-contain w-full max-w-sm lg:max-w-md xl:max-w-lg h-auto"
-          />
-        </div>
+        <div className="absolute bottom-5 left-1/2 hidden w-[min(88vw,1240px)] -translate-x-1/2 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)] lg:block">
+          <div className="flex items-center justify-center gap-3">
+            {HERO_CHIPS.map((chip, index) => {
+              const Icon = index % 3 === 0 ? Leaf : index % 3 === 1 ? Droplets : Star
+              const isActive = index === 2
 
+              return (
+                <span
+                  key={chip}
+                  className={`flex h-10 min-w-max items-center gap-2 rounded-full border px-5 text-xs font-bold backdrop-blur-md transition ${
+                    isActive
+                      ? "border-[#cfc8bd] bg-white/82 text-[#4f4a43] shadow-[0_10px_24px_rgba(31,28,24,0.08)]"
+                      : "border-[#ebe6de] bg-white/48 text-[#8a837b] shadow-[0_8px_20px_rgba(31,28,24,0.04)]"
+                  }`}
+                >
+                  <Icon className={`h-3.5 w-3.5 ${isActive ? "text-[#6f7f35]" : "text-[#a0ad74]"}`} aria-hidden="true" />
+                  {chip}
+                </span>
+              )
+            })}
+          </div>
+        </div>
       </div>
     </div>
   )

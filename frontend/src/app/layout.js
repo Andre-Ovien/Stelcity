@@ -17,30 +17,16 @@ export const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "Stelcity - Best Skincare Products in Nigeria",
+    default: "Stelcity Skincare Nigeria",
     template: "%s | Stelcity",
   },
   description:
-    "Shop dermatologist-tested skincare products, raw materials and professional beauty services in Lagos Nigeria. Trusted by 10,000+ happy customers across Lagos.",
+    "Shop skincare products and formulation ingredients, book beauty treatments, and learn practical skincare skills with Stelcity in Nigeria.",
   applicationName: "Stelcity",
   creator: "Stelcity",
   publisher: "Stelcity",
-  keywords: [
-  "skincare Nigeria",
-  "skincare products Lagos",
-  "buy skincare products Nigeria",
-  "skincare raw materials Nigeria",
-  "facial treatment Lagos",
-  "beauty training Nigeria",
-  "organic skincare Nigeria",
-  "dermatologist tested skincare",
-  "cruelty free skincare Nigeria",
-  "Stelcity skincare",
-  "skincare consultation Lagos",
-  "professional spa services Lagos",
-  "Skincare in Agbara Lagos",
-  ],
-
+  category: "Skincare and beauty",
+  manifest: "/site.webmanifest",
   verification: {
     google: "NU24pPefYwBVi4eXe8KuNyKyc-Zkc_16LofW-qZF9kg",
     other: {
@@ -49,18 +35,21 @@ export const metadata = {
   },
 
   metadataBase: new URL("https://www.stelcity.com"),
-  alternates: {
-    canonical: "https://www.stelcity.com",
-  },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
@@ -68,16 +57,15 @@ export const metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Stelcity — Premium Skincare Products in Nigeria",
+    title: "Stelcity Skincare Nigeria",
     description:
-      "Shop dermatologist-tested skincare products, raw materials and professional beauty services in Nigeria. Trusted by 10,000+ happy customers across Lagos.",
-    url: "https://www.stelcity.com",
+      "Shop skincare products and formulation ingredients, book beauty treatments, and learn practical skincare skills with Stelcity.",
     siteName: "Stelcity",
     images: [
       {
-        url: "/images/og-banner.jpg?v=2",
+        url: "/images/og-banner.jpg",
         width: 1200,
-        height: 630,
+        height: 634,
         alt: "Stelcity Skincare Products — Healthy Skin Starts Here",
       },
     ],
@@ -86,16 +74,10 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stelcity — Premium Skincare Products in Nigeria",
+    title: "Stelcity Skincare Nigeria",
     description:
-      "Shop dermatologist-tested skincare products, raw materials and professional beauty services in Nigeria. Trusted by 10,000+ happy customers.",
-    images: ["/images/og-banner.jpg?v=2"],
-  },
-  verification: {
-    google: "NU24pPefYwBVi4eXe8KuNyKyc-Zkc_16LofW-qZF9kg",
-    other: {
-      "p:domain_verify": "cc74998e20ef106bf21017318d86493b",
-    },
+      "Shop skincare products and ingredients, book beauty treatments, and learn with Stelcity.",
+    images: ["/images/og-banner.jpg"],
   },
 }
 

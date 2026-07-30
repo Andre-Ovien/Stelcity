@@ -29,7 +29,7 @@ async function fetchProducts(category) {
   const data = await cachedFetch(
     `${BASE_URL}/api/products/categories/?category=${category}&page=1`,
     {},
-    30000
+    { cacheTime: 30000, staleTime: 5000 }
   )
   return data.results || []
 }
@@ -38,7 +38,7 @@ async function fetchServiceCategories() {
   const data = await cachedFetch(
     `${BASE_URL}/api/services/service-category/`,
     {},
-    60000
+    { cacheTime: 60000, staleTime: 10000 }
   )
   const categories = data.results || []
 

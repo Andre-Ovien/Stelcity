@@ -1,3 +1,5 @@
+import { authenticatedFetch } from "./authenticatedFetch"
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const CALLBACK_URL = process.env.NEXT_PUBLIC_SQUAD_CALLBACK_URL
 
@@ -14,19 +16,17 @@ export async function createCheckout(items, token, fulfillmentType, state, city)
     body.city = city
   }
 
-  const res = await fetch(`${BASE_URL}/api/products/cart/checkout/`, {
+  const res = await authenticatedFetch(`${BASE_URL}/api/products/cart/checkout/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
     },
     body: JSON.stringify(body),
-  })
+  }, token)
 
-  if (res.status === 401) throw new Error("SESSION_EXPIRED")
   if (res.status === 502 || res.status === 503) throw new Error("Server is unavailable, please try again in a moment")
 
-  const data = await res.json()
+  const data = await res.json().catch(() => ({}))
 
   if (data.authorization_url) return data
 

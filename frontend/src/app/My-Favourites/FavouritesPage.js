@@ -1,225 +1,210 @@
 "use client"
 
+import { useCallback, useSyncExternalStore } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { FaHeart } from "react-icons/fa"
-import { IoAddCircleOutline } from "react-icons/io5"
-import Header from "../components/Header"
+import { ArrowLeft, ArrowRight, Heart, ShoppingBag } from "lucide-react"
+import toast from "react-hot-toast"
 import { useFavStore } from "../store/favStore"
 import { useCartStore } from "../store/cartStore"
-import toast from "react-hot-toast"
-import { useState } from "react"
 
-const ITEMS_PER_PAGE = 10
+const getServerMediaSnapshot = () => false
 
-function FavCard({ product }) {
-  const toggleFav = useFavStore((s) => s.toggleFav)
-  const isFav = useFavStore((s) => s.isFav(product.slug))
-  const addItem = useCartStore((s) => s.addItem)
+function useMediaQuery(query) {
+  const subscribe = useCallback((callback) => {
+    const media = window.matchMedia(query)
+    media.addEventListener("change", callback)
+    return () => media.removeEventListener("change", callback)
+  }, [query])
+
+  const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query])
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerMediaSnapshot)
+}
+
+function productHref(product) {
+  if (product.type === "service") return `/our-services/${product.slug}`
+  if (product.type === "raw") return `/raw-materials/${product.slug}`
+  return `/products/${product.slug}`
+}
+
+function itemKind(product) {
+  if (product.type === "service") return "Beauty service"
+  if (product.type === "raw") return "Raw material"
+  return "Skincare product"
+}
+
+function cartItem(product) {
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    quantity: 1,
+    variant: null,
+    variantId: null,
+  }
+}
+
+function WishlistRow({ product, isDesktop }) {
+  const toggleFav = useFavStore((state) => state.toggleFav)
+  const addItem = useCartStore((state) => state.addItem)
   const router = useRouter()
-
   const isService = product.type === "service"
   const isRawMaterial = product.type === "raw"
+  const canAddDirectly = !isService && !isRawMaterial
 
-  const href = isService
-    ? `/our-services/${product.slug}`
-    : isRawMaterial
-    ? `/raw-materials/${product.slug}`
-    : `/products/${product.slug}`
-
-  const handleAddToCart = (e) => {
-    e.preventDefault()
-    if (isService) {
-      router.push(`/services/${product.slug}`)
+  const handleAddToBag = () => {
+    if (isService || isRawMaterial) {
+      router.push(productHref(product))
       return
     }
-    if (isRawMaterial) {
-      router.push(`/rawMaterials/${product.slug}`)
-      return
-    }
-    addItem({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      quantity: 1,
-      variant: null,
-      variantId: null,
-    })
-    toast.success("Added to cart!")
+
+    addItem(cartItem(product))
+    toast.success("Added to bag!")
   }
 
-  const buttonLabel = isService
-    ? "View Service"
-    : isRawMaterial
-    ? "Select Weight"
-    : "Add to Cart"
+  const handleRemove = () => {
+    toggleFav(product)
+    toast.success("Removed from wishlist")
+  }
+
+  const actionLabel = isService ? "View service" : isRawMaterial ? "Select option" : "Add to bag"
 
   return (
-    <Link href={href} className="h-full">
-      <div className="
-        bg-white rounded-2xl border border-gray-100 shadow-sm p-3
-        flex flex-col gap-2 h-full
-        transition-all duration-200
-        hover:-translate-y-1 hover:shadow-md
-        active:scale-95
-      ">
-        
-        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50 shrink-0">
-          {product.badge && (
-            <span className="absolute top-2 left-2 z-10 bg-black text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide">
-              {product.badge}
-            </span>
-          )}
+    <article className="border-t py-7 sm:py-8" style={{ borderColor: "#d9ddd6" }}>
+      <div
+        className="wishlist-row-grid items-center gap-6"
+        style={{
+          display: "grid",
+          gridTemplateColumns: isDesktop ? "minmax(0, 1fr) 150px" : "minmax(0, 1fr)",
+        }}
+      >
+        <div className="min-w-0">
+          <Link href={productHref(product)} className="block w-fit transition hover:text-[#b54e47]">
+            <h2 className="text-[21px] font-black leading-[1.05] tracking-[-0.035em] text-[#1d241e] sm:text-[25px]">
+              {product.name}
+            </h2>
+          </Link>
+          <p className="mt-2 text-[15px] font-semibold text-[#52604f]">
+            {product.priceLabel || `₦${Number(product.price || 0).toLocaleString()}`}
+          </p>
+          <p className="mt-1 text-xs text-[#7d877a]">{itemKind(product)}</p>
+
           <button
-            onClick={(e) => {
-              e.preventDefault()
-              toggleFav(product)
-              toast.success(isFav ? "Removed from favourites" : "Added to favourites!")
-            }}
-            className="
-              absolute top-2 right-2 z-10
-              bg-white rounded-full p-1.5 shadow-sm
-              transition-all duration-150
-              hover:scale-110 hover:shadow-md
-              active:scale-90
-            "
+            type="button"
+            onClick={handleAddToBag}
+            className="mt-6 inline-flex h-10 min-w-[180px] items-center justify-center border border-[#1d241e] px-5 text-xs font-black text-[#1d241e] transition hover:bg-[#1d241e] hover:text-white"
           >
-            <FaHeart className={isFav ? "text-red-400" : "text-gray-300"} size={12} />
+            {actionLabel}
           </button>
+
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-bold">
+            <Link href={productHref(product)} className="text-[#52604f] transition hover:text-[#1d241e]">View item</Link>
+            <button type="button" onClick={handleRemove} className="text-[#b54e47] transition hover:text-[#772e29]">Remove item</button>
+          </div>
+        </div>
+
+        <Link
+          href={productHref(product)}
+          className={`relative justify-self-end overflow-hidden bg-[#f0f2ee] ${isDesktop ? "h-[150px] w-[150px]" : "order-first h-[118px] w-[118px]"}`}
+        >
           {product.image ? (
             <Image
               src={product.image}
               alt={product.name}
               fill
+              sizes={isDesktop ? "150px" : "118px"}
               className="object-cover"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-[#EEF5EE]">
-              <span className="text-[36px]">✨</span>
-            </div>
+            <span className="grid h-full w-full place-items-center text-[#b54e47]">
+              <Heart className="h-6 w-6" aria-hidden="true" />
+            </span>
           )}
-        </div>
-
-      
-        <h3 className="text-[13px] sm:text-[14px] font-semibold text-gray-800 leading-tight line-clamp-2 min-h-10">
-          {product.name}
-        </h3>
-        <p className="text-[11px] text-gray-400 leading-tight line-clamp-2 min-h-8">
-          {product.description}
-        </p>
-
-        <div className="mt-auto flex flex-col gap-1.5">
-          <span className="text-[12px] font-medium text-gray-900">
-            {product.priceLabel || `₦${product.price?.toLocaleString()}`}
-          </span>
-          <div className="flex items-center gap-1">
-            <span className="text-yellow-400 text-[11px]">★★★★★</span>
-            <span className="text-[11px] text-gray-400">5.0</span>
-          </div>
-          <button
-            onClick={handleAddToCart}
-            className="
-              flex items-center justify-center gap-1.5
-              bg-[#D65A5A] text-white rounded-full
-              py-2 text-[12px] font-medium w-full
-              transition-all duration-200
-              hover:bg-[#c44f4f] hover:shadow-md hover:-translate-y-0.5
-              active:scale-95 active:bg-[#b84444]
-            "
-          >
-            {buttonLabel}
-            <IoAddCircleOutline size={15} />
-          </button>
-        </div>
+        </Link>
       </div>
-    </Link>
+    </article>
   )
 }
 
 export default function FavouritesPage() {
-  const items = useFavStore((s) => s.items)
-  const [page, setPage] = useState(1)
+  const items = useFavStore((state) => state.items)
+  const addItem = useCartStore((state) => state.addItem)
+  const router = useRouter()
+  const isDesktop = useMediaQuery("(min-width: 720px)")
+  const cartableItems = items.filter((item) => item.type !== "service" && item.type !== "raw")
 
-  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE)
-  const paginated = items.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
+  const handleAddAllToBag = () => {
+    if (cartableItems.length === 0) {
+      toast("Choose product options before adding them to your bag.")
+      return
+    }
+
+    cartableItems.forEach((product) => addItem(cartItem(product)))
+    const skipped = items.length - cartableItems.length
+    toast.success(skipped > 0 ? `${cartableItems.length} item(s) added. Select options for the rest.` : "All saved items added to bag!")
+  }
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3]">
-      <Header />
+    <div className="min-h-screen bg-[#fffefb] text-[#1d241e]">
+      <header className="grid grid-cols-[1fr_auto_1fr] items-center border-b px-5 py-6 sm:px-10 sm:py-8" style={{ borderColor: "#d9ddd6" }}>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Go back"
+          className="inline-flex h-10 w-10 items-center justify-center text-[#1d241e] transition hover:text-[#b54e47]"
+        >
+          <ArrowLeft className="h-7 w-7" strokeWidth={1.7} aria-hidden="true" />
+        </button>
+        <h1 className="text-[30px] font-black leading-none tracking-[-0.045em] sm:text-[36px]">Wishlist</h1>
+        <span aria-hidden="true" />
+      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-        <h1 className="text-xl sm:text-2xl xl:text-4xl font-bold text-gray-900 text-center my-6 xl:my-10 tracking-tight">
-          My Favourites
-        </h1>
-
-        {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <span className="text-[60px]">🤍</span>
-            <h2 className="text-[18px] font-bold text-gray-800">No favourites yet</h2>
-            <p className="text-[13px] text-gray-500 text-center">
-              Tap the heart on any product to save it here.
-            </p>
-            <Link
-              href="/products"
-              className="
-                bg-[#D65A5A] text-white font-semibold px-8 py-3
-                rounded-full text-[14px]
-                transition-all duration-200
-                hover:bg-[#c44f4f] hover:-translate-y-0.5 hover:shadow-md
-                active:scale-95
-              "
-            >
-              Shop Now
-            </Link>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-              {paginated.map((product) => (
-                <FavCard key={product.slug} product={product} />
-              ))}
-            </div>
-
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-8">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-4 py-2 rounded-full text-[13px] font-medium bg-white border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors active:scale-95"
-                >
-                  ← Prev
-                </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={`w-8 h-8 rounded-full text-[13px] font-semibold transition-all active:scale-95 ${
-                      p === page
-                        ? "bg-[#D65A5A] text-white"
-                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="px-4 py-2 rounded-full text-[13px] font-medium bg-white border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors active:scale-95"
-                >
-                  Next →
-                </button>
+      <main className="px-5 pb-16 pt-10 sm:px-10 sm:pb-20 sm:pt-14">
+        <div className="mx-auto max-w-[900px]">
+          {items.length === 0 ? (
+            <section className="border-t py-20 text-center sm:py-28" style={{ borderColor: "#d9ddd6" }}>
+              <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#f6dfd3] text-[#b54e47]">
+                <Heart className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <h2 className="mt-5 text-[30px] font-black leading-none tracking-[-0.045em] text-[#1d241e]">Your wishlist is waiting.</h2>
+              <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-[#717a6e]">Save products you want to come back to and they will stay here for you.</p>
+              <Link href="/products" className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-[#1d241e] px-6 text-xs font-black text-white transition hover:-translate-y-0.5 hover:bg-[#354033]">
+                Explore products
+              </Link>
+            </section>
+          ) : (
+            <>
+              <div className="flex items-baseline justify-between gap-5 border-t pb-5 pt-4" style={{ borderColor: "#d9ddd6" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#748071]">Saved items</p>
+                <p className="text-xs font-bold text-[#7d877a]">{items.length} {items.length === 1 ? "item" : "items"}</p>
               </div>
-            )}
-          </>
-        )}
-      </div>
+
+              <div>
+                {items.map((product) => <WishlistRow key={product.slug} product={product} isDesktop={isDesktop} />)}
+              </div>
+
+              <section className="mt-7 flex flex-col gap-5 border-t pt-7 sm:mt-9 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "#d9ddd6" }}>
+                <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-bold">
+                  <Link href="/products" className="text-[#52604f] transition hover:text-[#1d241e]">Continue shopping</Link>
+                  <p className="text-[#7d877a]">Your saved list updates automatically.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddAllToBag}
+                  className="inline-flex h-12 min-w-[230px] items-center justify-center gap-2 bg-[#1d241e] px-6 text-xs font-black text-white transition hover:-translate-y-0.5 hover:bg-[#354033]"
+                >
+                  Add all to bag
+                  <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </section>
+            </>
+          )}
+        </div>
+      </main>
     </div>
   )
 }

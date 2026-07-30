@@ -3,12 +3,10 @@ import Main from "./Main"
 
 const Hero = () => {
   return (
-    <div className="back min-h-screen w-full relative flex flex-col">
-      <Header />
-      <div className="flex-1 flex items-center ">
-        <Main />
-      </div>
-    </div>
+    <section className="w-full bg-[#f7f5ef] text-[#17130f]">
+      <Header immersive />
+      <Main />
+    </section>
   )
 }
 

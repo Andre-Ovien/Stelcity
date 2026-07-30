@@ -202,7 +202,6 @@ const ProductGrid = () => {
 
   useEffect(() => {
     let mounted = true;
-    setLoading(true);
 
     getCollectionPreview(category).then((data) => {
       if (mounted) {
@@ -231,7 +230,11 @@ const ProductGrid = () => {
         {TABS.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => setCategory(tab.value)}
+            onClick={() => {
+              if (tab.value === category) return
+              setLoading(true)
+              setCategory(tab.value)
+            }}
             className={`
               shrink-0 px-4 py-1.5 rounded-full border
               text-[13px] sm:text-sm xl:text-base font-medium

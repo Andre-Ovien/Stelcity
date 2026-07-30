@@ -1,9 +1,11 @@
 "use client"
-export const dynamic = 'force-dynamic'
 
-import { Suspense } from "react"
-import { useState, useEffect, useRef } from "react"
+export const dynamic = "force-dynamic"
+
+import { Suspense, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
+import { ArrowLeft, Heart, LockKeyhole, MapPin, Package, UserRound } from "lucide-react"
 import Header from "../../components/Header"
 import { useAuthStore } from "../../store/authStore"
 import { getShippingAddress, saveShippingAddress, updateShippingAddress } from "../../lib/profile"
@@ -20,6 +22,15 @@ const NIGERIAN_STATES = [
 
 const SHIPPING_CACHE_KEY = "stelcity_shipping_address"
 const citiesCache = new Map()
+const getServerMediaSnapshot = () => false
+
+const ACCOUNT_NAVIGATION = [
+  { label: "User info", href: "/profile", Icon: UserRound },
+  { label: "Favourites", href: "/My-Favourites", Icon: Heart },
+  { label: "Orders", href: "/profile/orders", Icon: Package },
+  { label: "Delivery address", href: "/profile/shipping", Icon: MapPin, active: true },
+  { label: "Password & security", href: "/profile/change-password", Icon: LockKeyhole },
+]
 
 function saveAddressToLocal(data) {
   try { localStorage.setItem(SHIPPING_CACHE_KEY, JSON.stringify(data)) } catch {}
@@ -32,12 +43,54 @@ function getAddressFromLocal() {
   } catch { return null }
 }
 
+function useMediaQuery(query) {
+  const subscribe = useCallback((callback) => {
+    const media = window.matchMedia(query)
+    media.addEventListener("change", callback)
+    return () => media.removeEventListener("change", callback)
+  }, [query])
+
+  const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query])
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerMediaSnapshot)
+}
+
+function AccountNavItem({ label, href, Icon, active = false }) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={`group flex items-center gap-3 border-l-2 px-3 py-3 text-sm font-bold transition ${
+        active
+          ? "border-[#d65a5a] bg-[#fff4ef] text-[#1d241e]"
+          : "border-transparent text-[#6d776b] hover:border-[#e5d3cb] hover:bg-[#f7f7f3] hover:text-[#1d241e]"
+      }`}
+    >
+      <Icon className={`h-4 w-4 shrink-0 ${active ? "text-[#d65a5a]" : "text-[#849080]"}`} aria-hidden="true" />
+      {label}
+    </Link>
+  )
+}
+
+function AddressField({ children, error, label, htmlFor, required = false }) {
+  return (
+    <div>
+      <label htmlFor={htmlFor} className="mb-2 block text-[11px] font-black uppercase tracking-[0.12em] text-[#737c70]">
+        {label}{required ? " *" : ""}
+      </label>
+      {children}
+      {error && <p className="mt-1.5 text-xs text-[#b34d46]">{error}</p>}
+    </div>
+  )
+}
+
 function ShippingAddressContent() {
   const token = useAuthStore((s) => s.token)
   const softLogout = useAuthStore((s) => s.softLogout)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get("redirect")
+  const isDesktop = useMediaQuery("(min-width: 960px)")
 
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -104,7 +157,7 @@ function ShippingAddressContent() {
         }
         setFetching(false)
       })
-  }, [token])
+  }, [redirect, router, softLogout, token])
 
   const fetchCities = async (state) => {
     if (!state) return
@@ -178,150 +231,194 @@ function ShippingAddressContent() {
   }
 
   const inputClass = (field) =>
-    `w-full border rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#D65A5A] transition-colors text-gray-800 bg-white ${
-      errors[field] ? "border-red-400" : "border-gray-200"
+    `h-11 w-full border bg-[#fffefb] px-4 text-sm text-[#1d241e] outline-none transition focus:border-[#d65a5a] ${
+      errors[field] ? "border-[#d65a5a]" : "border-[#d9ddd6]"
     }`
 
   return (
-    <div className="min-h-screen bg-[#D6E4D3]">
+    <div className="min-h-screen bg-[#fffefb] text-[#1d241e]">
       <Header />
 
-      <div className="max-w-lg mx-auto px-4 sm:px-6 py-0 pb-10">
-        <h1 className="text-[22px] font-bold text-[#D65A5A] text-center mb-6">
-          Shipping Address
-        </h1>
-
-     
-        <div className="sm:bg-white sm:rounded-2xl sm:border sm:border-gray-100 sm:p-6 sm:shadow-sm">
-
-          {fetching && !existing ? (
-            <div className="flex flex-col gap-3 animate-pulse">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="h-12 bg-gray-100 rounded-xl" />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[12px] text-gray-500 mb-1 block">Full Name *</label>
-                  <input
-                    type="text"
-                    value={form.full_name}
-                    onChange={(e) => handleChange("full_name", e.target.value)}
-                    placeholder="John Doe"
-                    className={inputClass("full_name")}
-                  />
-                  {errors.full_name && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.full_name}</p>}
-                </div>
-
-                <div>
-                  <label className="text-[12px] text-gray-500 mb-1 block">Phone Number *</label>
-                  <input
-                    type="tel"
-                    value={form.phone_number}
-                    onChange={(e) => handleChange("phone_number", e.target.value)}
-                    placeholder="08012345678"
-                    className={inputClass("phone_number")}
-                  />
-                  {errors.phone_number && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.phone_number}</p>}
-                </div>
-              </div>
-
+      <main className="pb-0 pt-5 sm:pt-8">
+        <div className="w-full">
+          <div
+            className="account-workspace-grid min-h-[650px]"
+            style={{
+              display: "grid",
+              gridTemplateColumns: isDesktop ? "250px minmax(0, 1fr)" : "minmax(0, 1fr)",
+            }}
+          >
+            <aside
+              className="flex flex-col p-6 sm:p-8"
+              style={{
+                borderColor: "#d9ddd6",
+                borderBottomWidth: isDesktop ? 0 : 1,
+                borderRightWidth: isDesktop ? 1 : 0,
+              }}
+            >
               <div>
-                <label className="text-[12px] text-gray-500 mb-1 block">Street Address *</label>
-                <input
-                  type="text"
-                  value={form.street_address}
-                  onChange={(e) => handleChange("street_address", e.target.value)}
-                  placeholder="123 Lekki Phase 1"
-                  className={inputClass("street_address")}
-                />
-                {errors.street_address && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.street_address}</p>}
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#748071]">Stelcity account</p>
+                <h1 className="mt-3 text-[28px] font-black leading-none tracking-[-0.045em] text-[#1d241e]">Delivery address</h1>
               </div>
 
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[12px] text-gray-500 mb-1 block">State *</label>
-                  <select
-                    value={form.state}
-                    onChange={(e) => handleChange("state", e.target.value)}
-                    className={`${inputClass("state")} appearance-none`}
-                  >
-                    <option value="">Select a state</option>
-                    {NIGERIAN_STATES.map((state) => (
-                      <option key={state} value={state}>{state}</option>
+              <nav aria-label="Account navigation" className="mt-8 flex flex-col gap-1">
+                {ACCOUNT_NAVIGATION.map((item) => <AccountNavItem key={item.href} {...item} />)}
+              </nav>
+
+              <Link href="/profile" className="mt-8 inline-flex items-center gap-2 self-start text-xs font-black text-[#52604f] transition hover:text-[#1d241e] lg:mt-auto">
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Back to account
+              </Link>
+            </aside>
+
+            <section className="min-w-0 p-6 sm:p-8 lg:p-12">
+              <header className="border-b pb-8" style={{ borderColor: "#e4e5df" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#8a837a]">Delivery details</p>
+                <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <h2 className="max-w-2xl text-[36px] font-black leading-[0.95] tracking-[-0.055em] text-[#1d241e] sm:text-[46px]">Where should we send your order?</h2>
+                  <p className="max-w-[310px] text-sm leading-6 text-[#6d776b]">Keep one delivery address on hand for a faster, simpler checkout.</p>
+                </div>
+                {redirect && <p className="mt-5 text-xs font-bold text-[#62725f]">This address will be used to complete your checkout.</p>}
+              </header>
+
+              {fetching && !existing ? (
+                <div className="mt-9 max-w-4xl animate-pulse">
+                  <div className="grid gap-x-8 gap-y-6" style={{ gridTemplateColumns: isDesktop ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)" }}>
+                    {["one", "two", "three", "four", "five", "six"].map((item) => (
+                      <div key={item}>
+                        <div className="h-3 w-24 bg-[#e8ebe5]" />
+                        <div className="mt-2 h-11 bg-[#f0f2ee]" />
+                      </div>
                     ))}
-                  </select>
-                  {errors.state && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.state}</p>}
-                </div>
-
-                <div>
-                  <label className="text-[12px] text-gray-500 mb-1 block">City *</label>
-                  {loadingCities ? (
-                    <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400">
-                      Loading cities...
-                    </div>
-                  ) : cities.length > 0 ? (
-                    <select
-                      value={form.city}
-                      onChange={(e) => handleChange("city", e.target.value)}
-                      className={`${inputClass("city")} appearance-none`}
-                    >
-                      <option value="">Select a city</option>
-                      {cities.map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      value={form.city}
-                      onChange={(e) => handleChange("city", e.target.value)}
-                      placeholder={form.state ? "Enter city manually" : "Select a state first"}
-                      className={inputClass("city")}
-                      disabled={!form.state}
-                    />
-                  )}
-                  {errors.city && <p className="text-red-400 text-[11px] mt-1 px-1">{errors.city}</p>}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[12px] text-gray-500 mb-1 block">Country</label>
-                  <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-400 bg-gray-50">
-                    Nigeria
                   </div>
                 </div>
+              ) : (
+                <form
+                  className="mt-9 max-w-4xl"
+                  onSubmit={(event) => {
+                    event.preventDefault()
+                    handleSubmit()
+                  }}
+                >
+                  <div
+                    className="gap-x-8 gap-y-6"
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: isDesktop ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)",
+                    }}
+                  >
+                    <AddressField label="Full name" htmlFor="full_name" required error={errors.full_name}>
+                      <input
+                        id="full_name"
+                        type="text"
+                        autoComplete="name"
+                        value={form.full_name}
+                        onChange={(event) => handleChange("full_name", event.target.value)}
+                        placeholder="John Doe"
+                        className={inputClass("full_name")}
+                      />
+                    </AddressField>
 
-                <div>
-                  <label className="text-[12px] text-gray-500 mb-1 block">Postal Code</label>
-                  <input
-                    type="text"
-                    value={form.postal_code}
-                    onChange={(e) => handleChange("postal_code", e.target.value)}
-                    placeholder="100271"
-                    className={inputClass("postal_code")}
-                  />
-                </div>
-              </div>
+                    <AddressField label="Phone number" htmlFor="phone_number" required error={errors.phone_number}>
+                      <input
+                        id="phone_number"
+                        type="tel"
+                        autoComplete="tel"
+                        value={form.phone_number}
+                        onChange={(event) => handleChange("phone_number", event.target.value)}
+                        placeholder="0801 234 5678"
+                        className={inputClass("phone_number")}
+                      />
+                    </AddressField>
 
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="w-full bg-[#D65A5A] text-white font-semibold py-3 rounded-full text-[14px] hover:bg-[#c44f4f] transition-colors disabled:opacity-60 mt-2"
-              >
-                {loading ? "Saving..." : existing ? "Update Address" : "Save Address"}
-              </button>
+                    <div style={{ gridColumn: isDesktop ? "1 / -1" : "auto" }}>
+                      <AddressField label="Street address" htmlFor="street_address" required error={errors.street_address}>
+                        <input
+                          id="street_address"
+                          type="text"
+                          autoComplete="street-address"
+                          value={form.street_address}
+                          onChange={(event) => handleChange("street_address", event.target.value)}
+                          placeholder="123 Lekki Phase 1"
+                          className={inputClass("street_address")}
+                        />
+                      </AddressField>
+                    </div>
 
-            </div>
-          )}
+                    <AddressField label="State" htmlFor="state" required error={errors.state}>
+                      <select
+                        id="state"
+                        autoComplete="address-level1"
+                        value={form.state}
+                        onChange={(event) => handleChange("state", event.target.value)}
+                        className={`${inputClass("state")} appearance-none`}
+                      >
+                        <option value="">Select a state</option>
+                        {NIGERIAN_STATES.map((state) => <option key={state} value={state}>{state}</option>)}
+                      </select>
+                    </AddressField>
 
+                    <AddressField label="City" htmlFor="city" required error={errors.city}>
+                      {loadingCities ? (
+                        <div className="flex h-11 w-full items-center border border-[#d9ddd6] bg-[#f4f5f1] px-4 text-sm text-[#7a8477]">Loading cities…</div>
+                      ) : cities.length > 0 ? (
+                        <select
+                          id="city"
+                          autoComplete="address-level2"
+                          value={form.city}
+                          onChange={(event) => handleChange("city", event.target.value)}
+                          className={`${inputClass("city")} appearance-none`}
+                        >
+                          <option value="">Select a city</option>
+                          {cities.map((city) => <option key={city} value={city}>{city}</option>)}
+                        </select>
+                      ) : (
+                        <input
+                          id="city"
+                          type="text"
+                          autoComplete="address-level2"
+                          value={form.city}
+                          onChange={(event) => handleChange("city", event.target.value)}
+                          placeholder={form.state ? "Enter city manually" : "Select a state first"}
+                          className={inputClass("city")}
+                          disabled={!form.state}
+                        />
+                      )}
+                    </AddressField>
+
+                    <AddressField label="Country" htmlFor="country">
+                      <div id="country" className="flex h-11 items-center border border-[#e4e5df] bg-[#f4f5f1] px-4 text-sm text-[#899187]">Nigeria</div>
+                    </AddressField>
+
+                    <AddressField label="Postal code" htmlFor="postal_code">
+                      <input
+                        id="postal_code"
+                        type="text"
+                        autoComplete="postal-code"
+                        value={form.postal_code}
+                        onChange={(event) => handleChange("postal_code", event.target.value)}
+                        placeholder="100271"
+                        className={inputClass("postal_code")}
+                      />
+                    </AddressField>
+                  </div>
+
+                  <div className="mt-10 flex flex-col gap-4 border-t pt-7 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "#e4e5df" }}>
+                    <p className="max-w-md text-xs leading-5 text-[#798274]">We’ll use this address only for delivery and updates about your order.</p>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="inline-flex h-12 min-w-[184px] items-center justify-center rounded-full bg-[#d65a5a] px-7 text-xs font-black text-white shadow-[0_12px_24px_rgba(214,90,90,0.2)] transition hover:-translate-y-0.5 hover:bg-[#bc4949] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                    >
+                      {loading ? "Saving…" : existing ? "Update address" : "Save address"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </section>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
@@ -329,8 +426,9 @@ function ShippingAddressContent() {
 export default function ShippingAddressPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#D6E4D3] flex items-center justify-center">
-        <p className="text-gray-400 text-[13px]">Loading...</p>
+      <div className="min-h-screen bg-[#fffefb] text-[#1d241e]">
+        <Header />
+        <div className="px-6 py-16 text-center text-sm text-[#748071]">Loading delivery address…</div>
       </div>
     }>
       <ShippingAddressContent />

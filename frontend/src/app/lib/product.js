@@ -1,4 +1,5 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+const CATALOG_FETCH_OPTIONS = { next: { revalidate: 600 } }
 
 export async function getAllProducts() {
   let allProducts = []
@@ -6,7 +7,11 @@ export async function getAllProducts() {
   let hasMore = true
 
   while (hasMore) {
-    const res = await fetch(`${BASE_URL}/api/products/categories/?category=product&page=${page}`)
+    const res = await fetch(
+      `${BASE_URL}/api/products/categories/?category=product&page_size=100&page=${page}`,
+      CATALOG_FETCH_OPTIONS
+    )
+    if (!res.ok) throw new Error(`Products request failed with ${res.status}`)
     const data = await res.json()
 
     const mapped = data.results.map((p) => ({
@@ -36,7 +41,11 @@ export async function getCollectionPreview(category = "all") {
   }
 
   const mapped = categoryMap[category] || "product"
-  const res = await fetch(`${BASE_URL}/api/products/categories/?category=${mapped}`)
+  const res = await fetch(
+    `${BASE_URL}/api/products/categories/?category=${mapped}&page_size=100`,
+    CATALOG_FETCH_OPTIONS
+  )
+  if (!res.ok) throw new Error(`Collection request failed with ${res.status}`)
   const data = await res.json()
 
   return data.results.slice(0, 4).map((p) => ({
@@ -47,7 +56,7 @@ export async function getCollectionPreview(category = "all") {
     image: p.image,
     badge: p.stock <= 3 ? "LIMITED" : null,
     rating: 5,
-    slug: p.id,
+    slug: p.slug,
     category: category === "raw" ? "raw-materials" : "products",
   }))
 }

@@ -7,7 +7,7 @@ export async function getBestSellers() {
     const data = await cachedFetch(
       `${BASE_URL}/api/products/categories/?category=product&page=1`,
       {},
-      60000 
+      { cacheTime: 60000, staleTime: 10000 }
     )
 
     const results = (data.results || []).slice(0, 8).map((p) => {
@@ -20,7 +20,7 @@ export async function getBestSellers() {
         price: lowestPrice,
         rating: 5,
         image: p.image,
-        slug: p.id,
+        slug: p.slug,
         variants: p.variants || [],
       }
     })

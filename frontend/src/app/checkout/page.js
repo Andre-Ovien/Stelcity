@@ -2,7 +2,7 @@ import React from 'react'
 import CheckoutPage from './CheckoutPage'
 
 export const metadata = {
-  title: "Checkout | Stelcity",
+  title: "Checkout",
   description: "Complete your purchase securely and get your skincare products delivered.",
   robots: {
     index: false,

@@ -1,4 +1,5 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+const CATALOG_FETCH_OPTIONS = { next: { revalidate: 600 } }
 
 export async function getAllRawMaterials() {
   let allProducts = []
@@ -6,13 +7,22 @@ export async function getAllRawMaterials() {
   let hasMore = true
 
   while (hasMore) {
-    const res = await fetch(`${BASE_URL}/api/products/categories/?category=raw_material&page=${page}`)
+    const res = await fetch(
+      `${BASE_URL}/api/products/categories/?category=raw_material&page_size=100&page=${page}`,
+      CATALOG_FETCH_OPTIONS
+    )
+    if (!res.ok) throw new Error(`Raw materials request failed with ${res.status}`)
     const data = await res.json()
 
     const mapped = data.results.map((p) => {
-      const prices = p.variants.map((v) => parseFloat(v.price))
-      const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0
-      const highestPrice = prices.length > 0 ? Math.max(...prices) : 0
+      const variants = Array.isArray(p.variants) ? p.variants : []
+      const prices = variants
+        .map((variant) => parseFloat(variant.price))
+        .filter(Number.isFinite)
+      const basePrice = parseFloat(p.price)
+      const fallbackPrice = Number.isFinite(basePrice) ? basePrice : 0
+      const lowestPrice = prices.length > 0 ? Math.min(...prices) : fallbackPrice
+      const highestPrice = prices.length > 0 ? Math.max(...prices) : fallbackPrice
 
       return {
         id: p.id,
@@ -23,7 +33,7 @@ export async function getAllRawMaterials() {
           prices.length > 1
             ? `₦${lowestPrice.toLocaleString()} - ₦${highestPrice.toLocaleString()}`
             : `₦${lowestPrice.toLocaleString()}`,
-        variants: p.variants,
+        variants,
         image: p.image,
         badge: p.stock <= 3 ? "LIMITED" : null,
         rating: 5,

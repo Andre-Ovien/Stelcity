@@ -1,5 +1,7 @@
 import ServiceClient from "./ServiceClient"
 import ServiceSchema from "../../components/ServiceSchema"
+import BreadcrumbSchema from "../../components/BreadcrumbSchema"
+import Footer from "../../components/Footer"
 import { getServices } from "../../lib/services"
 
 export async function generateMetadata({ params }) {
@@ -13,7 +15,7 @@ export async function generateMetadata({ params }) {
       title: service.category,
       description: service.description || `Book ${service.category} at Stelcity Lagos`,
       alternates: {
-        canonical: `https://www.stelcity.com/our-services/${slug}`,
+        canonical: `/our-services/${slug}`,
       },
       openGraph: {
         title: `${service.category} | Stelcity`,
@@ -31,7 +33,10 @@ export async function generateMetadata({ params }) {
       },
     }
   } catch {
-    return { title: "Service | Stelcity" }
+    return {
+      title: "Beauty Service",
+      robots: { index: false, follow: true },
+    }
   }
 }
 
@@ -46,7 +51,17 @@ export default async function ServicePage({ params }) {
   return (
     <>
       {service && <ServiceSchema service={service} />}
-      <ServiceClient params={params} />
+      {service && (
+        <BreadcrumbSchema
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Beauty Services", url: "/our-services" },
+            { name: service.category, url: `/our-services/${service.slug}` },
+          ]}
+        />
+      )}
+      <ServiceClient params={params} initialService={service} />
+      <Footer />
     </>
   )
 }

@@ -49,7 +49,7 @@ export default function EditProfilePage() {
         }
         setFetching(false)
       })
-  }, [token])
+  }, [router, softLogout, token])
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
