@@ -171,13 +171,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": 'rest_framework.pagination.PageNumberPagination',
     "PAGE_SIZE": 10,
 
-    "DEFAULT_THROTTLE_CLASSES": [
-        "Auth.throttles.LoginRateThrottle",
-        "Auth.throttles.RegisterRateThrottle",
-    ],
-
     "DEFAULT_THROTTLE_RATES": {
         "login": "5/minute",
+        "login_burst": "30/minute",
         "register": "10/minute",
     }
 }
@@ -191,7 +187,7 @@ CACHES = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
