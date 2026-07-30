@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 import hmac, hashlib, uuid
 from django.conf import settings
 from .paystack import initialize_payment, verify_payment
@@ -19,6 +20,11 @@ from django.views.decorators.cache import cache_page
 from .squad import initialize_squad_payment, verify_squad_payment
 
 # Create your views here.
+
+class ProductPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class ProductVariantViewSet(generics.ListCreateAPIView):
@@ -44,6 +50,7 @@ class ProductViewSet(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
     serializer_class = ProductSerializer
+    pagination_class = ProductPagination
 
     def get_queryset(self):
         qs = Product.objects.prefetch_related('variants').all()
