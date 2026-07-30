@@ -2,8 +2,7 @@ import { blogPosts } from "./lib/blogPosts"
 import { getAllProducts } from "./lib/product"
 import { getAllRawMaterials } from "./lib/rawMaterials"
 import { getServices } from "./lib/services"
-
-const SITE_URL = "https://www.stelcity.com"
+import { SITE_URL } from "./lib/site"
 
 export const revalidate = 3600
 
@@ -21,19 +20,14 @@ export default async function sitemap() {
     ...entry,
   }))
 
-  const [productsResult, rawMaterialsResult, servicesResult] =
-    await Promise.allSettled([
-      getAllProducts(),
-      getAllRawMaterials(),
-      getServices(),
-    ])
-
-  const products =
-    productsResult.status === "fulfilled" ? productsResult.value : []
-  const rawMaterials =
-    rawMaterialsResult.status === "fulfilled" ? rawMaterialsResult.value : []
-  const services =
-    servicesResult.status === "fulfilled" ? servicesResult.value : []
+  // A failed catalogue request must fail sitemap regeneration. Returning a
+  // successful but incomplete sitemap can make healthy URLs disappear from
+  // the next cached sitemap during a temporary API outage.
+  const [products, rawMaterials, services] = await Promise.all([
+    getAllProducts(),
+    getAllRawMaterials(),
+    getServices(),
+  ])
 
   const productPages = products
     .filter((product) => product.slug)

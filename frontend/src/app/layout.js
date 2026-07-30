@@ -1,4 +1,5 @@
 import { Inter, Poppins } from "next/font/google"
+import "leaflet/dist/leaflet.css"
 import "./globals.css"
 import { Toaster } from "react-hot-toast"
 import OrgSchema from "./components/OrgSchema"
@@ -83,7 +84,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en-NG">
       <body className={`${inter.variable} ${poppins.variable} antialiased`}>
         <OrgSchema />
         <TikTokPixel />

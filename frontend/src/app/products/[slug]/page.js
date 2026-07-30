@@ -51,6 +51,7 @@ export default async function ProductPage({ params }) {
     product = await getProductDetail(slug)
   } catch (error) {
     if (error?.status === 404) notFound()
+    throw error
   }
 
   if (product && product.category !== "product") notFound()

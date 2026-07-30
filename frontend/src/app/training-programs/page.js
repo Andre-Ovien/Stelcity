@@ -2,6 +2,7 @@ import React from 'react'
 import TrainingPage from './TrainingPage'
 import BreadcrumbSchema from '../components/BreadcrumbSchema'
 import StructuredData from '../components/StructuredData'
+import { BUSINESS, SITE_URL } from '../lib/site'
 
 export const metadata = {
   title: 'Skincare Training in Lagos & Online',
@@ -25,13 +26,13 @@ const page = () => {
   const courseSchema = {
     '@context': 'https://schema.org',
     '@type': 'Course',
-    '@id': 'https://www.stelcity.com/training-programs#course',
+    '@id': `${SITE_URL}/training-programs#course`,
     name: 'Advanced Skincare Training Program',
     description:
       'A practical two-week skincare programme covering acne, hyperpigmentation, skin types, routine building, ingredients and treatment techniques.',
-    url: 'https://www.stelcity.com/training-programs',
+    url: `${SITE_URL}/training-programs`,
     provider: {
-      '@id': 'https://www.stelcity.com/#organization',
+      '@id': `${SITE_URL}/#organization`,
     },
     offers: [
       {
@@ -39,14 +40,14 @@ const page = () => {
         category: 'Online training',
         price: 300000,
         priceCurrency: 'NGN',
-        url: 'https://www.stelcity.com/training-programs',
+        url: `${SITE_URL}/training-programs`,
       },
       {
         '@type': 'Offer',
         category: 'In-person training',
         price: 700000,
         priceCurrency: 'NGN',
-        url: 'https://www.stelcity.com/training-programs',
+        url: `${SITE_URL}/training-programs`,
       },
     ],
     hasCourseInstance: [
@@ -62,10 +63,10 @@ const page = () => {
           name: 'Stelcity',
           address: {
             '@type': 'PostalAddress',
-            streetAddress:
-              'No 430 Jida Plaza, Opp Redeem Church, Agbara Bus Stop, Along Badagry Express Way',
-            addressRegion: 'Lagos State',
-            addressCountry: 'NG',
+            streetAddress: BUSINESS.streetAddress,
+            addressLocality: BUSINESS.locality,
+            addressRegion: BUSINESS.region,
+            addressCountry: BUSINESS.country,
           },
         },
       },

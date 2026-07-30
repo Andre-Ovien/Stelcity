@@ -30,13 +30,23 @@ const CATALOGS = {
     heroAlt: "Two women enjoying a playful skincare ritual",
     heroImageClass: "scale-[1.06]",
     heroWord: null,
-    accessibleTitle: "Shop skincare products",
     eyebrow: "Everyday skincare",
-    heading: "Give your skin what it needs.",
+    heading: "Skincare products for the way your skin feels.",
     description:
-      "Explore thoughtful skincare for softer, clearer, more confident-looking skin.",
+      "Explore everyday skincare and targeted routines, with delivery options available in Lagos and across Nigeria.",
     searchPlaceholder: "Search skincare products",
     emptyLabel: "products",
+    localGuide: {
+      eyebrow: "Shopping from Lagos?",
+      title: "A clearer route from browsing to delivery.",
+      description:
+        "Explore the full catalogue here, read the Lagos skincare guide for local information, or compare in-person facial treatments at the Stelcity studio in Agbara.",
+      links: [
+        { label: "Skincare in Lagos guide", href: "/skincare-in-lagos" },
+        { label: "Facial treatments in Agbara", href: "/our-services/facial-treatment" },
+        { label: "Routine for oily skin in Nigeria", href: "/blog/best-skincare-routine-for-oily-skin-nigeria" },
+      ],
+    },
   },
   rawMaterials: {
     path: "/raw-materials",
@@ -45,13 +55,23 @@ const CATALOGS = {
     heroImage: "/images/raw-materials-ingredients-hero.png",
     heroAlt: "Botanical powders, butters, oils, and fruit used in skincare formulations",
     heroWord: null,
-    accessibleTitle: "Shop raw materials",
     eyebrow: "For makers and formulators",
-    heading: "Ingredients for your next blend.",
+    heading: "Skincare raw materials for your next blend.",
     description:
-      "Source botanical powders, nourishing butters, carrier oils, and formulation essentials.",
+      "Source botanical powders, nourishing butters, carrier oils, and formulation essentials in Nigeria.",
     searchPlaceholder: "Search raw materials",
     emptyLabel: "raw materials",
+    localGuide: {
+      eyebrow: "For makers in Nigeria",
+      title: "Source ingredients, then keep building your knowledge.",
+      description:
+        "Browse raw materials for your next formulation, explore practical skincare training, or use the Stelcity Lagos guide to find every part of the business.",
+      links: [
+        { label: "Skincare training in Lagos and online", href: "/training-programs" },
+        { label: "Explore Stelcity in Lagos", href: "/skincare-in-lagos" },
+        { label: "Affordable skincare buying guide", href: "/blog/where-to-buy-affordable-skincare-products-nigeria" },
+      ],
+    },
   },
 }
 
@@ -113,9 +133,7 @@ function CatalogHero({ config }) {
         <h1 className={`absolute inset-x-0 text-center font-black leading-[0.75] tracking-[-0.08em] text-[#fffdf7] drop-shadow-[0_10px_28px_rgba(0,0,0,0.22)] ${config.heroWordClass} ${config.heroPositionClass}`}>
           {config.heroWord}
         </h1>
-      ) : (
-        <h1 className="sr-only">{config.accessibleTitle}</h1>
-      )}
+      ) : null}
     </section>
   )
 }
@@ -285,9 +303,9 @@ function CatalogContent({ catalogType, initialItems = [], initialPage = 1 }) {
               <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#8a837a] sm:text-xs">
                 {config.eyebrow}
               </p>
-              <h2 className="mt-4 max-w-[760px] text-[40px] font-black leading-[0.95] tracking-[-0.045em] sm:text-[58px] lg:text-[70px]">
+              <h1 className="mt-4 max-w-[820px] text-[40px] font-black leading-[0.95] tracking-[-0.045em] sm:text-[58px] lg:text-[70px]">
                 {config.heading}
-              </h2>
+              </h1>
               <p className="mt-5 max-w-[580px] text-sm leading-6 text-[#6a645d] sm:text-base">
                 {config.description}
               </p>
@@ -443,6 +461,35 @@ function CatalogContent({ catalogType, initialItems = [], initialPage = 1 }) {
               </AutoProductCarousel>
             </section>
           )}
+
+          <section className="mt-20 overflow-hidden bg-[#1d241e] text-white sm:mt-24 lg:grid lg:grid-cols-[1fr_0.72fr]">
+            <div className="p-7 sm:p-10 lg:p-12">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#a4b4a0]">
+                {config.localGuide.eyebrow}
+              </p>
+              <h2 className="mt-4 max-w-[660px] text-[34px] font-black leading-[0.96] tracking-[-0.05em] sm:text-[46px]">
+                {config.localGuide.title}
+              </h2>
+              <p className="mt-5 max-w-[620px] text-sm leading-7 text-white/64">
+                {config.localGuide.description}
+              </p>
+            </div>
+            <nav
+              aria-label={`${catalogType === "products" ? "Skincare" : "Raw material"} guides`}
+              className="divide-y divide-white/14 border-t border-white/14 lg:border-l lg:border-t-0"
+            >
+              {config.localGuide.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="group flex min-h-[92px] items-center justify-between gap-5 px-6 py-5 text-sm font-black transition hover:bg-white hover:text-[#1d241e] sm:px-8"
+                >
+                  {link.label}
+                  <ArrowRight className="h-4 w-4 shrink-0 transition group-hover:translate-x-1" aria-hidden="true" />
+                </Link>
+              ))}
+            </nav>
+          </section>
         </div>
       </main>
 

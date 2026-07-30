@@ -1,4 +1,5 @@
 import StructuredData from "./StructuredData"
+import { BUSINESS, SITE_URL, SOCIAL_LINKS } from "../lib/site"
 
 export default function OrgSchema() {
   const schema = {
@@ -6,40 +7,37 @@ export default function OrgSchema() {
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://www.stelcity.com/#organization",
-        name: "Stelcity",
-        url: "https://www.stelcity.com",
+        "@id": `${SITE_URL}/#organization`,
+        name: BUSINESS.name,
+        url: SITE_URL,
         logo: {
           "@type": "ImageObject",
-          url: "https://www.stelcity.com/images/logo.png",
+          url: `${SITE_URL}/images/logo.png`,
           width: 386,
           height: 125,
         },
-        image: "https://www.stelcity.com/images/og-banner.jpg",
+        image: `${SITE_URL}/images/og-banner.jpg`,
         description:
           "Skincare products, formulation ingredients, beauty services, and practical skincare training in Nigeria.",
-        telephone: "+2348092221127",
-        email: "stellaefeturi1@gmail.com",
+        telephone: BUSINESS.phoneInternational,
+        email: BUSINESS.email,
         address: {
           "@type": "PostalAddress",
-          streetAddress:
-            "No 430 Jida Plaza, Opp Redeem Church, Agbara Bus Stop, Along Badagry Express Way",
-          addressRegion: "Lagos State",
-          addressCountry: "NG",
+          streetAddress: BUSINESS.streetAddress,
+          addressLocality: BUSINESS.locality,
+          addressRegion: BUSINESS.region,
+          addressCountry: BUSINESS.country,
         },
-        sameAs: [
-          "https://www.facebook.com/Stelcityskincarenspa",
-          "https://www.instagram.com/stelcityskincare_aesthetics",
-        ],
+        sameAs: [SOCIAL_LINKS.facebook, SOCIAL_LINKS.instagram],
       },
       {
         "@type": "WebSite",
-        "@id": "https://www.stelcity.com/#website",
-        url: "https://www.stelcity.com",
-        name: "Stelcity",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: BUSINESS.name,
         inLanguage: "en-NG",
         publisher: {
-          "@id": "https://www.stelcity.com/#organization",
+          "@id": `${SITE_URL}/#organization`,
         },
       },
     ],

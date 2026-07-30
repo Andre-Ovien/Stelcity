@@ -2,8 +2,7 @@ import Link from "next/link"
 import { FaFacebook, FaInstagram, FaWhatsapp } from "react-icons/fa"
 import { MdEmail, MdLocationOn } from "react-icons/md"
 import Newsletter from "./NewsLetter"
-
-const WHATSAPP_NUMBER = "2348092221127"
+import { BUSINESS, SOCIAL_LINKS, getWhatsAppUrl } from "../lib/site"
 
 const shopLinks = [
   { label: "Products", href: "/products" },
@@ -14,14 +13,12 @@ const shopLinks = [
 
 const exploreLinks = [
   { label: "Skincare in Lagos", href: "/skincare-in-lagos" },
+  { label: "Skincare Products in Lagos", href: "/products" },
+  { label: "Facial Treatments in Agbara", href: "/our-services/facial-treatment" },
   { label: "Skincare Blog", href: "/blog" },
   {
     label: "Oily Skin Tips",
     href: "/blog/best-skincare-routine-for-oily-skin-nigeria",
-  },
-  {
-    label: "Glowing Skin Guide",
-    href: "/blog/how-to-get-glowing-skin-naturally-lagos",
   },
 ]
 
@@ -53,14 +50,13 @@ const Footer = () => {
               <div className="mt-6 flex items-start gap-2 text-xs leading-5 text-[#7b6257]">
                 <MdLocationOn className="mt-0.5 h-4 w-4 shrink-0 text-[#0f8a64]" />
                 <span>
-                  No 430 Jida Plaza, Opp Redeem Church, Agbara Bus Stop, Along
-                  Badagry Express Way, Lagos State
+                  {BUSINESS.address}
                 </span>
               </div>
 
               <div className="mt-7 flex gap-3">
                 <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                  href={getWhatsAppUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Chat with Stelcity on WhatsApp"
@@ -69,7 +65,7 @@ const Footer = () => {
                   <FaWhatsapp className="h-4 w-4" />
                 </a>
                 <a
-                  href="https://www.instagram.com/stelcityskincare_aesthetics"
+                  href={SOCIAL_LINKS.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Follow Stelcity on Instagram"
@@ -78,7 +74,7 @@ const Footer = () => {
                   <FaInstagram className="h-4 w-4" />
                 </a>
                 <a
-                  href="https://www.facebook.com/Stelcityskincarenspa"
+                  href={SOCIAL_LINKS.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Follow Stelcity on Facebook"
@@ -130,7 +126,7 @@ const Footer = () => {
                     Order Status
                   </Link>
                   <a
-                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${helpMessage}`}
+                    href={`${getWhatsAppUrl()}?text=${helpMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-[#6f5b51] transition hover:text-[#241b18]"
@@ -150,20 +146,20 @@ const Footer = () => {
                 <h4 className="text-sm font-black text-[#241b18]">Contact</h4>
                 <div className="mt-4 flex flex-col gap-3">
                   <a
-                    href="mailto:stellaefeturi1@gmail.com"
+                    href={`mailto:${BUSINESS.email}`}
                     className="flex items-start gap-2 text-sm text-[#6f5b51] transition hover:text-[#241b18]"
                   >
                     <MdEmail className="mt-0.5 h-4 w-4 shrink-0 text-[#8f7669]" />
-                    <span className="break-all">stellaefeturi1@gmail.com</span>
+                    <span className="break-all">{BUSINESS.email}</span>
                   </a>
                   <a
-                    href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                    href={getWhatsAppUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-[#6f5b51] transition hover:text-[#241b18]"
                   >
                     <FaWhatsapp className="h-4 w-4 shrink-0 text-[#8f7669]" />
-                    <span>+234 809 222 1127</span>
+                    <span>{BUSINESS.phoneDisplay}</span>
                   </a>
                 </div>
               </div>

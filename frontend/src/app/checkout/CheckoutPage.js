@@ -28,9 +28,10 @@ import { createCheckout } from "../lib/checkout"
 import { getShippingAddress } from "../lib/profile"
 import toast from "react-hot-toast"
 import { handleSessionExpiry } from "../lib/handleSessionExpiry"
+import { BUSINESS } from "../lib/site"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
-const SHOP_ADDRESS = "No 430 Jida Plaza, Opp Redeem Church, Agbara Bus Stop, Along Badagry Express Way, Lagos State"
+const SHOP_ADDRESS = BUSINESS.address
 
 function formatNaira(value) {
   const amount = Number(value)

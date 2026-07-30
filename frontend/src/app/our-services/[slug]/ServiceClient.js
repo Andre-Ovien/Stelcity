@@ -8,8 +8,7 @@ import Link from "next/link"
 import { ArrowDown, ArrowLeft, ArrowUpRight, MessageCircle, Sparkles } from "lucide-react"
 import Header from "../../components/Header"
 import { getServices } from "../../lib/services"
-
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2348092221127"
+import { BUSINESS } from "../../lib/site"
 
 function formatPrice(price) {
   return `₦${Number(price || 0).toLocaleString()}`
@@ -65,6 +64,9 @@ export default function ServiceClient({ params, initialService = null }) {
         const found = data.find((item) => item.slug === slug)
         setService(found || null)
       })
+      .catch(() => {
+        if (isCurrent) setService(null)
+      })
       .finally(() => {
         if (isCurrent) setLoading(false)
       })
@@ -78,14 +80,14 @@ export default function ServiceClient({ params, initialService = null }) {
     const message = encodeURIComponent(
       `Hello, I would like to book the *${itemName}* service under *${service.category}*. Please let me know the availability.`
     )
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank", "noopener,noreferrer")
+    window.open(`https://wa.me/${BUSINESS.whatsappNumber}?text=${message}`, "_blank", "noopener,noreferrer")
   }
 
   const handleGeneralRequest = () => {
     const message = encodeURIComponent(
       `Hello, I would like help choosing a service under *${service.category}*.`
     )
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank", "noopener,noreferrer")
+    window.open(`https://wa.me/${BUSINESS.whatsappNumber}?text=${message}`, "_blank", "noopener,noreferrer")
   }
 
   if (loading) return <ServiceDetailSkeleton />
@@ -112,6 +114,7 @@ export default function ServiceClient({ params, initialService = null }) {
   const items = Array.isArray(service.items) ? service.items : []
   const prices = items.map((item) => Number(item.price)).filter(Number.isFinite)
   const startingPrice = prices.length > 0 ? Math.min(...prices) : null
+  const isFacialTreatment = slug === "facial-treatment"
 
   return (
     <div className="min-h-screen bg-[#fff8ef] text-[#241b18]">
@@ -138,6 +141,13 @@ export default function ServiceClient({ params, initialService = null }) {
                 {service.description && (
                   <p className="mt-7 max-w-[540px] text-sm leading-6 text-[#69564b] sm:text-base sm:leading-7">
                     {service.description}
+                  </p>
+                )}
+                {isFacialTreatment && (
+                  <p className={`${service.description ? "mt-4" : "mt-7"} max-w-[540px] text-sm leading-6 text-[#69564b] sm:text-base sm:leading-7`}>
+                    Explore facial treatments at the Stelcity studio in Agbara,
+                    along Badagry Express Way, Lagos State. Review the menu and
+                    request your preferred appointment on WhatsApp.
                   </p>
                 )}
 
@@ -252,6 +262,26 @@ export default function ServiceClient({ params, initialService = null }) {
                 Ask on WhatsApp
               </button>
             </div>
+
+            <nav
+              aria-label="Related Stelcity guides"
+              className="mt-14 grid overflow-hidden border border-[#241b18]/12 sm:grid-cols-3"
+            >
+              {[
+                { label: "Skincare in Lagos", href: "/skincare-in-lagos" },
+                { label: "Shop skincare products", href: "/products" },
+                { label: "Explore skincare training", href: "/training-programs" },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="group flex min-h-[96px] items-center justify-between gap-4 border-b border-[#241b18]/12 px-5 py-5 text-sm font-black transition hover:bg-[#241b18] hover:text-white sm:border-b-0 sm:border-r last:border-0"
+                >
+                  {link.label}
+                  <ArrowUpRight className="h-4 w-4 shrink-0 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                </Link>
+              ))}
+            </nav>
           </div>
         </section>
       </main>

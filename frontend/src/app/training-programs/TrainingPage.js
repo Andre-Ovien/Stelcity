@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useState } from "react"
 import { ArrowRight, Check, ChevronDown, ChevronUp } from "lucide-react"
 import Header from "../components/Header"
@@ -243,6 +244,28 @@ export default function TrainingPage() {
               </button>
             </div>
           </section>
+
+          <nav
+            aria-label="Related Stelcity guides"
+            className="mt-4 grid border sm:grid-cols-3"
+            style={{ borderColor: "#d9ddd6" }}
+          >
+            {[
+              { label: "Skincare in Lagos", href: "/skincare-in-lagos" },
+              { label: "Shop formulation raw materials", href: "/raw-materials" },
+              { label: "Read the skincare journal", href: "/blog" },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group flex min-h-[88px] items-center justify-between gap-4 border-b px-5 py-5 text-sm font-black text-[#1d241e] transition hover:bg-[#1d241e] hover:text-white sm:border-b-0 sm:border-r last:border-0"
+                style={{ borderColor: "#d9ddd6" }}
+              >
+                {link.label}
+                <ArrowRight className="h-4 w-4 shrink-0 transition group-hover:translate-x-1" aria-hidden="true" />
+              </Link>
+            ))}
+          </nav>
         </div>
       </main>
 

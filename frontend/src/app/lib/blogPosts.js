@@ -8,9 +8,10 @@ export const blogPosts = [
     readTime: "5 min read",
     description:
       "If you have oily skin in Nigeria, you know the struggle: the heat and humidity can make it feel worse. Here is a simple routine that actually works.",
-    image: "/images/skincare-routine-mirror.png",
-    imageAlt: "A woman applying skincare while looking in a bathroom mirror",
-    imagePosition: "object-[50%_50%]",
+    image: "/images/blog-oily-skin-routine-nigeria.webp",
+    imageAlt:
+      "A Nigerian woman applying lightweight skincare while looking in a bathroom mirror",
+    imagePosition: "object-center",
     featured: true,
     content: [
       {
@@ -50,6 +51,10 @@ export const blogPosts = [
       {
         heading: "Final tips",
         body: "Wash your pillowcase every week. Never sleep with makeup on. Drink at least 2 litres of water daily. Avoid touching your face throughout the day. Consistency is key, so stick to this routine for at least 4 weeks before judging the results.",
+        links: [
+          { label: "Shop skincare products", href: "/products" },
+          { label: "Explore skincare in Lagos", href: "/skincare-in-lagos" },
+        ],
       },
     ],
   },
@@ -62,9 +67,10 @@ export const blogPosts = [
     readTime: "4 min read",
     description:
       "Finding quality skincare products in Nigeria that are affordable and genuine can be challenging. Here is what you need to know.",
-    image: "/images/earthy-collection-background.png",
-    imageAlt: "Warm earthy skincare still-life background",
-    imagePosition: "object-center",
+    image: "/images/blog-skincare-buying-guide-nigeria.webp",
+    imageAlt:
+      "A Nigerian woman comparing two unbranded skincare products before buying",
+    imagePosition: "object-[52%_center]",
     content: [
       {
         heading: null,
@@ -72,7 +78,7 @@ export const blogPosts = [
       },
       {
         heading: "The problem with buying skincare in Nigeria",
-        body: "Many skincare products sold in local markets and on social media are counterfeit. Using fake products can damage your skin permanently. Always buy from a trusted source.",
+        body: "Online skincare listings do not always provide enough information about the seller, ingredients, directions, or product condition. Check those details before you place an order.",
       },
       { heading: "What to look for when buying skincare online", body: null },
       {
@@ -80,8 +86,8 @@ export const blogPosts = [
         body: "Any legitimate skincare product will display its full ingredient list. Avoid products with no ingredient information.",
       },
       {
-        heading: "2. Dermatologist tested",
-        body: "Look for products that have been tested and approved by dermatologists. This ensures they are safe for your skin type.",
+        heading: "2. Clear directions and warnings",
+        body: "A useful product page should explain how the product is intended to be used and include any relevant cautions. If the information is unclear, ask the seller before ordering.",
       },
       {
         heading: "3. Return policy",
@@ -93,7 +99,11 @@ export const blogPosts = [
       },
       {
         heading: "Why Stelcity",
-        body: "Stelcity is a Nigerian skincare brand based in Lagos offering premium, dermatologist-tested skincare products, raw materials, and professional beauty services. All products are cruelty-free and made with natural ingredients. We offer fast delivery across Nigeria and our products are trusted by over 10,000 happy customers.",
+        body: "Stelcity is a Nigerian skincare business in Agbara, Lagos State. The website brings together skincare products, formulation raw materials, facial treatments, and practical skincare training, with online ordering available across Nigeria.",
+        links: [
+          { label: "Browse skincare products", href: "/products" },
+          { label: "Visit the Lagos skincare guide", href: "/skincare-in-lagos" },
+        ],
       },
       {
         heading: "Tips for saving money on skincare",
@@ -110,9 +120,10 @@ export const blogPosts = [
     readTime: "5 min read",
     description:
       "Everyone wants glowing, healthy skin. The good news is you do not need expensive treatments to achieve it.",
-    image: "/images/skincare-confidence-closeup.png",
-    imageAlt: "Two women with healthy glowing skin",
-    imagePosition: "object-[58%_35%]",
+    image: "/images/blog-glowing-skin-lagos.webp",
+    imageAlt:
+      "A Nigerian woman applying sunscreen beside a bright window in Lagos",
+    imagePosition: "object-[64%_center]",
     content: [
       {
         heading: null,
@@ -149,7 +160,11 @@ export const blogPosts = [
       },
       {
         heading: "Products we recommend",
-        body: "Stelcity stocks everything you need for a glowing skin routine. Browse our skincare products in Lagos at stelcity.com/products or learn more about skincare in Lagos at stelcity.com/skincare-in-lagos.",
+        body: "Browse the Stelcity catalogue to compare available skincare products, or use the Lagos guide to explore products, facial treatments, raw materials, and training in one place.",
+        links: [
+          { label: "Browse skincare products", href: "/products" },
+          { label: "Explore skincare in Lagos", href: "/skincare-in-lagos" },
+        ],
       },
     ],
   },

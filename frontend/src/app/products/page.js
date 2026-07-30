@@ -15,23 +15,23 @@ export async function generateMetadata({ searchParams }) {
   const page = getPageNumber(await searchParams)
   const canonical = page === 1 ? '/products' : `/products?page=${page}`
   const title = page === 1
-    ? 'Skincare Products in Nigeria'
-    : `Skincare Products in Nigeria – Page ${page}`
+    ? 'Skincare Products in Lagos & Across Nigeria'
+    : `Skincare Products in Lagos & Nigeria – Page ${page}`
 
   return {
     title,
-    description: 'Shop skincare products for clearer, softer and healthier-looking skin from Stelcity, with convenient delivery across Nigeria.',
+    description: 'Shop Stelcity skincare products online with delivery options in Lagos and across Nigeria. Browse everyday care and targeted routines.',
     alternates: { canonical },
     openGraph: {
       title: `${title} | Stelcity`,
-      description: 'Shop skincare products for clearer, softer and healthier-looking skin, delivered across Nigeria.',
+      description: 'Shop skincare products online with delivery options in Lagos and across Nigeria.',
       url: canonical,
       images: [{ url: '/images/og-banner.jpg', width: 1200, height: 634 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${title} | Stelcity`,
-      description: 'Shop skincare products for clearer, softer and healthier-looking skin.',
+      description: 'Shop skincare products online with delivery options in Lagos and across Nigeria.',
       images: ['/images/og-banner.jpg'],
     },
   }

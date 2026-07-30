@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowDown, ArrowUpRight, Sparkles } from "lucide-react"
+import { ArrowDown, ArrowUpRight, MapPin, Sparkles } from "lucide-react"
 import { FaHeart } from "react-icons/fa"
 import Header from "../components/Header"
 import { getServices } from "../lib/services"
 import { useFavStore } from "../store/favStore"
 import toast from "react-hot-toast"
+import { BUSINESS } from "../lib/site"
 
 const CARD_LAYOUTS = [
   "lg:col-span-7",
@@ -149,6 +150,9 @@ export default function ServicesPage({ initialServices = [] }) {
       .then((data) => {
         if (isCurrent) setServices(data || [])
       })
+      .catch(() => {
+        if (isCurrent) setServices([])
+      })
       .finally(() => {
         if (isCurrent) setLoading(false)
       })
@@ -269,6 +273,39 @@ export default function ServicesPage({ initialServices = [] }) {
                 <p className="mt-3 text-sm text-[#756258]">Please check back shortly.</p>
               </div>
             )}
+          </div>
+        </section>
+
+        <section className="bg-[#1d241e] px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-14">
+          <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-end">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#a4b4a0]">
+                Treatments in Agbara
+              </p>
+              <h2 className="mt-4 max-w-[720px] text-[39px] font-black leading-[0.94] tracking-[-0.055em] sm:text-[54px]">
+                Explore locally, then book with the right context.
+              </h2>
+              <div className="mt-7 flex max-w-[650px] items-start gap-3 text-sm leading-6 text-white/65">
+                <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#d79185]" aria-hidden="true" />
+                <p>{BUSINESS.address}</p>
+              </div>
+            </div>
+            <nav aria-label="Local treatment guides" className="grid gap-2 sm:grid-cols-2 lg:justify-self-end">
+              <Link
+                href="/our-services/facial-treatment"
+                className="inline-flex min-h-14 items-center justify-between gap-4 border border-white/16 px-5 text-xs font-black transition hover:bg-white hover:text-[#1d241e]"
+              >
+                Facial treatments in Agbara
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/skincare-in-lagos"
+                className="inline-flex min-h-14 items-center justify-between gap-4 border border-white/16 px-5 text-xs font-black transition hover:bg-white hover:text-[#1d241e]"
+              >
+                Skincare in Lagos guide
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </nav>
           </div>
         </section>
 

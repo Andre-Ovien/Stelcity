@@ -5,6 +5,97 @@ body{
   overflow-x: hidden;
 }
 
+.stelcity-location-map {
+  font-family: var(--font-inter), sans-serif;
+  z-index: 0;
+}
+
+.stelcity-location-map .leaflet-control-zoom {
+  border: 0;
+  box-shadow: 0 12px 30px rgba(29, 36, 30, 0.14);
+}
+
+.stelcity-location-map .leaflet-control-zoom a {
+  border: 0;
+  color: #1d241e;
+}
+
+.stelcity-location-map .leaflet-control-attribution {
+  background: rgba(255, 250, 243, 0.86);
+  color: #536052;
+  font-size: 8px;
+}
+
+.stelcity-location-marker {
+  background: transparent;
+  border: 0;
+}
+
+.stelcity-marker-wrap {
+  display: block;
+  height: 48px;
+  position: relative;
+  width: 38px;
+}
+
+.stelcity-marker-pin {
+  align-items: center;
+  background: #ba685f;
+  border: 4px solid #fffaf3;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 10px 24px rgba(65, 36, 31, 0.28);
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  left: 1px;
+  position: absolute;
+  top: 0;
+  transform: rotate(-45deg);
+  width: 36px;
+}
+
+.stelcity-marker-pin span {
+  background: #fffaf3;
+  border-radius: 999px;
+  height: 9px;
+  transform: rotate(45deg);
+  width: 9px;
+}
+
+.stelcity-marker-label {
+  background: #1d241e;
+  border: 2px solid #fffaf3;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(29, 36, 30, 0.18);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  left: 43px;
+  letter-spacing: 0.08em;
+  padding: 7px 10px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 2px;
+  white-space: nowrap;
+}
+
+.stelcity-map-popup {
+  color: #1d241e;
+  display: grid;
+  gap: 5px;
+  max-width: 240px;
+}
+
+.stelcity-map-popup strong {
+  font-size: 13px;
+}
+
+.stelcity-map-popup span {
+  color: #5f675e;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
 .back {
   background-image: url("/images/image 7.png");
   background-position: center;

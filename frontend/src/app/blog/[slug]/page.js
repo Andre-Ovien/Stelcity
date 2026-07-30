@@ -87,6 +87,20 @@ function ArticleSidebar({ relatedPosts }) {
             Beauty services
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
+          <Link
+            href="/skincare-in-lagos"
+            className="flex items-center justify-between py-2.5 text-xs font-bold text-[#1d241e] transition hover:text-[#778c73]"
+          >
+            Skincare in Lagos
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+          <Link
+            href="/training-programs"
+            className="flex items-center justify-between py-2.5 text-xs font-bold text-[#1d241e] transition hover:text-[#778c73]"
+          >
+            Skincare training
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
         </div>
       </div>
 
@@ -245,6 +259,20 @@ export default async function BlogPost({ params }) {
                       <p className="mt-3 text-[15px] leading-7 text-[#586257] sm:mt-4 sm:text-[16px] sm:leading-8">
                         {section.body}
                       </p>
+                    )}
+                    {section.links && (
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {section.links.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="inline-flex items-center gap-2 rounded-full border border-[#aeb8ab] px-4 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-[#1d241e] transition hover:border-[#1d241e] hover:bg-[#1d241e] hover:text-white"
+                          >
+                            {link.label}
+                            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                          </Link>
+                        ))}
+                      </div>
                     )}
                   </section>
                 ))}

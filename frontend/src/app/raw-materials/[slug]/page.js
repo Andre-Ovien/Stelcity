@@ -51,6 +51,7 @@ export default async function RawMaterialPage({ params }) {
     product = await getProductDetail(slug) 
   } catch (error) {
     if (error?.status === 404) notFound()
+    throw error
   }
 
   if (product && product.category !== "raw_material") notFound()

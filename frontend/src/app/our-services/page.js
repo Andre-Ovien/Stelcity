@@ -6,19 +6,19 @@ import { getServices } from '../lib/services'
 
 
 export const metadata = {
-  title: 'Facial Treatments & Beauty Services in Lagos',
-  description: 'Explore professional facial treatments, skincare consultations, body care and spa services from Stelcity in Lagos, Nigeria.',
+  title: 'Beauty Services & Treatment Menu in Lagos',
+  description: 'Browse the Stelcity beauty-service menu, treatment categories and pricing, with appointment requests available for the Agbara studio.',
   alternates: { canonical: '/our-services' },
   openGraph: {
-    title: 'Facial Treatments & Beauty Services in Lagos | Stelcity',
-    description: 'Explore professional facials, skincare consultations, body care and spa services.',
+    title: 'Beauty Services & Treatment Menu in Lagos | Stelcity',
+    description: 'Browse treatment categories, pricing and appointment options for the Stelcity studio in Agbara.',
     url: '/our-services',
     images: [{ url: '/images/og-banner.jpg', width: 1200, height: 634 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Facial Treatments & Beauty Services in Lagos | Stelcity',
-    description: 'Explore professional facials, skincare consultations, body care and spa services.',
+    title: 'Beauty Services & Treatment Menu in Lagos | Stelcity',
+    description: 'Browse treatment categories, pricing and appointment options for the Stelcity studio in Agbara.',
     images: ['/images/og-banner.jpg'],
   },
 }
