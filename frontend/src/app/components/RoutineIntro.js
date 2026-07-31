@@ -14,7 +14,7 @@ const RoutineIntro = () => {
     <section className={`${handwriting.variable} bg-[#fff6e4] px-3 pb-16 pt-14 sm:px-5 sm:pt-16 lg:pb-24 lg:pt-20`}>
       <div className="relative z-10 mx-auto mb-9 flex max-w-[1280px] justify-center px-2 text-center sm:mb-11 lg:mb-12">
         <div className="routine-handwriting-wrap">
-          <p
+          <h2
             className="routine-handwriting-text"
             style={{
               color: "#748071",
@@ -26,7 +26,7 @@ const RoutineIntro = () => {
           >
             <span className="block">Skin that keeps</span>
             <span className="block">getting better.</span>
-          </p>
+          </h2>
           <span className="routine-handwriting-stroke" aria-hidden="true" />
         </div>
       </div>
@@ -35,15 +35,15 @@ const RoutineIntro = () => {
         <div className="flex min-h-[360px] items-center justify-center bg-[#748071] px-8 py-14 text-center text-[#f8f3ea] sm:min-h-[430px] lg:min-h-[500px]">
           <div className="max-w-[520px]">
             <p className="font-serif text-[31px] leading-[1.14] tracking-normal sm:text-[42px] lg:text-[46px]">
-              Starting a skincare routine can feel overwhelming. We are here to
-              simplify it and make your skin glow.
+              A simpler routine, professional facial care, and a clearer path
+              to healthy, glowing skin.
             </p>
 
             <Link
-              href="/our-services"
+              href="/our-services/facial-treatment"
               className="mt-9 inline-flex h-7 items-center justify-center border border-[#f8f3ea]/45 px-7 text-[11px] font-semibold text-[#f8f3ea] transition hover:border-[#f8f3ea] hover:bg-[#f8f3ea] hover:text-[#748071]"
             >
-              Book an appointment
+              Explore facials in Agbara
             </Link>
           </div>
         </div>

@@ -44,8 +44,9 @@ const Main = () => {
             </h1>
 
             <p className="mt-5 max-w-[520px] text-sm leading-6 text-[#5f5952] sm:text-base">
-              Reveal your skin&apos;s beauty with nourishing skincare, raw materials,
-              and expert care designed for radiant, healthy skin.
+              Shop skincare products and cosmetic raw materials online across
+              Nigeria, book professional facial treatments at our studio in
+              Agbara, and explore practical skincare training with Stelcity.
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">

@@ -19,12 +19,13 @@ const RawMaterialsFeature = () => {
       <div className="relative z-10 mx-auto flex min-h-[720px] max-w-[1280px] items-center px-5 py-20 sm:px-8 lg:px-14">
         <div className="max-w-[560px]">
           <h2 className="max-w-[540px] text-[46px] font-black leading-[0.9] tracking-normal sm:text-[64px] lg:text-[78px]">
-            Raw ingredients for radiant blends
+            Raw materials for radiant blends
           </h2>
 
           <p className="mt-6 max-w-[430px] text-sm leading-6 text-[#5f4938] sm:text-base">
-            Shop botanical powders, rich butters, carrier oils, and active
-            ingredients for skincare routines and custom formulations.
+            Buy cosmetic and skincare raw materials in Nigeria, including
+            botanical powders, rich butters, carrier oils, and formulation
+            actives for your next blend.
           </p>
 
           <Link

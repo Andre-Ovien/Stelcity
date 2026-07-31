@@ -4,7 +4,6 @@ import Hero from './components/Hero'
 import RoutineIntro from './components/RoutineIntro'
 import CollectionFeature from './components/CollectionFeature'
 import RawMaterialsFeature from './components/RawMaterialsFeature'
-import LocalDiscovery from './components/LocalDiscovery'
 import Footer from './components/Footer'
 import ClientReviews from './components/ClientReview'
 
@@ -33,7 +32,6 @@ const page = () => {
         <RoutineIntro/>
         <CollectionFeature/>
         <RawMaterialsFeature/>
-        <LocalDiscovery/>
         <ClientReviews/>
         
         <Footer/>

@@ -42,15 +42,16 @@ const CollectionFeature = () => {
             </h2>
 
             <p className="mt-6 max-w-[430px] text-sm leading-6 text-[#60584f] sm:text-base">
-              From daily essentials to targeted treatments, Stelcity helps you build a
-              routine that supports clearer, softer, more confident-looking skin.
+              Shop Stelcity skincare products online across Nigeria, from daily
+              essentials to targeted routines made to support clearer, softer,
+              more confident-looking skin.
             </p>
 
             <Link
               href="/products"
               className="mt-8 inline-flex h-12 items-center gap-3 bg-[#17130f] px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#2a241f]"
             >
-              Browse our collection
+              Shop skincare products
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>

@@ -60,7 +60,7 @@ const page = () => {
         courseMode: 'Onsite',
         location: {
           '@type': 'Place',
-          name: 'Stelcity',
+          name: 'Stelcity Agbara Studio',
           address: {
             '@type': 'PostalAddress',
             streetAddress: BUSINESS.streetAddress,

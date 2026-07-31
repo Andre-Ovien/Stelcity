@@ -41,7 +41,7 @@ export default function LocationMap() {
         html: `
           <span class="stelcity-marker-wrap" aria-hidden="true">
             <span class="stelcity-marker-pin"><span></span></span>
-            <span class="stelcity-marker-label">Stelcity</span>
+            <span class="stelcity-marker-label">Stelcity Agbara</span>
           </span>
         `,
         iconSize: [38, 48],
@@ -52,15 +52,15 @@ export default function LocationMap() {
       const popup = document.createElement("div")
       const name = document.createElement("strong")
       const address = document.createElement("span")
-      name.textContent = BUSINESS.name
+      name.textContent = `${BUSINESS.name} Agbara studio`
       address.textContent = BUSINESS.address
       popup.className = "stelcity-map-popup"
       popup.append(name, address)
 
       L.marker([latitude, longitude], {
         icon: markerIcon,
-        title: `${BUSINESS.name} location`,
-        alt: `${BUSINESS.name} location`,
+        title: `${BUSINESS.name} Agbara studio`,
+        alt: `${BUSINESS.name} Agbara studio`,
       })
         .addTo(map)
         .bindPopup(popup, { closeButton: false, offset: [0, -2] })
@@ -100,7 +100,7 @@ export default function LocationMap() {
       <div
         ref={containerRef}
         className="stelcity-location-map h-full w-full"
-        aria-label={`Interactive map showing ${BUSINESS.name} in ${BUSINESS.locality}`}
+        aria-label={`Interactive map showing the ${BUSINESS.name} Agbara studio`}
       />
 
       {!isReady && (
@@ -113,7 +113,7 @@ export default function LocationMap() {
         rel="noopener noreferrer"
         className="absolute bottom-8 left-4 z-[500] inline-flex items-center gap-2 rounded-full border border-[#1d241e]/12 bg-[#fffaf3]/95 px-4 py-3 text-[10px] font-black uppercase tracking-[0.12em] text-[#1d241e] shadow-[0_12px_32px_rgba(29,36,30,0.16)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white"
       >
-        Directions to Stelcity
+        Directions to Agbara studio
         <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
       </a>
     </div>

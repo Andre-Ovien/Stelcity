@@ -49,9 +49,7 @@ const Footer = () => {
 
               <div className="mt-6 flex items-start gap-2 text-xs leading-5 text-[#7b6257]">
                 <MdLocationOn className="mt-0.5 h-4 w-4 shrink-0 text-[#0f8a64]" />
-                <span>
-                  {BUSINESS.address}
-                </span>
+                <span>{BUSINESS.address}</span>
               </div>
 
               <div className="mt-7 flex gap-3">

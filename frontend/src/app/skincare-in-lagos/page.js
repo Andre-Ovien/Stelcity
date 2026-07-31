@@ -170,8 +170,8 @@ export default function SkincareInLagosPage() {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "HealthAndBeautyBusiness",
-    "@id": `${SITE_URL}/skincare-in-lagos#location`,
-    name: BUSINESS.name,
+    "@id": `${SITE_URL}/skincare-in-lagos#agbara-studio`,
+    name: `${BUSINESS.name} Agbara Studio`,
     description:
       "Skincare products, facial treatments, formulation raw materials and practical skincare training in Agbara, Lagos State.",
     url: `${SITE_URL}/skincare-in-lagos`,
@@ -263,7 +263,7 @@ export default function SkincareInLagosPage() {
                 </span>
               </h1>
               <p className="mt-7 max-w-[520px] text-[15px] leading-7 text-[#66564d] sm:text-base">
-                Shop skincare and formulation supplies, explore facial treatments,
+                Shop skincare and formulation supplies, explore facial treatments
                 or begin practical training with Stelcity in Agbara. Start with
                 exactly what you came looking for.
               </p>
