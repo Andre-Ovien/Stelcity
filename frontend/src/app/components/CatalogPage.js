@@ -20,6 +20,7 @@ import AutoProductCarousel from "./AutoProductCarousel"
 import { getAllProducts } from "../lib/product"
 import { getAllRawMaterials } from "../lib/rawMaterials"
 import { CATALOG_ITEMS_PER_PAGE } from "../lib/catalogPagination"
+import { trackSearch } from "../lib/tiktok"
 
 const CATALOGS = {
   products: {
@@ -217,6 +218,7 @@ function CatalogContent({ catalogType, initialItems = [], initialPage = 1 }) {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("default")
   const catalogRef = useRef(null)
+  const lastTrackedSearch = useRef("")
   const router = useRouter()
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const isWideDesktop = useMediaQuery("(min-width: 1280px)")
@@ -283,6 +285,14 @@ function CatalogContent({ catalogType, initialItems = [], initialPage = 1 }) {
     catalogRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
+  const trackCatalogSearch = () => {
+    const query = search.trim()
+    if (query.length < 2 || query === lastTrackedSearch.current) return
+
+    trackSearch(query)
+    lastTrackedSearch.current = query
+  }
+
   return (
     <>
       <Header immersive />
@@ -318,6 +328,13 @@ function CatalogContent({ catalogType, initialItems = [], initialPage = 1 }) {
                 type="search"
                 aria-label={config.searchPlaceholder}
                 value={search}
+                onBlur={trackCatalogSearch}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter") return
+                  event.preventDefault()
+                  trackCatalogSearch()
+                  event.currentTarget.blur()
+                }}
                 onChange={(event) => {
                   setSearch(event.target.value)
                   resetToFirstPage()
