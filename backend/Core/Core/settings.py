@@ -210,6 +210,25 @@ PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
 
 SQUAD_SECRET_KEY=config('SQUAD_SECRET_KEY')
 
+TIKTOK_PIXEL_ID = config('TIKTOK_PIXEL_ID', default='')
+TIKTOK_EVENTS_API_ACCESS_TOKEN = config(
+    'TIKTOK_EVENTS_API_ACCESS_TOKEN',
+    default='',
+)
+TIKTOK_EVENTS_API_URL = config(
+    'TIKTOK_EVENTS_API_URL',
+    default='https://business-api.tiktok.com/open_api/v1.3/event/track/',
+)
+TIKTOK_EVENTS_API_TIMEOUT = config(
+    'TIKTOK_EVENTS_API_TIMEOUT',
+    default=5.0,
+    cast=float,
+)
+TIKTOK_EVENTS_API_TEST_CODE = config(
+    'TIKTOK_EVENTS_API_TEST_CODE',
+    default='',
+)
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 if DEBUG:
