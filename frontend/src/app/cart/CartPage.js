@@ -9,6 +9,7 @@ import toast from "react-hot-toast"
 import Header from "../components/Header"
 import { useCartStore } from "../store/cartStore"
 import { useAuthStore } from "../store/authStore"
+import { startCheckoutSession } from "../lib/tiktok"
 
 const getServerMediaSnapshot = () => false
 
@@ -254,6 +255,8 @@ export default function CartPage() {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
   const handleCheckout = () => {
+    startCheckoutSession()
+
     if (!isAuth) {
       toast.error("Please sign in to proceed to checkout", { duration: 2000 })
       setTimeout(() => {
