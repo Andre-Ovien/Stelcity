@@ -5,6 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "../../components/Header"
 import { useCartStore } from "../../store/cartStore"
+import {
+  clearCheckoutSession,
+  forgetPendingPurchase,
+  getPendingPurchase,
+  trackPurchase,
+} from "../../lib/tiktok"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -37,7 +43,19 @@ function CheckoutSuccessContent() {
           throw new Error(data.detail || "Payment verification failed")
         }
 
-        if (data.order_status === "Confirmed") {
+        if (data.status === "success" && data.order_status === "Confirmed") {
+          const pendingPurchase = getPendingPurchase(reference)
+          const currentCartItems = useCartStore.getState().items
+          trackPurchase({
+            orderId: data.order_id,
+            reference: data.reference || reference,
+            amount: data.amount,
+            items: pendingPurchase?.items?.length
+              ? pendingPurchase.items
+              : currentCartItems,
+          })
+          forgetPendingPurchase(reference)
+          clearCheckoutSession()
           clearCart()
           setOrderId(data.order_id || null)
           setStatus("success")
