@@ -29,6 +29,10 @@ import { getShippingAddress } from "../lib/profile"
 import toast from "react-hot-toast"
 import { handleSessionExpiry } from "../lib/handleSessionExpiry"
 import { BUSINESS } from "../lib/site"
+import {
+  rememberPendingPurchase,
+  trackInitiateCheckout,
+} from "../lib/tiktok"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const SHOP_ADDRESS = BUSINESS.address
@@ -174,6 +178,7 @@ export default function CheckoutPage() {
   const [hydrated, setHydrated] = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState("delivery")
   const addressFetched = useRef(false)
+  const checkoutTracked = useRef(false)
 
   const subtotal = items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
@@ -188,6 +193,13 @@ export default function CheckoutPage() {
     const timer = setTimeout(() => setHydrated(true), 100)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (!hydrated || items.length === 0 || checkoutTracked.current) return
+
+    trackInitiateCheckout(items)
+    checkoutTracked.current = true
+  }, [hydrated, items])
 
   useEffect(() => {
     if (!token || addressFetched.current) return
@@ -310,6 +322,12 @@ export default function CheckoutPage() {
       )
 
       if (!data.authorization_url) throw new Error("Payment initialization failed")
+      rememberPendingPurchase({
+        reference: data.reference,
+        orderId: data.order_id,
+        amount: data.amount,
+        items,
+      })
       window.location.href = data.authorization_url
     } catch (error) {
       if (error.message === "SESSION_EXPIRED") {
