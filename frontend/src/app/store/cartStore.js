@@ -1,12 +1,14 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { trackAddToCart } from "../lib/tiktok"
 
 export const useCartStore = create(
   persist(
     (set) => ({
       items: [],
 
-      addItem: (item) =>
+      addItem: (item) => {
+        trackAddToCart(item)
         set((state) => {
           const existing = state.items.find((i) => i.id === item.id)
           if (existing) {
@@ -19,7 +21,8 @@ export const useCartStore = create(
             }
           }
           return { items: [...state.items, item] }
-        }),
+        })
+      },
 
       removeItem: (id) =>
         set((state) => ({
