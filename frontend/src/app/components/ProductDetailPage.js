@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -13,6 +13,7 @@ import AutoProductCarousel from "./AutoProductCarousel"
 import { getProductDetail } from "../lib/productDetail"
 import { getAllProducts } from "../lib/product"
 import { getAllRawMaterials } from "../lib/rawMaterials"
+import { trackViewContent } from "../lib/tiktok"
 import { useCartStore } from "../store/cartStore"
 import { useFavStore } from "../store/favStore"
 
@@ -173,6 +174,7 @@ export default function ProductDetailPage({
   const [selectedVariant, setSelectedVariant] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [relatedItems, setRelatedItems] = useState([])
+  const trackedProductKey = useRef(null)
   const isFavourite = useFavStore((state) => state.isFav(product?.slug || slug))
   const loading = resolvedRequest !== requestKey
 
@@ -232,6 +234,31 @@ export default function ProductDetailPage({
       cancelled = true
     }
   }, [expectedCategory, product])
+
+  useEffect(() => {
+    if (!product) return
+
+    const productKey = `${expectedCategory}:${product.id}`
+    if (trackedProductKey.current === productKey) return
+
+    const variantPrices = (product.variants || [])
+      .map((variant) => Number(variant.price))
+      .filter(Number.isFinite)
+    const viewPrice = expectedCategory === "raw_material" && variantPrices.length > 0
+      ? Math.min(...variantPrices)
+      : product.price
+
+    trackViewContent({
+      id: product.id,
+      slug: product.slug || slug,
+      name: product.name,
+      price: viewPrice,
+      category: expectedCategory,
+      type: isRawMaterial ? "raw" : "product",
+      quantity: 1,
+    })
+    trackedProductKey.current = productKey
+  }, [expectedCategory, isRawMaterial, product, slug])
 
   if (loading) {
     return (
