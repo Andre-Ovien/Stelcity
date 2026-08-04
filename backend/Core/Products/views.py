@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from decimal import Decimal, InvalidOperation
+import logging
+
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
@@ -11,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 import hmac, hashlib, uuid
 from django.conf import settings
+from django.db import transaction
 from .paystack import initialize_payment, verify_payment
 from .emails import send_order_confirmation, send_payment_failed
 from Notifications.utils import create_notification
@@ -18,6 +22,10 @@ from .utils import get_delivery_fee
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from .squad import initialize_squad_payment, verify_squad_payment
+from .tiktok import send_purchase_event, TikTokEventsAPIError
+
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -149,6 +157,46 @@ class CartCheckoutView(generics.GenericAPIView):
 class SquadWebhookView(APIView):
     permission_classes = [AllowAny]
 
+    VERIFICATION_VALID = 'valid'
+    VERIFICATION_TRANSIENT = 'transient'
+    VERIFICATION_INVALID = 'invalid'
+
+    @staticmethod
+    def _verification_state(verification, payment):
+        if not isinstance(verification, dict):
+            return SquadWebhookView.VERIFICATION_TRANSIENT
+        if verification.get('status') != 200 or verification.get('success') is not True:
+            return SquadWebhookView.VERIFICATION_TRANSIENT
+
+        data = verification.get('data')
+        if not isinstance(data, dict):
+            return SquadWebhookView.VERIFICATION_TRANSIENT
+
+        transaction_status = data.get('transaction_status')
+        transaction_reference = data.get('transaction_ref')
+        transaction_currency = data.get('transaction_currency_id')
+
+        if not isinstance(transaction_status, str):
+            return SquadWebhookView.VERIFICATION_TRANSIENT
+        if transaction_status.casefold() == 'pending':
+            return SquadWebhookView.VERIFICATION_TRANSIENT
+        if transaction_status.casefold() != 'success':
+            return SquadWebhookView.VERIFICATION_INVALID
+        if transaction_reference != payment.reference:
+            return SquadWebhookView.VERIFICATION_INVALID
+        if transaction_currency != 'NGN':
+            return SquadWebhookView.VERIFICATION_INVALID
+
+        try:
+            transaction_amount = Decimal(str(data.get('transaction_amount')))
+        except (InvalidOperation, TypeError, ValueError):
+            return SquadWebhookView.VERIFICATION_INVALID
+
+        if transaction_amount != payment.amount * Decimal('100'):
+            return SquadWebhookView.VERIFICATION_INVALID
+
+        return SquadWebhookView.VERIFICATION_VALID
+
     def post(self, request):    
         squad_signature = request.headers.get('x-squad-encrypted-body')
         
@@ -166,7 +214,7 @@ class SquadWebhookView(APIView):
             hashlib.sha512
         ).hexdigest().upper()
 
-        if squad_signature != computed:
+        if not hmac.compare_digest(squad_signature.upper(), computed):
             return Response(
                 {
                     "detail": "Invalid signature."
@@ -185,46 +233,79 @@ class SquadWebhookView(APIView):
             )
 
         try:
-            payment = Payment.objects.get(reference=reference)
+            payment = Payment.objects.select_related('order').get(reference=reference)
         except Payment.DoesNotExist:
-            return Response(status=status.HTTP_200_OK)
-
-        if payment.status == Payment.StatusChoices.SUCCESS:
             return Response(status=status.HTTP_200_OK)
 
         verification = verify_squad_payment(reference)
 
-        transaction_status = verification.get('data', {}).get('transaction_status')
-
-        if transaction_status.lower() == 'success':
-            payment.status = Payment.StatusChoices.SUCCESS
-            payment.save()
-
-            payment.order.status = Order.StatusChoices.CONFIRMED
-            payment.order.save()
-
-            create_notification(
-                user=payment.order.user,
-                type='payment',
-                title='Payment Confirmed',
-                message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
+        verification_state = self._verification_state(verification, payment)
+        if verification_state != self.VERIFICATION_VALID:
+            logger.error(
+                'Squad verification was %s for payment reference=%s',
+                verification_state,
+                reference,
             )
-            send_order_confirmation(payment.order)
-
-        else:
-            payment.status = Payment.StatusChoices.FAILED
-            payment.save()
-
-            payment.order.status = Order.StatusChoices.CANCELLED
-            payment.order.save()
-
-            create_notification(
-                user=payment.order.user,
-                type='payment',
-                title='Payment Failed',
-                message=f'Your payment for order {payment.order.order_id} was unsuccessful. Please try again.'
+            response_status = (
+                status.HTTP_400_BAD_REQUEST
+                if verification_state == self.VERIFICATION_INVALID
+                else status.HTTP_503_SERVICE_UNAVAILABLE
             )
-            send_payment_failed(payment.order)
+            return Response(
+                {'detail': 'Payment verification is not conclusive.'},
+                status=response_status,
+            )
+
+        with transaction.atomic():
+            try:
+                payment = (
+                    Payment.objects
+                    .select_for_update()
+                    .select_related('order', 'order__user')
+                    .get(reference=reference)
+                )
+            except Payment.DoesNotExist:
+                return Response(status=status.HTTP_200_OK)
+
+            newly_confirmed = (
+                payment.status != Payment.StatusChoices.SUCCESS
+                or payment.order.status != Order.StatusChoices.CONFIRMED
+            )
+
+            if payment.status != Payment.StatusChoices.SUCCESS:
+                payment.status = Payment.StatusChoices.SUCCESS
+                payment.save(update_fields=['status'])
+
+            if payment.order.status != Order.StatusChoices.CONFIRMED:
+                payment.order.status = Order.StatusChoices.CONFIRMED
+                payment.order.save(update_fields=['status'])
+
+        if newly_confirmed:
+            try:
+                create_notification(
+                    user=payment.order.user,
+                    type='payment',
+                    title='Payment Confirmed',
+                    message=f'Your payment of ₦{payment.amount:,.2f} was successful. Order {payment.order.order_id} is confirmed.'
+                )
+                send_order_confirmation(payment.order)
+            except Exception:
+                logger.exception(
+                    'Post-payment notification failed for order=%s',
+                    payment.order.order_id,
+                )
+
+        if newly_confirmed:
+            try:
+                send_purchase_event(payment)
+            except TikTokEventsAPIError:
+                # Analytics must never make Squad treat a confirmed payment as failed.
+                # Durable retries require an outbox/delivery record, which is intentionally
+                # deferred because this release must not introduce a migration.
+                logger.exception(
+                    'TikTok Purchase delivery failed for order=%s',
+                    payment.order.order_id,
+                )
 
         return Response(status=status.HTTP_200_OK)
 
