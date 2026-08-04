@@ -11,6 +11,7 @@ import { useAuthStore } from "../store/authStore"
 import AuthInput from "../components/auth/AuthInput"
 import PasswordInput from "../components/auth/PasswordInput"
 import PasswordRequirements, { passwordRequirements } from "../components/auth/PasswordRequirements"
+import { trackCompleteRegistration } from "../lib/tiktok"
 
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 const getServerMediaSnapshot = () => false
@@ -114,6 +115,7 @@ export default function AuthPage({ initialMode = "register" }) {
         : await loginUser(email, password)
 
       login(data.user, data.token, data.refreshToken)
+      if (isRegistering) trackCompleteRegistration()
       toast.success(isRegistering ? "Account created!" : "Welcome back!")
 
       const redirectAfter = sessionStorage.getItem("redirectAfter") || "/"
