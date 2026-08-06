@@ -94,6 +94,13 @@ class TikTokPurchasePayloadTests(PurchaseFixtureMixin, TestCase):
         self.assertEqual(event['properties']['content_type'], 'product')
         self.assertEqual(len(event['properties']['contents']), 2)
         self.assertEqual(
+            event['properties']['content_ids'],
+            [
+                str(item.product_id)
+                for item in payment.order.items.order_by('id')
+            ],
+        )
+        self.assertEqual(
             event['properties']['contents'][0],
             {
                 'content_id': str(payment.order.items.first().product_id),
@@ -121,6 +128,16 @@ class TikTokPurchasePayloadTests(PurchaseFixtureMixin, TestCase):
         payload = build_purchase_payload(payment)
 
         self.assertEqual(payload['test_event_code'], 'TEST123')
+
+    def test_purchase_payload_rejects_an_order_without_items(self):
+        payment = self.create_purchase()
+        payment.order.items.all().delete()
+
+        with self.assertRaisesMessage(
+            TikTokEventsAPIError,
+            'TikTok Purchase events require at least one order item.',
+        ):
+            build_purchase_payload(payment)
 
 
 @override_settings(
@@ -194,6 +211,16 @@ class TikTokEventsClientTests(PurchaseFixtureMixin, TestCase):
 
         with self.assertRaises(TikTokEventsAPIError):
             send_purchase_event(payment)
+
+    @patch('Products.tiktok.requests.post')
+    def test_sender_does_not_send_an_empty_purchase(self, post):
+        payment = self.create_purchase()
+        payment.order.items.all().delete()
+
+        with self.assertRaises(TikTokEventsAPIError):
+            send_purchase_event(payment)
+
+        post.assert_not_called()
 
 
 @override_settings(

@@ -25,7 +25,7 @@ def build_purchase_event(payment, event_time=None):
     order = payment.order
     contents = []
 
-    for item in order.items.select_related('product').all():
+    for item in order.items.select_related('product').order_by('id'):
         category = (
             'raw_material'
             if item.product.category == Product.CategoryChoices.RAW_MATERIAL
@@ -40,6 +40,13 @@ def build_purchase_event(payment, event_time=None):
             'price': _number(item.price),
         })
 
+    if not contents:
+        raise TikTokEventsAPIError(
+            'TikTok Purchase events require at least one order item.'
+        )
+
+    content_ids = [item['content_id'] for item in contents]
+
     occurred_at = event_time or timezone.now()
     event = {
         'event': 'Purchase',
@@ -52,6 +59,7 @@ def build_purchase_event(payment, event_time=None):
         },
         'properties': {
             'contents': contents,
+            'content_ids': content_ids,
             'content_type': 'product',
             'value': _number(payment.amount),
             'currency': 'NGN',
