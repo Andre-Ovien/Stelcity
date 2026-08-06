@@ -138,6 +138,7 @@ export function buildTikTokContents(items = []) {
 
 export function buildTikTokCommercePayload(items = [], explicitValue = null) {
   const contents = buildTikTokContents(items)
+  const contentIds = contents.map((item) => item.content_id)
   const requestedValue = toAmount(explicitValue)
   const calculatedValue = contents.reduce(
     (total, item) => total + (item.price ?? 0) * item.quantity,
@@ -147,6 +148,7 @@ export function buildTikTokCommercePayload(items = [], explicitValue = null) {
 
   return {
     contents,
+    content_ids: contentIds,
     value,
     currency: TIKTOK_CURRENCY,
   }
@@ -354,10 +356,13 @@ export function trackPurchase({ orderId, reference, amount, items }) {
   const uniqueOrderId = toSafeString(orderId) || toSafeString(reference)
   if (!uniqueOrderId) return false
 
+  const payload = buildTikTokCommercePayload(items, amount)
+  if (payload.contents.length === 0) return false
+
   const eventId = `purchase:${uniqueOrderId}`
   return trackTikTokEvent(
     "Purchase",
-    buildTikTokCommercePayload(items, amount),
+    payload,
     { eventId, onceKey: eventId }
   )
 }
